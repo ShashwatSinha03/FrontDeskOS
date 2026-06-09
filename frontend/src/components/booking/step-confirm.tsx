@@ -58,6 +58,9 @@ export function StepConfirm({
         sessionId,
         serviceId: service?.id || null,
         appointmentTime,
+        name: customerName,
+        email: customerEmail,
+        phone: customerPhone,
       });
 
       if (res.success) {

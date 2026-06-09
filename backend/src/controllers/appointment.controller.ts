@@ -57,6 +57,9 @@ export class AppointmentController {
         appointmentTime: z.string().datetime({ message: 'appointmentTime must be a valid ISO datetime' }),
         notes: z.string().optional(),
         sessionId: z.string().optional(),
+        name: z.string().optional(),
+        email: z.string().email('Invalid email format').optional(),
+        phone: z.string().optional(),
       });
 
       const parsed = schema.parse(req.body);
@@ -67,13 +70,20 @@ export class AppointmentController {
         if (session?.customerId) {
           customerId = session.customerId;
         } else {
-          // No linked customer yet — create one on the fly for direct booking
-          const customer = await customerRepository.create(parsed.businessId, null, null, null);
+          if (!parsed.name && !parsed.email && !parsed.phone) {
+            res.status(400).json({ success: false, error: 'Customer identity required' });
+            return;
+          }
+          const customer = await customerRepository.create(
+            parsed.businessId,
+            parsed.name ?? null,
+            parsed.email ?? null,
+            parsed.phone ?? null
+          );
           customerId = customer.id;
           if (session) {
             await sessionRepository.updateCustomer(session.sessionId, customer.id);
           }
-          // Create an active conversation so the booking has context
           await conversationRepository.create(customerId, parsed.businessId, 'web_chat');
         }
       }

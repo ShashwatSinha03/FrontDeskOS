@@ -185,6 +185,9 @@ export async function bookAppointment(payload: {
   serviceId: string | null;
   appointmentTime: string; // ISO datetime
   notes?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
 }): Promise<ApiResponse<Appointment>> {
   const response = await fetch(`${API_URL}/appointments/book`, {
     method: 'POST',
