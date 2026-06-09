@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: frontdeskos_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
+
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: frontdeskos_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    tmpfs: /var/lib/postgresql/data
+    command: >
+      bash -c "
+        docker-entrypoint.sh postgres &
+        sleep 3 &&
+        psql -U postgres -d frontdeskos_test -f /docker-entrypoint-initdb.d/schema.sql &&
+        psql -U postgres -d frontdeskos_test -f /docker-entrypoint-initdb.d/seed-brightsmile.sql &&
+        wait
+      "
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres_data:
