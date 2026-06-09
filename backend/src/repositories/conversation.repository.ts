@@ -51,8 +51,8 @@ export class ConversationRepository {
     metadata: Record<string, any> = {}
   ): Promise<Message> {
     const query = `
-      INSERT INTO messages (conversation_id, sender, content, metadata)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO messages (conversation_id, business_id, sender, content, metadata)
+      VALUES ($1, (SELECT business_id FROM conversations WHERE id = $1), $2, $3, $4)
       RETURNING *
     `;
     const res = await pool.query(query, [conversationId, sender, content, JSON.stringify(metadata)]);

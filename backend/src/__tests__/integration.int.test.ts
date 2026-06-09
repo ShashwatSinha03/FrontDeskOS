@@ -427,7 +427,7 @@ describe('Journey H: Recovery Message Visibility', () => {
     conversationId = chat.body.data?.conversation?.id || '';
 
     if (customerId) {
-      const { recoveryService } = await import('../services/recovery');
+      const { recoveryService } = await import('../services/recovery/index.js');
       await recoveryService.scheduleRecovery(customerId, BRIGHTSMILE_BUSINESS_ID, 'inactivity');
       await recoveryService.processDueRecoveries();
     }

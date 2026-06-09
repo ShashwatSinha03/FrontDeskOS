@@ -55,11 +55,11 @@ VALUES (
 -- 5 Services
 INSERT INTO services (id, business_id, name, description, price_min, price_max, duration_minutes)
 VALUES
-  ('svc-b7a2-0001-4000-8000-000000000001', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Comprehensive Exam & Cleaning', 'Full oral exam, digital X-rays, professional cleaning, and fluoride treatment.', 125.00, 225.00, 60),
-  ('svc-b7a2-0001-4000-8000-000000000002', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Teeth Whitening', 'Professional in-office Zoom whitening treatment with take-home touch-up kit.', 350.00, 600.00, 90),
-  ('svc-b7a2-0001-4000-8000-000000000003', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Invisalign Consultation', '3D intraoral scan, treatment plan simulation, and aligner fitting.', 0.00, 100.00, 45),
-  ('svc-b7a2-0001-4000-8000-000000000004', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Composite Filling', 'Tooth-colored resin filling for cavities on molars and premolars.', 150.00, 350.00, 45),
-  ('svc-b7a2-0001-4000-8000-000000000005', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Emergency Exam', 'Same-day urgent evaluation, X-rays, and pain management prescription.', 100.00, 200.00, 30);
+  ('b7a2f4c1-d93e-48d6-95bc-000000000001', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Comprehensive Exam & Cleaning', 'Full oral exam, digital X-rays, professional cleaning, and fluoride treatment.', 125.00, 225.00, 60),
+  ('b7a2f4c1-d93e-48d6-95bc-000000000002', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Teeth Whitening', 'Professional in-office Zoom whitening treatment with take-home touch-up kit.', 350.00, 600.00, 90),
+  ('b7a2f4c1-d93e-48d6-95bc-000000000003', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Invisalign Consultation', '3D intraoral scan, treatment plan simulation, and aligner fitting.', 0.00, 100.00, 45),
+  ('b7a2f4c1-d93e-48d6-95bc-000000000004', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Composite Filling', 'Tooth-colored resin filling for cavities on molars and premolars.', 150.00, 350.00, 45),
+  ('b7a2f4c1-d93e-48d6-95bc-000000000005', 'b7a2f4c1-d93e-48d6-95bc-79f94eb97220', 'Emergency Exam', 'Same-day urgent evaluation, X-rays, and pain management prescription.', 100.00, 200.00, 30);
 
 -- Staff owner
 INSERT INTO staff_profiles (user_id, business_id, role, full_name)

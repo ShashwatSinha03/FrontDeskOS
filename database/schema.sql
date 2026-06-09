@@ -779,11 +779,11 @@ INSERT INTO conversations (id, customer_id, business_id, status, channel_type) V
   ('e0a80121-0001-4000-8000-000000000002', 'c0a80121-0001-4000-8000-000000000003', 'd4a6f7b1-e23a-48d6-95bc-79f94eb97210', 'active', 'web_chat');
 
 -- Seed Sample Messages
-INSERT INTO messages (conversation_id, sender, content) VALUES
-  ('e0a80121-0001-4000-8000-000000000001', 'customer', 'Hi, I''d like to schedule a teeth cleaning.'),
-  ('e0a80121-0001-4000-8000-000000000001', 'agent', 'Hello John! I''d be happy to help you schedule a teeth cleaning. We have availability this week. What day works best for you?'),
-  ('e0a80121-0001-4000-8000-000000000002', 'customer', 'Do you offer payment plans for dental work?'),
-  ('e0a80121-0001-4000-8000-000000000002', 'agent', 'Yes, we do offer flexible payment plans. Let me connect you with our financing options.');
+INSERT INTO messages (conversation_id, business_id, sender, content) VALUES
+  ('e0a80121-0001-4000-8000-000000000001', 'd4a6f7b1-e23a-48d6-95bc-79f94eb97210', 'customer', 'Hi, I''d like to schedule a teeth cleaning.'),
+  ('e0a80121-0001-4000-8000-000000000001', 'd4a6f7b1-e23a-48d6-95bc-79f94eb97210', 'agent', 'Hello John! I''d be happy to help you schedule a teeth cleaning. We have availability this week. What day works best for you?'),
+  ('e0a80121-0001-4000-8000-000000000002', 'd4a6f7b1-e23a-48d6-95bc-79f94eb97210', 'customer', 'Do you offer payment plans for dental work?'),
+  ('e0a80121-0001-4000-8000-000000000002', 'd4a6f7b1-e23a-48d6-95bc-79f94eb97210', 'agent', 'Yes, we do offer flexible payment plans. Let me connect you with our financing options.');
 
 -- Seed Sample Appointment (for tomorrow)
 INSERT INTO appointments (customer_id, business_id, service_id, appointment_time, status) VALUES
