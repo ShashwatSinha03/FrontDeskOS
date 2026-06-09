@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { requireApiKey } from '../middleware/auth';
 import { resolveSession } from '../middleware/session';
 import { chatController } from '../controllers/chat.controller';
@@ -76,7 +76,7 @@ router.put('/recovery/config', (req, res) => recoveryController.updateConfig(req
 router.get('/public/businesses/:slug', (req, res) => publicController.getBusiness(req, res));
 router.get('/public/businesses/:slug/services', (req, res) => publicController.getServices(req, res));
 router.post('/public/businesses/:slug/contact', (req, res) => publicController.submitContact(req, res));
-router.post('/public/sessions/create', (req, res) => publicController.createSession(req, res));
+router.post('/public/sessions/create', (req: Request, res: Response) => publicController.createSession(req, res));
 
 export default router;
 export { router };
