@@ -1,14 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import config from '../config';
 
-const PUBLIC_PREFIXES = ['/public', '/chat', '/health'];
-
 export function requireApiKey(req: Request, res: Response, next: NextFunction): void {
-  if (PUBLIC_PREFIXES.some(p => req.path.startsWith(p))) {
-    next();
-    return;
-  }
-
   if (config.NODE_ENV === 'development') {
     next();
     return;

@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import config from './config';
-import apiRouter from './routes/api.routes';
+import { publicRouter, adminRouter } from './routes/api.routes';
 import { createRateLimiter } from './middleware/rate-limit';
 
 const app = express();
@@ -32,7 +32,8 @@ app.use('/api', adminLimiter);
 
 app.use(express.json({ limit: '10kb' }));
 
-app.use('/api', apiRouter);
+app.use('/api', publicRouter);
+app.use('/api', adminRouter);
 
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({
