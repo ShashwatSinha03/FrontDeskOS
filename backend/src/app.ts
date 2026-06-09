@@ -10,6 +10,7 @@ if (config.NODE_ENV === 'production') {
   const allowedOrigins = [
     'https://frontdeskos.app',
     'https://brightsmile.frontdeskos.app',
+    'https://frontdeskos.vercel.app',
   ];
   if (process.env.FRONTEND_URL) {
     allowedOrigins.push(process.env.FRONTEND_URL);
