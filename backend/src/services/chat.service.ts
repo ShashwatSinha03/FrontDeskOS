@@ -65,7 +65,7 @@ export class ChatService {
     if (!customer) {
       customer = await customerRepository.create(
         input.businessId,
-        input.customerName || null,
+        input.customerName || input.channelIdentity,
         input.customerEmail || null,
         input.customerPhone || (input.channelType !== 'web_chat' ? input.channelIdentity : null)
       );
