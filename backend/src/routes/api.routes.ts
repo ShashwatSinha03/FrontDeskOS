@@ -23,6 +23,8 @@ publicRouter.get('/public/businesses/:slug', (req: Request, res: Response) => pu
 publicRouter.get('/public/businesses/:slug/services', (req: Request, res: Response) => publicController.getServices(req, res));
 publicRouter.post('/public/businesses/:slug/contact', (req: Request, res: Response) => publicController.submitContact(req, res));
 publicRouter.post('/public/sessions/create', (req: Request, res: Response) => publicController.createSession(req, res));
+publicRouter.get('/appointments/slots', (req: Request, res: Response) => appointmentController.getSlots(req, res));
+publicRouter.post('/appointments/book', (req: Request, res: Response) => appointmentController.book(req, res));
 
 // ==========================================
 // Admin Router — requires x-api-key
@@ -41,8 +43,7 @@ adminRouter.post('/knowledge-base/requests/:id/approve', (req: Request, res: Res
 adminRouter.post('/knowledge-base/requests/:id/reject', (req: Request, res: Response) => dashboardController.rejectKnowledgeRequest(req, res));
 
 adminRouter.get('/appointments', (req: Request, res: Response) => appointmentController.list(req, res));
-adminRouter.get('/appointments/slots', (req: Request, res: Response) => appointmentController.getSlots(req, res));
-adminRouter.post('/appointments/book', (req: Request, res: Response) => appointmentController.book(req, res));
+
 adminRouter.post('/appointments/:id/cancel', (req: Request, res: Response) => appointmentController.cancel(req, res));
 adminRouter.post('/appointments/:id/reschedule', (req: Request, res: Response) => appointmentController.reschedule(req, res));
 adminRouter.post('/appointments/:id/confirm', (req: Request, res: Response) => appointmentController.confirm(req, res));
