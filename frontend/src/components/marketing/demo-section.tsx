@@ -25,20 +25,20 @@ export function DemoSection({ headline, messages }: DemoContent) {
   }, []);
 
   return (
-    <section className="relative border-t border-zinc-800 bg-black py-24 sm:py-32">
-      <DotGrid
-        className="absolute inset-0"
-        style={{ padding: 0 }}
-        dotSize={6}
-        gap={21}
-        baseColor="#1a2537"
-        activeColor="#1f74ff"
-        proximity={150}
-        shockRadius={200}
-        shockStrength={9}
-        resistance={1750}
-        returnDuration={4.3}
-      />
+    <section className="relative overflow-hidden border-t border-zinc-800 bg-black py-24 sm:py-32">
+      <div className="absolute inset-0">
+        <DotGrid
+          dotSize={6}
+          gap={21}
+          baseColor="#2a3a5c"
+          activeColor="#1f74ff"
+          proximity={150}
+          shockRadius={200}
+          shockStrength={9}
+          resistance={1750}
+          returnDuration={4.3}
+        />
+      </div>
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -49,7 +49,7 @@ export function DemoSection({ headline, messages }: DemoContent) {
         <div className="mx-auto mt-16 flex justify-center">
           <div
             ref={ref}
-            className="max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4 backdrop-blur-sm sm:p-6"
+            className="max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900/85 p-4 sm:p-6"
           >
             <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
               <div className="flex gap-1.5">
