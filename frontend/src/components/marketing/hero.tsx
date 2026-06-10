@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { HeroContent } from '@/lib/marketing-content';
 import { ArrowRight, MessageSquare, CalendarCheck, UserCheck } from 'lucide-react';
+import LightRays from '@/components/LightRays';
 
 function FlowStep({ icon: Icon, label }: { icon: any; label: string }) {
   return (
@@ -21,8 +22,22 @@ export function HomeHero({
 }: HeroContent) {
   return (
     <section className="relative min-h-screen overflow-hidden bg-black">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-      <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-blue-500/5 blur-[120px]" />
+      <div className="absolute inset-0">
+        <LightRays
+          raysOrigin="top-center"
+          raysColor="#3b85ff"
+          raysSpeed={0.6}
+          lightSpread={1.3}
+          rayLength={2.1}
+          followMouse={true}
+          mouseInfluence={0.2}
+          noiseAmount={0.28}
+          distortion={0}
+          pulsating
+          fadeDistance={1}
+          saturation={1.1}
+        />
+      </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-4 pb-32 pt-24 sm:px-6 sm:pb-40 sm:pt-32 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
