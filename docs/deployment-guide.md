@@ -112,7 +112,7 @@ SUPABASE_URL=https://[PROJECT_REF].supabase.co
 SUPABASE_SERVICE_ROLE_KEY=[your-service-role-key]
 LLM_PROVIDER=groq
 GROQ_API_KEY=[your-groq-api-key]
-GROQ_MODEL=llama3-70b-8192
+GROQ_MODEL=llama-3.3-70b-versatile
 ADMIN_API_KEY=[run: openssl rand -hex 32]
 FRONTEND_URL=https://frontdeskos.app
 ```

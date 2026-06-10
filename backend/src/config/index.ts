@@ -22,7 +22,7 @@ const configSchema = z.object({
 
   // Groq Settings
   GROQ_API_KEY: z.string().optional(),
-  GROQ_MODEL: z.string().default('llama3-70b-8192'),
+  GROQ_MODEL: z.string().default('llama-3.3-70b-versatile'),
 
   // OpenAI Settings
   OPENAI_API_KEY: z.string().optional(),
