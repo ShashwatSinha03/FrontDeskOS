@@ -18,7 +18,7 @@ export function ProductShowcase({ headline, items }: ShowcaseContent) {
           {items.map((item, i) => {
             const Icon = icons[i] || MessageSquare;
             return (
-              <SpotlightCard key={i} className="group">
+              <SpotlightCard key={i} className="group" spotlightColor="rgba(59, 133, 255, 0.25)">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/50">
                   <Icon className="h-5 w-5 text-zinc-400 transition group-hover:text-blue-400" />
                 </div>
