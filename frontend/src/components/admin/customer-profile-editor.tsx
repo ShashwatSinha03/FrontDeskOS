@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchPublicBusiness, updateCustomerProfile } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Pencil } from 'lucide-react';
 
 export function CustomerProfileEditor({
@@ -65,9 +66,9 @@ export function CustomerProfileEditor({
   return (
     <div className="space-y-2 p-3 rounded-lg border bg-muted/30">
       <div className="grid gap-2 sm:grid-cols-3">
-        <input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Name *" className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-        <input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="Email" type="email" className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-        <input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone" className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+        <Input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Name *" className="h-8 px-2 py-1 text-xs" />
+        <Input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="Email" type="email" className="h-8 px-2 py-1 text-xs" />
+        <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone" className="h-8 px-2 py-1 text-xs" />
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
       <div className="flex gap-2 justify-end">

@@ -13,8 +13,15 @@ const LEGAL_LINKS = [
   { label: 'Terms of Service', href: '#' },
 ];
 
-export function Footer({ businessName }: { businessName: string }) {
+export function Footer({ businessName, slug }: { businessName: string; slug?: string }) {
   const currentYear = new Date().getFullYear();
+
+  const prefix = slug ? `/${slug}` : '';
+
+  const navLinks = NAV_LINKS.map((link) => ({
+    ...link,
+    href: link.href === '' ? prefix || '/' : `${prefix}${link.href}`,
+  }));
 
   return (
     <footer className="border-t bg-muted/30">
@@ -23,14 +30,14 @@ export function Footer({ businessName }: { businessName: string }) {
           <div className="lg:col-span-2">
             <h3 className="text-lg font-semibold tracking-tight">{businessName}</h3>
             <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-              Professional care tailored to you. Schedule your visit and experience the difference.
+              {businessName} — professional service tailored to you.
             </p>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold mb-3">Navigation</h4>
             <ul className="space-y-2">
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}

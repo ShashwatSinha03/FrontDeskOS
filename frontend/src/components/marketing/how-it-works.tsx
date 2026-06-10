@@ -2,7 +2,7 @@ import { HowItWorksContent } from '@/lib/marketing-content';
 
 export function HowItWorks({ headline, steps }: HowItWorksContent) {
   return (
-    <section className="border-t border-zinc-800 bg-black py-24 sm:py-32">
+    <section id="how-it-works" className="border-t border-zinc-800 bg-black py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">
           {headline}

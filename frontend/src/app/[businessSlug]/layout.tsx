@@ -28,8 +28,8 @@ export default async function BusinessLayout({
   if (!business) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold">Clinic not found</h1>
-        <p className="text-muted-foreground mt-2">The clinic you&apos;re looking for doesn&apos;t exist.</p>
+        <h1 className="text-2xl font-bold">Business not found</h1>
+        <p className="text-muted-foreground mt-2">The business you&apos;re looking for doesn&apos;t exist.</p>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export default async function BusinessLayout({
       <div className="flex min-h-screen flex-col">
         <Header businessName={business.name} slug={businessSlug} />
         <main className="flex-1">{children}</main>
-        <Footer businessName={business.name} />
+        <Footer businessName={business.name} slug={businessSlug} />
         <ChatWidget />
       </div>
     </ChatProvider>

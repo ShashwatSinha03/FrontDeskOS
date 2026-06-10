@@ -255,7 +255,7 @@ CURRENT DATE: ${currentDate || new Date().toISOString().slice(0, 10)} (use this 
 
 TASK: Collect booking details and help the customer book.
 
-Collect these in order: service, date, time, name, phone, email.
+Collect in this order: service, date, time, name, phone. Ask for email only if the customer volunteers it.
 Only ask for information not yet provided. Check conversation history before asking.
 Do not ask for information already provided.
 
@@ -263,13 +263,13 @@ Respond ONLY with valid JSON. No explanations. No markdown.
 
 Use this JSON structure:
 - If more info is needed: {"action": "collect_info", "reply": "your question to the customer", "customerName": "if provided", "customerEmail": "if provided", "customerPhone": "if provided"}
-- If customer has confirmed date, time, service, name, phone, and email: {"action": "book", "reply": "confirmation message", "serviceId": "exact-uuid-from-list", "date": "YYYY-MM-DD", "time": "HH:mm", "customerName": "full name", "customerEmail": "email", "customerPhone": "phone"}
+- If customer has confirmed date, time, service, name, and phone: {"action": "book", "reply": "confirmation message", "serviceId": "exact-uuid-from-list", "date": "YYYY-MM-DD", "time": "HH:mm", "customerName": "full name", "customerEmail": "email if provided", "customerPhone": "phone"}
 
 Rules:
 - The date must be in YYYY-MM-DD format, using the CURRENT DATE as reference. For example, "next Monday" from CURRENT DATE would be June 15, 2026.
 - The time must be in HH:mm format (24-hour).
-- Set action to "book" when ALL of: customer has specified a date AND time AND service, AND you have their name, phone, and email. Do NOT wait for a separate confirmation message.
-- If the customer provided all details including name/phone/email in their message, go ahead and book directly.
+- Set action to "book" when ALL of: customer has specified a date AND time AND service, AND you have their name and phone. Email is optional. Do NOT wait for a separate confirmation message.
+- If the customer provided all required details in their message, go ahead and book directly.
 - Use "collect_info" to ask for whatever is still missing — one field at a time.
 - When booking, confirm clearly: "Perfect, your [Service] appointment is booked for [Date] at [Time]."
 - NEVER confirm a booking without all required details.

@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useBusiness } from '@/hooks/use-business';
 import { useServices } from '@/hooks/use-services';
 import { ServiceCard } from '@/components/services/service-card';
 import { Skeleton } from '@/components/design/skeleton';
@@ -10,6 +11,7 @@ import { AlertCircle, Package } from 'lucide-react';
 export default function ServicesPage() {
   const params = useParams();
   const slug = params.businessSlug as string;
+  const { business } = useBusiness(slug);
   const { services, isLoading, error } = useServices(slug);
 
   if (isLoading) {
@@ -42,9 +44,11 @@ export default function ServicesPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
       <div className="max-w-xl mb-12">
         <h1 className="text-3xl font-bold tracking-tight">Our Services</h1>
-        <p className="mt-3 text-base text-muted-foreground">
-          Professional care tailored to your needs. Browse our services and book online.
-        </p>
+        {business && (
+          <p className="mt-3 text-base text-muted-foreground">
+            Services offered by {business.name}.
+          </p>
+        )}
       </div>
       {services.length === 0 ? (
         <EmptyState

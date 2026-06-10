@@ -104,7 +104,7 @@ export default function BookPage() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="text-2xl font-bold">No Services Available</h1>
-        <p className="text-muted-foreground mt-2">Please contact the clinic directly to book an appointment.</p>
+        <p className="text-muted-foreground mt-2">Please contact us directly to book an appointment.</p>
       </div>
     );
   }

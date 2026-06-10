@@ -7,6 +7,7 @@ import { fetchAppointments, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
 import { StatusBadge, statusLevel } from '@/components/design/status-badge';
 import { PageHeader } from '@/components/design/page-header';
+import { Select } from '@/components/ui/select';
 import { AppointmentStatus } from '@/types';
 import { CustomerLink } from '@/components/admin/customer-link';
 
@@ -82,15 +83,14 @@ export default function AppointmentsPage() {
       />
 
       <div className="flex flex-wrap items-center gap-3">
-        <select
+        <Select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {STATUS_FILTERS.map((s) => (
             <option key={s} value={s}>{s === 'all' ? 'All Statuses' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <DataTable

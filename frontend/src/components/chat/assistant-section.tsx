@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bot, Calendar, Clock, Sparkles, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useChat } from '@/contexts/chat-context';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +11,7 @@ const QUICK_ACTIONS = [
   { label: 'Book Appointment', message: 'I\'d like to book an appointment' },
   { label: 'Services', message: 'What services do you offer?' },
   { label: 'Hours', message: 'What are your business hours?' },
-  { label: 'Insurance', message: 'Do you accept insurance?' },
+  { label: 'Contact', message: 'How can I contact you?' },
 ];
 
 const FEATURES = [
@@ -189,14 +190,14 @@ export function AiAssistant() {
 
                 <div className="border-t px-5 py-3.5">
                   <div className="flex items-center gap-2">
-                    <input
+                    <Input
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Type your message..."
                       maxLength={1000}
                       disabled={sending || !sessionReady}
-                      className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                      className="flex-1"
                     />
                     <Button
                       size="icon"

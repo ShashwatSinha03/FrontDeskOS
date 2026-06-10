@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="Dashboard"
-        description="Overview of your clinic's operations."
+        description="Overview of your business's operations."
       />
 
       {error && (

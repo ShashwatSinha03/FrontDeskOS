@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge, lifecycleLevel, statusLevel } from '@/components/design/status-badge';
 import { MetricCard } from '@/components/design/metric-card';
+import { TabBar } from '@/components/design/tab-bar';
 import { ConversationViewer } from '@/components/admin/conversation-viewer';
 import { LifecycleEditor } from '@/components/admin/lifecycle-editor';
 import { CustomerProfileEditor } from '@/components/admin/customer-profile-editor';
@@ -253,22 +254,11 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
         </CardContent>
       </Card>
 
-      {/* Tab Navigation */}
-      <div className="flex gap-0 border-b overflow-x-auto">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === tab
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <TabBar
+        tabs={TABS.map((t) => ({ label: t, value: t }))}
+        activeTab={activeTab}
+        onTabChange={(v) => setActiveTab(v as Tab)}
+      />
 
       {/* Tab Content */}
       {activeTab === 'Overview' && (
@@ -290,21 +280,15 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
             </Card>
           ) : (
             <>
-              <div className="flex gap-0 border-b overflow-x-auto">
-                {conversations.map((conv) => (
-                  <button
-                    key={conv.id}
-                    onClick={() => setSelectedConversationId(conv.id)}
-                    className={`px-3 py-2 text-xs font-medium border-b-2 whitespace-nowrap transition-colors ${
-                      selectedConversationId === conv.id
-                        ? 'border-primary text-primary'
-                        : 'border-transparent text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {conv.channelType.replace('_', ' ')} — {new Date(conv.createdAt).toLocaleDateString()}
-                  </button>
-                ))}
-              </div>
+              <TabBar
+                tabs={conversations.map((conv) => ({
+                  label: `${conv.channelType.replace('_', ' ')} — ${new Date(conv.createdAt).toLocaleDateString()}`,
+                  value: conv.id,
+                }))}
+                activeTab={selectedConversationId ?? ''}
+                onTabChange={(v) => setSelectedConversationId(v)}
+                size="sm"
+              />
 
               <ConversationMessages conversationId={selectedConversationId ?? null} />
             </>

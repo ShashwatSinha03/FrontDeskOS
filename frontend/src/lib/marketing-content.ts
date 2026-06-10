@@ -64,6 +64,8 @@ export interface DemoContent {
 
 export interface FounderContent {
   headline: string;
+  name: string;
+  title: string;
   story: string;
 }
 
@@ -129,6 +131,7 @@ export const defaultContent: MarketingContent = {
       { label: 'Escalation Management', description: 'Flags urgent issues — legal threats, complaints, emergencies — for human attention.' },
       { label: 'Customer Tracking', description: 'Full lifecycle view from first inquiry to booked customer.' },
       { label: 'Dashboard Reporting', description: 'See lead volume, conversion rates, escalations, and team performance at a glance.' },
+      { label: 'Pilot Program Available', description: 'FrontDeskOS is currently accepting limited pilot partners. Get priority support and shape the product roadmap.' },
     ],
   },
 
@@ -180,6 +183,8 @@ export const defaultContent: MarketingContent = {
 
   founder: {
     headline: "Built by someone who's been there.",
+    name: 'Shashwat Sinha',
+    title: 'Founder & CEO',
     story:
       "I built FrontDeskOS because I watched local businesses lose customers every single day — not because their service was bad, but because nobody answered the phone after hours. A missed call is a lost customer. A slow response is a lost lead. FrontDeskOS fixes that. It's the front desk that never sleeps, never forgets, and never puts a customer on hold.",
   },

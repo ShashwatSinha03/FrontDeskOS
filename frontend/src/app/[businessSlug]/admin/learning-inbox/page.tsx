@@ -7,6 +7,7 @@ import { fetchKnowledgeRequests, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
 import { StatusBadge, statusLevel } from '@/components/design/status-badge';
 import { PageHeader } from '@/components/design/page-header';
+import { TabBar } from '@/components/design/tab-bar';
 import { LearningInboxDetail } from '@/components/admin/learning-inbox-detail';
 import { KnowledgeRequest, KnowledgeRequestStatus } from '@/types';
 import { CustomerLink } from '@/components/admin/customer-link';
@@ -102,22 +103,11 @@ export default function LearningInboxPage() {
         description="Review and approve answers to questions the AI couldn't answer."
       />
 
-      {/* Status tabs */}
-      <div className="flex gap-0 border-b">
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => { setStatusTab(tab.value); setPage(1); setSelectedRequest(null); }}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              statusTab === tab.value
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <TabBar
+        tabs={STATUS_TABS}
+        activeTab={statusTab}
+        onTabChange={(v) => { setStatusTab(v as any); setPage(1); setSelectedRequest(null); }}
+      />
 
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 min-w-0">

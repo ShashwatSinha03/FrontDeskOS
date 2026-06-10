@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export function HeroSection({ businessName, slug }: { businessName: string; slug: string }) {
+export function HeroSection({ businessName, slug, description }: { businessName: string; slug: string; description?: string | null }) {
   return (
     <section className="relative overflow-hidden bg-background border-b">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-muted/50 via-background to-background" />
@@ -19,9 +19,11 @@ export function HeroSection({ businessName, slug }: { businessName: string; slug
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
             {businessName}
           </h1>
-          <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-muted-foreground max-w-lg">
-            Professional care, modern approach. We combine expertise with comfort to give you the best experience.
-          </p>
+          {description && (
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-muted-foreground max-w-lg">
+              {description}
+            </p>
+          )}
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3">
             <Link href={`/${slug}/book`}>
               <Button size="lg" className="w-full sm:w-auto">
@@ -39,3 +41,4 @@ export function HeroSection({ businessName, slug }: { businessName: string; slug
     </section>
   );
 }
+

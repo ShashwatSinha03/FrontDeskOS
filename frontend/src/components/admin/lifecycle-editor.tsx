@@ -6,6 +6,8 @@ import useSWR from 'swr';
 import { fetchPublicBusiness, updateCustomerLifecycle } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { StatusBadge, lifecycleLevel } from '@/components/design/status-badge';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { CustomerLifecycleState } from '@/types';
 
 const ALLOWED_STATES: CustomerLifecycleState[] = [
@@ -84,15 +86,15 @@ export function LifecycleEditor({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <select
+        <Select
           value={selectedState}
           onChange={(e) => setSelectedState(e.target.value)}
-          className="flex h-8 rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="h-8 px-2 py-1 text-xs"
         >
           {ALLOWED_STATES.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
-        </select>
+        </Select>
         <Button
           size="sm"
           onClick={() => setShowConfirm(true)}
@@ -108,23 +110,25 @@ export function LifecycleEditor({
         </Button>
       </div>
 
-      {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="rounded-xl bg-card p-6 shadow-lg max-w-sm mx-4 border">
-            <h3 className="font-semibold mb-2">Change Lifecycle State</h3>
-            <p className="text-sm text-muted-foreground mb-1">
+      <Dialog open={showConfirm} onOpenChange={(o) => !o && setShowConfirm(false)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Lifecycle State</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
               Current: <StatusBadge level={lifecycleLevel(currentState)}>{currentState}</StatusBadge>
             </p>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground">
               New: <StatusBadge level={lifecycleLevel(selectedState)}>{selectedState}</StatusBadge>
             </p>
-            <div className="flex gap-2 justify-end">
+            <DialogFooter>
               <Button variant="outline" size="sm" onClick={() => setShowConfirm(false)}>Cancel</Button>
               <Button size="sm" onClick={handleSave}>Confirm</Button>
-            </div>
+            </DialogFooter>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {message && (
         <div

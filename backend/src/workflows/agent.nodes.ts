@@ -118,6 +118,53 @@ async function fetchServices(businessId: string) {
 // ─────────────────────────────────────────────────────────────────────────────
 export async function detectIntentNode(state: AgentState): Promise<Partial<AgentState>> {
   const t0 = Date.now();
+
+  // ── Workflow continuation guard ──────────────────────────────
+  // Skips LLM intent classification when the assistant was already
+  // collecting information for a multi-turn workflow (booking,
+  // lead_capture, reschedule, cancellation) and the user responds
+  // with a short data-like continuation (phone, name, date, time,
+  // yes/no, etc.) rather than an explicit intent switch.
+  //
+  // This prevents bare continuations like "9005093983" from being
+  // misclassified as "unknown" by the LLM intent classifier.
+
+  const CONTINUABLE_WORKFLOWS = ['booking', 'lead_capture', 'reschedule', 'cancellation'];
+  const completionFlags = ['bookingCreated', 'rescheduleCreated', 'appointmentCancelled', 'appointmentId'];
+
+  const lastAgentMsg = [...state.history].reverse().find(m => m.sender === 'agent');
+  const lastIntent = lastAgentMsg?.metadata?.intent as string | undefined;
+
+  if (lastAgentMsg && lastIntent && CONTINUABLE_WORKFLOWS.includes(lastIntent)) {
+    const workflowCompleted = completionFlags.some(flag => !!lastAgentMsg.metadata?.[flag]);
+
+    if (!workflowCompleted) {
+      const msg = state.userMessage.trim();
+
+      const isContinuation =
+        msg.length > 0 &&
+        msg.length <= 100 &&
+        !msg.includes('?') &&
+        !/^(actually|wait|never\s*mind|instead|forget\s*it)/i.test(msg) &&
+        !/^(how\s+(much|many|long)|what\s+(are|is|do|does|about)|do\s+you\s+(take|accept|have|offer))/i.test(msg) &&
+        !/^(can\s+(i|we)\s+(cancel|reschedule|change)|i\s+(want|need)\s+to\s+(cancel|reschedule))/i.test(msg) &&
+        !/^(is\s+this|does\s+that)/i.test(msg);
+
+      if (isContinuation) {
+        console.log(`🔁 Workflow continuation: "${lastIntent}" via "${msg}"`);
+        return {
+          intent: lastIntent as ConversationIntent,
+          intentConfidence: 1.0,
+          metadata: {
+            workflowContinuation: true,
+            continuedFrom: lastIntent,
+            intentDetectionMs: Date.now() - t0,
+          },
+        };
+      }
+    }
+  }
+
   const provider = LLMProviderFactory.getProvider();
 
   const systemPrompt = buildIntentDetectionPrompt(

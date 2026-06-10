@@ -5,6 +5,9 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchPublicBusiness, fetchPublicServices, fetchAvailableSlots, adminBookAppointment } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 export function BookAppointmentDialog({
   customerId, open, onClose, onSuccess,
@@ -63,50 +66,49 @@ export function BookAppointmentDialog({
     }
   };
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="rounded-xl bg-card p-6 shadow-lg max-w-md w-full mx-4 border">
-        <h2 className="text-lg font-semibold mb-4">Book Appointment</h2>
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Book Appointment</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
-          <select
+          <Select
             value={serviceId} onChange={(e) => setServiceId(e.target.value)}
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="w-full"
           >
             <option value="">Any Service</option>
             {services.map((s: any) => (
               <option key={s.id} value={s.id}>{s.name} ({s.durationMinutes}min)</option>
             ))}
-          </select>
-          <input
+          </Select>
+          <Input
             type="date" value={date} onChange={(e) => setDate(e.target.value)} required
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
-          <select
+          <Select
             value={time} onChange={(e) => setTime(e.target.value)} required
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="w-full"
             disabled={!date}
           >
             <option value="">Select time</option>
             {slots.map((slot: any) => (
               <option key={slot.time} value={slot.time}>{slot.time}</option>
             ))}
-          </select>
+          </Select>
           <textarea
             value={notes} onChange={(e) => setNotes(e.target.value)}
             placeholder="Notes (optional)"
             className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           {error && <p className="text-xs text-red-600">{error}</p>}
-          <div className="flex gap-2 justify-end pt-2">
+          <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={onClose}>Cancel</Button>
             <Button type="submit" size="sm" disabled={saving || !date || !time}>
               {saving ? 'Booking...' : 'Book Appointment'}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

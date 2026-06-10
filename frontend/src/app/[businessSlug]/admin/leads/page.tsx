@@ -8,6 +8,8 @@ import { DataTable, Column } from '@/components/admin/data-table';
 import { Button } from '@/components/ui/button';
 import { StatusBadge, lifecycleLevel } from '@/components/design/status-badge';
 import { PageHeader } from '@/components/design/page-header';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { Customer, CustomerLifecycleState } from '@/types';
 import { CustomerLink } from '@/components/admin/customer-link';
 import { AddLeadDialog } from '@/components/admin/add-lead-dialog';
@@ -106,21 +108,20 @@ export default function LeadsPage() {
       />
 
       <div className="flex flex-wrap items-center gap-3">
-        <select
+        <Select
           value={stateFilter}
           onChange={(e) => { setStateFilter(e.target.value); setPage(1); }}
-          className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {STATE_FILTERS.map((s) => (
             <option key={s} value={s}>{s === 'all' ? 'All States' : s}</option>
           ))}
-        </select>
-        <input
+        </Select>
+        <Input
           type="text"
           placeholder="Search name, email, phone..."
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring flex-1 min-w-[200px]"
+          className="flex-1 min-w-[200px]"
         />
       </div>
 

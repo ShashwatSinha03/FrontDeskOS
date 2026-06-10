@@ -21,7 +21,7 @@ function formatPrice(min: number, max: number) {
   return `$${min} \u2013 $${max}`;
 }
 
-export function ServicesOverview({ services, slug }: { services: ServiceItem[]; slug: string }) {
+export function ServicesOverview({ services, slug, businessName }: { services: ServiceItem[]; slug: string; businessName?: string }) {
   const displayed = services.slice(0, 6);
 
   return (
@@ -29,9 +29,11 @@ export function ServicesOverview({ services, slug }: { services: ServiceItem[]; 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mb-12">
           <h2 className="text-3xl font-bold tracking-tight">Our Services</h2>
-          <p className="mt-3 text-base text-muted-foreground">
-            Care designed around you. Every service delivered with precision and attention to detail.
-          </p>
+          {businessName && (
+            <p className="mt-3 text-base text-muted-foreground">
+              Services offered by {businessName}.
+            </p>
+          )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {displayed.map((service) => (

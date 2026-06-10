@@ -43,11 +43,11 @@ export default function HomePage() {
 
   return (
     <>
-      <HeroSection businessName={business.name} slug={slug} />
-      <ServicesOverview services={business.services} slug={slug} />
-      <AboutSection businessName={business.name} />
-      <FaqSection />
-      <CtaBanner slug={slug} />
+      <HeroSection businessName={business.name} slug={slug} description={business.description} />
+      <ServicesOverview services={business.services} slug={slug} businessName={business.name} />
+      <AboutSection businessName={business.name} description={business.description} />
+      <FaqSection faqs={business.faqs} />
+      <CtaBanner slug={slug} businessName={business.name} />
       <AiAssistant />
     </>
   );
