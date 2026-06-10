@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BorderGlow from '@/components/BorderGlow';
 import { CtaContent } from '@/lib/marketing-content';
 import { Calendar, Mail, Phone } from 'lucide-react';
 
@@ -29,14 +30,26 @@ export function FinalCta({ headline, subheadline, primaryCta, secondaryActions }
             ))}
           </div>
 
-          <div className="mt-10">
-            <Link
-              href={primaryHref}
-              className="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 text-base font-semibold text-black transition hover:bg-zinc-200 sm:text-lg"
+          <div className="mt-10 inline-block">
+            <BorderGlow
+              edgeSensitivity={30}
+              glowColor="40 80 80"
+              backgroundColor="#000"
+              borderRadius={12}
+              glowRadius={12}
+              glowIntensity={1}
+              coneSpread={25}
+              animated={false}
+              colors={['#c084fc', '#f472b6', '#38bdf8']}
             >
-              <Calendar className="h-5 w-5" />
-              {primaryCta.label}
-            </Link>
+              <Link
+                href={primaryHref}
+                className="inline-flex items-center gap-2.5 px-8 py-4 text-base font-semibold text-white sm:text-lg"
+              >
+                <Calendar className="h-5 w-5" />
+                {primaryCta.label}
+              </Link>
+            </BorderGlow>
           </div>
 
           <div className="mt-8 flex items-center justify-center gap-6 text-sm text-zinc-600">
