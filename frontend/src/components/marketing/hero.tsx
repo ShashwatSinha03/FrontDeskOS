@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import PixelCard from '@/components/PixelCard';
+import BorderGlow from '@/components/BorderGlow';
 import { HeroContent } from '@/lib/marketing-content';
 import { ArrowRight, MessageSquare, CalendarCheck, UserCheck } from 'lucide-react';
 import LightRays from '@/components/LightRays';
@@ -21,6 +21,18 @@ export function HomeHero({
   primaryCta,
   secondaryCta,
 }: HeroContent) {
+  const glowProps = {
+    edgeSensitivity: 30,
+    glowColor: '40 80 80' as const,
+    backgroundColor: '#000',
+    borderRadius: 12,
+    glowRadius: 12,
+    glowIntensity: 1,
+    coneSpread: 25,
+    animated: false,
+    colors: ['#c084fc', '#f472b6', '#38bdf8'] as string[],
+  };
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-black">
       <div className="absolute inset-0">
@@ -49,27 +61,23 @@ export function HomeHero({
             {subheadline}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href={primaryCta.href}
-              className="relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black"
-            >
-              <PixelCard
-                variant="pink"
-                className="absolute inset-0 !h-full !w-full !rounded-none !border-0"
-              />
-              <span className="relative z-10">{primaryCta.label}</span>
-              <ArrowRight className="relative z-10 h-4 w-4" />
-            </Link>
-            <Link
-              href={secondaryCta.href}
-              className="relative inline-flex items-center gap-2 overflow-hidden rounded-xl border border-zinc-800 px-6 py-3 text-sm font-medium text-zinc-300"
-            >
-              <PixelCard
-                variant="pink"
-                className="absolute inset-0 !h-full !w-full !rounded-none !border-0"
-              />
-              <span className="relative z-10">{secondaryCta.label}</span>
-            </Link>
+            <BorderGlow {...glowProps}>
+              <Link
+                href={primaryCta.href}
+                className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white"
+              >
+                {primaryCta.label}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </BorderGlow>
+            <BorderGlow {...glowProps}>
+              <Link
+                href={secondaryCta.href}
+                className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300"
+              >
+                {secondaryCta.label}
+              </Link>
+            </BorderGlow>
           </div>
         </div>
 
