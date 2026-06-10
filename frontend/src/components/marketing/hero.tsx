@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import PixelCard from '@/components/PixelCard';
 import { HeroContent } from '@/lib/marketing-content';
 import { ArrowRight, MessageSquare, CalendarCheck, UserCheck } from 'lucide-react';
 import LightRays from '@/components/LightRays';
@@ -48,19 +49,29 @@ export function HomeHero({
             {subheadline}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href={primaryCta.href}
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200"
+            <PixelCard
+              variant="pink"
+              className="!inline-grid !h-auto !w-auto !aspect-auto !rounded-xl !border-0"
             >
-              {primaryCta.label}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href={secondaryCta.href}
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 px-6 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+              <Link
+                href={primaryCta.href}
+                className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white"
+              >
+                {primaryCta.label}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </PixelCard>
+            <PixelCard
+              variant="pink"
+              className="!inline-grid !h-auto !w-auto !aspect-auto !rounded-xl !border !border-zinc-800"
             >
-              {secondaryCta.label}
-            </Link>
+              <Link
+                href={secondaryCta.href}
+                className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300"
+              >
+                {secondaryCta.label}
+              </Link>
+            </PixelCard>
           </div>
         </div>
 
