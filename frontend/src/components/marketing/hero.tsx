@@ -113,16 +113,16 @@ export function HomeHero({
             className={`h-4 w-4 text-zinc-600 transition-all duration-500 ${
               visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
             }`}
-            style={{ transitionDelay: visible ? '850ms' : '0ms' }}
+            style={{ transitionDelay: visible ? '750ms' : '0ms' }}
           />
-          <FlowStep icon={CalendarCheck} label="Appointment" visible={visible} delay={1700} />
+          <FlowStep icon={CalendarCheck} label="Appointment" visible={visible} delay={1500} />
           <ArrowRight
             className={`h-4 w-4 text-zinc-600 transition-all duration-500 ${
               visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
             }`}
-            style={{ transitionDelay: visible ? '2550ms' : '0ms' }}
+            style={{ transitionDelay: visible ? '2250ms' : '0ms' }}
           />
-          <FlowStep icon={UserCheck} label="Customer" visible={visible} delay={3400} />
+          <FlowStep icon={UserCheck} label="Customer" visible={visible} delay={3000} />
         </div>
       </div>
     </section>
