@@ -9,7 +9,7 @@ import { ProductShowcase } from '@/components/marketing/product-showcase';
 import { ProductScreenshots } from '@/components/marketing/product-screenshots';
 import { IndustriesSection } from '@/components/marketing/industries-section';
 import { DemoSection } from '@/components/marketing/demo-section';
-import { FounderSection } from '@/components/marketing/founder-section';
+import { BuiltBySection } from '@/components/marketing/built-by-section';
 import { FinalCta } from '@/components/marketing/final-cta';
 import { MarketingFooter } from '@/components/marketing/marketing-footer';
 
@@ -34,7 +34,7 @@ export default function MarketingPage() {
       <ProductShowcase {...showcase} />
       <IndustriesSection {...industries} />
       <DemoSection {...demo} />
-      <FounderSection {...founder} />
+      <BuiltBySection {...founder} />
       <FinalCta {...cta} />
       <MarketingFooter />
     </>
