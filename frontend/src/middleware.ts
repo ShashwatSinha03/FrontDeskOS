@@ -13,6 +13,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Root path — always serve marketing page
+  if (pathname === '/') {
+    return NextResponse.next();
+  }
+
   // Skip if already on a slug path (e.g. /some-slug/...)
   if (pathname.match(/^\/[a-z0-9]+(?:[-][a-z0-9]+)*(?:\/|$)/)) {
     return NextResponse.next();
