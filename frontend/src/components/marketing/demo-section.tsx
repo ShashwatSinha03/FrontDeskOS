@@ -39,8 +39,8 @@ export function DemoSection({ headline, messages }: DemoContent) {
           returnDuration={4.3}
         />
       </div>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-black/50 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-black/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-black/75 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-black/75 to-transparent" />
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -72,7 +72,7 @@ export function DemoSection({ headline, messages }: DemoContent) {
                     className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed transition-all duration-500 ${
+                      className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed transition-all duration-1000 ${
                         isCustomer
                           ? 'rounded-bl-sm bg-zinc-800 text-zinc-200'
                           : 'rounded-br-sm bg-blue-600 text-white'
