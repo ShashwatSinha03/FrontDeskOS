@@ -25,67 +25,65 @@ export function DemoSection({ headline, messages }: DemoContent) {
   }, []);
 
   return (
-    <section className="border-t border-zinc-800 bg-black py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative border-t border-zinc-800 bg-black py-24 sm:py-32">
+      <DotGrid
+        className="absolute inset-0"
+        style={{ padding: 0 }}
+        dotSize={6}
+        gap={21}
+        baseColor="#1a2537"
+        activeColor="#1f74ff"
+        proximity={150}
+        shockRadius={200}
+        shockStrength={9}
+        resistance={1750}
+        returnDuration={4.3}
+      />
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
             {headline}
           </h2>
         </div>
 
-        <div className="relative mx-auto mt-16 h-[600px]">
-          <DotGrid
-            className="absolute inset-0"
-            style={{ padding: 0 }}
-            dotSize={6}
-            gap={21}
-            baseColor="#1a2537"
-            activeColor="#1f74ff"
-            proximity={150}
-            shockRadius={200}
-            shockStrength={9}
-            resistance={1750}
-            returnDuration={4.3}
-          />
-          <div className="relative z-10 flex h-full items-center justify-center">
-            <div
-              ref={ref}
-              className="max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900/75 p-4 backdrop-blur-sm sm:p-6"
-            >
-              <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
-                <div className="flex gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
-                </div>
-                <span className="text-xs font-medium text-zinc-400">AI Receptionist · Live</span>
-                <span className="ml-auto h-2 w-2 animate-pulse rounded-full bg-green-500" />
+        <div className="mx-auto mt-16 flex justify-center">
+          <div
+            ref={ref}
+            className="max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4 backdrop-blur-sm sm:p-6"
+          >
+            <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
+              <div className="flex gap-1.5">
+                <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
+                <div className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
               </div>
+              <span className="text-xs font-medium text-zinc-400">AI Receptionist · Live</span>
+              <span className="ml-auto h-2 w-2 animate-pulse rounded-full bg-green-500" />
+            </div>
 
-              <div className="mt-4 space-y-4">
-                {messages.map((msg, i) => {
-                  const isCustomer = msg.sender === 'customer';
-                  return (
+            <div className="mt-4 space-y-4">
+              {messages.map((msg, i) => {
+                const isCustomer = msg.sender === 'customer';
+                return (
+                  <div
+                    key={i}
+                    className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}
+                  >
                     <div
-                      key={i}
-                      className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}
+                      className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed transition-all duration-500 ${
+                        isCustomer
+                          ? 'rounded-bl-sm bg-zinc-800 text-zinc-200'
+                          : 'rounded-br-sm bg-blue-600 text-white'
+                      } ${visible ? 'translate-x-0 opacity-100' : `${isCustomer ? '-translate-x-6' : 'translate-x-6'} opacity-0`}`}
+                      style={{
+                        transitionDelay: visible ? `${i * 850}ms` : '0ms',
+                      }}
                     >
-                      <div
-                        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed transition-all duration-500 ${
-                          isCustomer
-                            ? 'rounded-bl-sm bg-zinc-800 text-zinc-200'
-                            : 'rounded-br-sm bg-blue-600 text-white'
-                        } ${visible ? 'translate-x-0 opacity-100' : `${isCustomer ? '-translate-x-6' : 'translate-x-6'} opacity-0`}`}
-                        style={{
-                          transitionDelay: visible ? `${i * 850}ms` : '0ms',
-                        }}
-                      >
-                        {msg.text}
-                      </div>
+                      {msg.text}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
