@@ -7,6 +7,7 @@ import { fetchAppointments, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
 import { Badge } from '@/components/ui/badge';
 import { AppointmentStatus } from '@/types';
+import { CustomerLink } from '@/components/admin/customer-link';
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -16,7 +17,15 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const columns: Column[] = [
-  { key: 'id', label: 'ID', render: (v: string) => v?.slice(0, 8) + '...' },
+  {
+    key: 'customerName',
+    label: 'Customer',
+    render: (v: string, row: any) => (
+      <CustomerLink customerId={row.customerId} customerName={v}>
+        {v || 'Unknown'}
+      </CustomerLink>
+    ),
+  },
   {
     key: 'appointmentTime',
     label: 'Date & Time',
@@ -31,7 +40,11 @@ const columns: Column[] = [
       </Badge>
     ),
   },
-  { key: 'serviceId', label: 'Service', render: (v) => v ? v.slice(0, 8) + '...' : '—' },
+  {
+    key: 'serviceName',
+    label: 'Service',
+    render: (v: string) => v || '—',
+  },
   { key: 'notes', label: 'Notes', render: (v) => v || '—' },
   {
     key: 'createdAt',

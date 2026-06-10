@@ -342,7 +342,7 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
             appointmentTime,
           });
           appointmentId = appointment.id;
-          await customerRepository.updateLifecycleState(state.customer.id, 'Booked');
+          await customerRepository.updateLifecycleState(state.customer.id, 'Booked', 'agent:booking');
           console.log(`✅ BookingNode: Appointment created ${appointmentId}`);
         } catch (err) {
           console.error('❌ BookingNode: Error creating appointment:', err);

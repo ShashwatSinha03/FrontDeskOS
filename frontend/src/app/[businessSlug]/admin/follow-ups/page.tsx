@@ -7,6 +7,7 @@ import { fetchFollowUps, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
 import { Badge } from '@/components/ui/badge';
 import { FollowUpStatus, FollowUpType } from '@/types';
+import { CustomerLink } from '@/components/admin/customer-link';
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -22,7 +23,17 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const columns: Column[] = [
-  { key: 'id', label: 'ID', render: (v: string) => v?.slice(0, 8) + '...' },
+  {
+    key: 'customerName',
+    label: 'Customer',
+    render: (v: string, row: any) => (
+      <div className="flex items-center gap-2">
+        <CustomerLink customerId={row.customerId} customerName={v}>
+          {v || 'Unknown'}
+        </CustomerLink>
+      </div>
+    ),
+  },
   {
     key: 'type',
     label: 'Type',
@@ -45,11 +56,6 @@ const columns: Column[] = [
   {
     key: 'scheduledAt',
     label: 'Scheduled',
-    render: (v: string) => v ? new Date(v).toLocaleString() : '—',
-  },
-  {
-    key: 'sentAt',
-    label: 'Sent',
     render: (v: string) => v ? new Date(v).toLocaleString() : '—',
   },
   {

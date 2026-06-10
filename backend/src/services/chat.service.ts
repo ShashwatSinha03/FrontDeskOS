@@ -170,7 +170,8 @@ export class ChatService {
         agentOutput.updatedLifecycleState !== customer.lifecycleState) {
       await customerRepository.updateLifecycleState(
         customer.id,
-        agentOutput.updatedLifecycleState
+        agentOutput.updatedLifecycleState,
+        `agent:${agentOutput.intent}`
       );
     }
 

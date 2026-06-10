@@ -30,7 +30,7 @@ export class AppointmentService {
     if (!isAvailable) throw new Error('The requested slot is already booked.');
 
     const appointment = await appointmentRepository.create(data);
-    await customerRepository.updateLifecycleState(data.customerId, 'Booked');
+    await customerRepository.updateLifecycleState(data.customerId, 'Booked', 'system:appointment_booking');
 
     const service = data.serviceId ? await this.getService(data.serviceId) : null;
     await calendarService.getProvider().createEvent(appointment, service);
@@ -74,7 +74,7 @@ export class AppointmentService {
     if (appointment.status === 'cancelled') throw new Error('Appointment is already cancelled');
 
     await appointmentRepository.cancelWithReason(appointmentId, businessId, reason);
-    await customerRepository.updateLifecycleState(appointment.customerId, 'Follow-Up Pending');
+    await customerRepository.updateLifecycleState(appointment.customerId, 'Follow-Up Pending', 'system:appointment_cancellation');
 
     await calendarService.getProvider().cancelEvent(appointment.id);
   }
@@ -97,7 +97,7 @@ export class AppointmentService {
     if (appointment.status === 'cancelled') throw new Error('Cannot complete a cancelled appointment');
 
     await appointmentRepository.updateStatus(appointmentId, 'confirmed', businessId);
-    await customerRepository.updateLifecycleState(appointment.customerId, 'Customer');
+    await customerRepository.updateLifecycleState(appointment.customerId, 'Customer', 'system:appointment_completed');
 
     const service = appointment.serviceId ? await this.getService(appointment.serviceId) : null;
     await calendarService.getProvider().updateEvent(appointment, service);

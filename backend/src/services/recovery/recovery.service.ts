@@ -113,7 +113,7 @@ export class RecoveryService {
       await followUpRepository.markSent(followUp.id);
 
       if (followUp.type === 'day_3') {
-        await customerRepository.updateLifecycleState(followUp.customerId, 'Lost');
+        await customerRepository.updateLifecycleState(followUp.customerId, 'Lost', 'system:no_response_to_day_3_followup');
       }
     } catch (error) {
       console.error(`Error executing recovery step ${followUp.id} — cancelling:`, error);

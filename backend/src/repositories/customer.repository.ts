@@ -60,14 +60,36 @@ export class CustomerRepository {
 
   /**
    * Update the customer's lifecycle state.
+   * The DB trigger log_customer_lifecycle_transition automatically creates an audit event.
+   * The trigger_event is passed via session variable app.lifecycle_trigger.
    */
-  async updateLifecycleState(id: string, state: CustomerLifecycleState): Promise<void> {
-    const query = `
-      UPDATE customers
-      SET lifecycle_state = $2, last_interaction_at = NOW(), updated_at = NOW()
-      WHERE id = $1
-    `;
-    await pool.query(query, [id, state]);
+  async updateLifecycleState(
+    id: string,
+    state: CustomerLifecycleState,
+    triggerEvent?: string | null
+  ): Promise<void> {
+    const customer = await this.findById(id);
+    if (!customer) throw new Error('Customer not found');
+    if (customer.lifecycleState === state) return;
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(
+        `SELECT set_config('app.lifecycle_trigger', $1, true)`,
+        [triggerEvent || 'system_update']
+      );
+      await client.query(
+        `UPDATE customers SET lifecycle_state = $2, last_interaction_at = NOW(), updated_at = NOW() WHERE id = $1`,
+        [id, state]
+      );
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   }
 
   /**

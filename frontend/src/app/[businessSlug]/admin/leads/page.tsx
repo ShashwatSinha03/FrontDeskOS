@@ -7,6 +7,8 @@ import { fetchLeads, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Customer, CustomerLifecycleState } from '@/types';
+import { CustomerLink } from '@/components/admin/customer-link';
+import { AddLeadDialog } from '@/components/admin/add-lead-dialog';
 
 const LIFECYCLE_COLORS: Record<string, string> = {
   'New Inquiry': 'bg-blue-100 text-blue-700',
@@ -21,7 +23,15 @@ const LIFECYCLE_COLORS: Record<string, string> = {
 };
 
 const columns: Column<Customer>[] = [
-  { key: 'name', label: 'Name', render: (v) => v || '—' },
+  {
+    key: 'name',
+    label: 'Name',
+    render: (v: string, row: Customer) => (
+      <CustomerLink customerId={row.id} customerName={v}>
+        {v || '—'}
+      </CustomerLink>
+    ),
+  },
   { key: 'email', label: 'Email', render: (v) => v || '—' },
   { key: 'phone', label: 'Phone', render: (v) => v || '—' },
   {
@@ -57,6 +67,7 @@ export default function LeadsPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [showAddDialog, setShowAddDialog] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const limit = 10;
 
@@ -89,10 +100,24 @@ export default function LeadsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Leads</h1>
-        <p className="text-muted-foreground mt-1">Manage customer inquiries and track their lifecycle.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Leads</h1>
+          <p className="text-muted-foreground mt-1">Manage customer inquiries and track their lifecycle.</p>
+        </div>
+        <button
+          onClick={() => setShowAddDialog(true)}
+          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+        >
+          + Add Lead
+        </button>
       </div>
+
+      <AddLeadDialog
+        open={showAddDialog}
+        onClose={() => setShowAddDialog(false)}
+        onSuccess={() => mutate()}
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <select

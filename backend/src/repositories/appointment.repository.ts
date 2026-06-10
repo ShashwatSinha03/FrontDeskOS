@@ -105,39 +105,51 @@ export class AppointmentRepository {
       status?: AppointmentStatus;
       startDate?: Date;
       endDate?: Date;
+      customerId?: string;
     },
     pagination?: {
       page?: number;
       limit?: number;
     }
-  ): Promise<{ appointments: Appointment[]; totalCount: number }> {
+  ): Promise<{ appointments: any[]; totalCount: number }> {
     let query = `
-      SELECT id, customer_id, business_id, service_id, appointment_time, status, notes, cancellation_reason, rescheduled_from_id, created_at, updated_at, COUNT(*) OVER() as total_count
-      FROM appointments
-      WHERE business_id = $1
+      SELECT a.id, a.customer_id, a.business_id, a.service_id, a.appointment_time, a.status, a.notes, a.cancellation_reason, a.rescheduled_from_id, a.created_at, a.updated_at,
+             c.name as customer_name, c.email as customer_email, c.phone as customer_phone,
+             s.name as service_name,
+             COUNT(*) OVER() as total_count
+      FROM appointments a
+      LEFT JOIN customers c ON c.id = a.customer_id
+      LEFT JOIN services s ON s.id = a.service_id
+      WHERE a.business_id = $1
     `;
     const params: any[] = [businessId];
     let paramIndex = 2;
 
     if (filters?.status) {
-      query += ` AND status = $${paramIndex}`;
+      query += ` AND a.status = $${paramIndex}`;
       params.push(filters.status);
       paramIndex++;
     }
 
     if (filters?.startDate) {
-      query += ` AND appointment_time >= $${paramIndex}`;
+      query += ` AND a.appointment_time >= $${paramIndex}`;
       params.push(filters.startDate);
       paramIndex++;
     }
 
     if (filters?.endDate) {
-      query += ` AND appointment_time <= $${paramIndex}`;
+      query += ` AND a.appointment_time <= $${paramIndex}`;
       params.push(filters.endDate);
       paramIndex++;
     }
 
-    query += ` ORDER BY appointment_time ASC`;
+    if (filters?.customerId) {
+      query += ` AND a.customer_id = $${paramIndex}`;
+      params.push(filters.customerId);
+      paramIndex++;
+    }
+
+    query += ` ORDER BY a.appointment_time ASC`;
 
     const page = pagination?.page || 1;
     const limit = pagination?.limit || 10;
@@ -153,9 +165,30 @@ export class AppointmentRepository {
     }
 
     const totalCount = parseInt(res.rows[0].total_count, 10);
-    const appointments = res.rows.map(row => this.mapToEntity(row));
+    const appointments = res.rows.map(row => ({
+      ...this.mapToEntity(row),
+      customerName: row.customer_name,
+      customerEmail: row.customer_email,
+      customerPhone: row.customer_phone,
+      serviceName: row.service_name,
+    }));
     
     return { appointments, totalCount };
+  }
+
+  async findByCustomerWithDetails(customerId: string): Promise<any[]> {
+    const query = `
+      SELECT a.*, s.name as service_name
+      FROM appointments a
+      LEFT JOIN services s ON s.id = a.service_id
+      WHERE a.customer_id = $1
+      ORDER BY a.appointment_time DESC
+    `;
+    const res = await pool.query(query, [customerId]);
+    return res.rows.map(row => ({
+      ...this.mapToEntity(row),
+      serviceName: row.service_name,
+    }));
   }
 
   /**

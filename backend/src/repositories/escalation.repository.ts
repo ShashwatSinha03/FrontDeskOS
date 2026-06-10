@@ -51,22 +51,25 @@ export class EscalationRepository {
       page?: number;
       limit?: number;
     }
-  ): Promise<{ escalations: Escalation[]; totalCount: number }> {
+  ): Promise<{ escalations: any[]; totalCount: number }> {
     let query = `
-      SELECT id, customer_id, business_id, conversation_id, reason, status, resolved_at, created_at, updated_at, COUNT(*) OVER() as total_count
-      FROM escalations
-      WHERE business_id = $1
+      SELECT e.id, e.customer_id, e.business_id, e.conversation_id, e.reason, e.status, e.resolved_at, e.created_at, e.updated_at,
+             c.name as customer_name, c.email as customer_email, c.phone as customer_phone,
+             COUNT(*) OVER() as total_count
+      FROM escalations e
+      LEFT JOIN customers c ON c.id = e.customer_id
+      WHERE e.business_id = $1
     `;
     const params: any[] = [businessId];
     let paramIndex = 2;
 
     if (filters?.status) {
-      query += ` AND status = $${paramIndex}`;
+      query += ` AND e.status = $${paramIndex}`;
       params.push(filters.status);
       paramIndex++;
     }
 
-    query += ` ORDER BY created_at DESC`;
+    query += ` ORDER BY e.created_at DESC`;
 
     const page = pagination?.page || 1;
     const limit = pagination?.limit || 10;
@@ -82,7 +85,12 @@ export class EscalationRepository {
     }
 
     const totalCount = parseInt(res.rows[0].total_count, 10);
-    const escalations = res.rows.map(row => this.mapToEntity(row));
+    const escalations = res.rows.map(row => ({
+      ...this.mapToEntity(row),
+      customerName: row.customer_name,
+      customerEmail: row.customer_email,
+      customerPhone: row.customer_phone,
+    }));
     
     return { escalations, totalCount };
   }
@@ -93,6 +101,23 @@ export class EscalationRepository {
   async findPendingByBusiness(businessId: string): Promise<Escalation[]> {
     const result = await this.findByBusiness(businessId, { status: 'pending' }, { page: 1, limit: 100 });
     return result.escalations;
+  }
+
+  async findByCustomer(customerId: string): Promise<any[]> {
+    const query = `
+      SELECT e.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone
+      FROM escalations e
+      LEFT JOIN customers c ON c.id = e.customer_id
+      WHERE e.customer_id = $1
+      ORDER BY e.created_at DESC
+    `;
+    const res = await pool.query(query, [customerId]);
+    return res.rows.map(row => ({
+      ...this.mapToEntity(row),
+      customerName: row.customer_name,
+      customerEmail: row.customer_email,
+      customerPhone: row.customer_phone,
+    }));
   }
 
   private mapToEntity(row: any): Escalation {

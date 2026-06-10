@@ -19,6 +19,9 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
+// Proxy URL for admin routes — goes through Next.js API route which injects the API key server-side
+const ADMIN_API_URL = '/api/admin';
+
 /**
  * Unified response payload format
  */
@@ -80,13 +83,12 @@ export async function fetchLeads(
   page?: number,
   limit?: number
 ): Promise<ApiResponse<Customer[]>> {
-  const url = new URL(`${API_URL}/leads`);
-  url.searchParams.append('businessId', businessId);
-  if (state) url.searchParams.append('state', state);
-  if (search) url.searchParams.append('search', search);
-  if (page) url.searchParams.append('page', String(page));
-  if (limit) url.searchParams.append('limit', String(limit));
-  const response = await fetch(url.toString());
+  const params = new URLSearchParams({ businessId: businessId.toString() });
+  if (state) params.append('state', state);
+  if (search) params.append('search', search);
+  if (page) params.append('page', String(page));
+  if (limit) params.append('limit', String(limit));
+  const response = await fetch(`${ADMIN_API_URL}/leads?${params}`);
   return response.json();
 }
 
@@ -99,12 +101,11 @@ export async function fetchEscalations(
   page?: number,
   limit?: number
 ): Promise<ApiResponse<Escalation[]>> {
-  const url = new URL(`${API_URL}/escalations`);
-  url.searchParams.append('businessId', businessId);
-  if (status) url.searchParams.append('status', status);
-  if (page) url.searchParams.append('page', String(page));
-  if (limit) url.searchParams.append('limit', String(limit));
-  const response = await fetch(url.toString());
+  const params = new URLSearchParams({ businessId: businessId.toString() });
+  if (status) params.append('status', status);
+  if (page) params.append('page', String(page));
+  if (limit) params.append('limit', String(limit));
+  const response = await fetch(`${ADMIN_API_URL}/escalations?${params}`);
   return response.json();
 }
 
@@ -112,7 +113,7 @@ export async function fetchEscalations(
  * Mark a human takeover escalation as resolved.
  */
 export async function resolveEscalation(escalationId: string): Promise<ApiResponse<void>> {
-  const response = await fetch(`${API_URL}/escalations/${escalationId}/resolve`, {
+  const response = await fetch(`${ADMIN_API_URL}/escalations/${escalationId}/resolve`, {
     method: 'POST',
   });
   return response.json();
@@ -127,12 +128,11 @@ export async function fetchKnowledgeRequests(
   page?: number,
   limit?: number
 ): Promise<ApiResponse<KnowledgeRequest[]>> {
-  const url = new URL(`${API_URL}/knowledge-base/requests`);
-  url.searchParams.append('businessId', businessId);
-  if (status) url.searchParams.append('status', status);
-  if (page) url.searchParams.append('page', String(page));
-  if (limit) url.searchParams.append('limit', String(limit));
-  const response = await fetch(url.toString());
+  const params = new URLSearchParams({ businessId: businessId.toString() });
+  if (status) params.append('status', status);
+  if (page) params.append('page', String(page));
+  if (limit) params.append('limit', String(limit));
+  const response = await fetch(`${ADMIN_API_URL}/knowledge-base/requests?${params}`);
   return response.json();
 }
 
@@ -143,7 +143,7 @@ export async function approveKnowledgeRequest(
   requestId: string, 
   answer: string
 ): Promise<ApiResponse<KnowledgeRequest>> {
-  const response = await fetch(`${API_URL}/knowledge-base/requests/${requestId}/approve`, {
+  const response = await fetch(`${ADMIN_API_URL}/knowledge-base/requests/${requestId}/approve`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ answer }),
@@ -155,7 +155,7 @@ export async function approveKnowledgeRequest(
  * Reject an unknown knowledge question.
  */
 export async function rejectKnowledgeRequest(requestId: string): Promise<ApiResponse<KnowledgeRequest>> {
-  const response = await fetch(`${API_URL}/knowledge-base/requests/${requestId}/reject`, {
+  const response = await fetch(`${ADMIN_API_URL}/knowledge-base/requests/${requestId}/reject`, {
     method: 'POST',
   });
   return response.json();
@@ -204,7 +204,7 @@ export async function cancelAppointment(
   appointmentId: string,
   reason?: string
 ): Promise<ApiResponse<void>> {
-  const response = await fetch(`${API_URL}/appointments/${appointmentId}/cancel`, {
+  const response = await fetch(`${ADMIN_API_URL}/appointments/${appointmentId}/cancel`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ reason }),
@@ -220,7 +220,7 @@ export async function rescheduleAppointment(
   newTime: string,
   notes?: string
 ): Promise<ApiResponse<Appointment>> {
-  const response = await fetch(`${API_URL}/appointments/${appointmentId}/reschedule`, {
+  const response = await fetch(`${ADMIN_API_URL}/appointments/${appointmentId}/reschedule`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ newTime, notes }),
@@ -234,7 +234,7 @@ export async function rescheduleAppointment(
 export async function confirmAppointment(
   appointmentId: string
 ): Promise<ApiResponse<void>> {
-  const response = await fetch(`${API_URL}/appointments/${appointmentId}/confirm`, {
+  const response = await fetch(`${ADMIN_API_URL}/appointments/${appointmentId}/confirm`, {
     method: 'POST',
   });
   return response.json();
@@ -296,7 +296,7 @@ export async function fetchAvailabilitySchedules(
   businessId: string,
   serviceId?: string
 ): Promise<ApiResponse<AvailabilitySchedule[]>> {
-  let url = `${API_URL}/availability/schedules?businessId=${businessId}`;
+  let url = `${ADMIN_API_URL}/availability/schedules?businessId=${businessId}`;
   if (serviceId) url += `&serviceId=${serviceId}`;
   const response = await fetch(url);
   return response.json();
@@ -314,7 +314,7 @@ export async function createAvailabilitySchedule(payload: {
   effectiveFrom?: string;
   effectiveUntil?: string | null;
 }): Promise<ApiResponse<AvailabilitySchedule>> {
-  const response = await fetch(`${API_URL}/availability/schedules`, {
+  const response = await fetch(`${ADMIN_API_URL}/availability/schedules`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -328,7 +328,7 @@ export async function createAvailabilitySchedule(payload: {
 export async function deleteAvailabilitySchedule(
   scheduleId: string
 ): Promise<ApiResponse<void>> {
-  const response = await fetch(`${API_URL}/availability/schedules/${scheduleId}`, {
+  const response = await fetch(`${ADMIN_API_URL}/availability/schedules/${scheduleId}`, {
     method: 'DELETE',
   });
   return response.json();
@@ -345,7 +345,7 @@ export async function fetchAvailabilityOverrides(
   businessId: string,
   date?: string
 ): Promise<ApiResponse<AvailabilityOverride[]>> {
-  let url = `${API_URL}/availability/overrides?businessId=${businessId}`;
+  let url = `${ADMIN_API_URL}/availability/overrides?businessId=${businessId}`;
   if (date) url += `&date=${date}`;
   const response = await fetch(url);
   return response.json();
@@ -363,7 +363,7 @@ export async function createAvailabilityOverride(payload: {
   reason?: string | null;
   isAvailable?: boolean;
 }): Promise<ApiResponse<AvailabilityOverride>> {
-  const response = await fetch(`${API_URL}/availability/overrides`, {
+  const response = await fetch(`${ADMIN_API_URL}/availability/overrides`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -377,7 +377,7 @@ export async function createAvailabilityOverride(payload: {
 export async function deleteAvailabilityOverride(
   overrideId: string
 ): Promise<ApiResponse<void>> {
-  const response = await fetch(`${API_URL}/availability/overrides/${overrideId}`, {
+  const response = await fetch(`${ADMIN_API_URL}/availability/overrides/${overrideId}`, {
     method: 'DELETE',
   });
   return response.json();
@@ -393,7 +393,7 @@ export async function deleteAvailabilityOverride(
 export async function fetchRecoveryConfig(
   businessId: string
 ): Promise<ApiResponse<RecoveryConfig>> {
-  const response = await fetch(`${API_URL}/recovery/config?businessId=${businessId}`);
+  const response = await fetch(`${ADMIN_API_URL}/recovery/config?businessId=${businessId}`);
   return response.json();
 }
 
@@ -404,7 +404,7 @@ export async function updateRecoveryConfig(
   businessId: string,
   recoveryConfig: RecoveryConfig
 ): Promise<ApiResponse<RecoveryConfig>> {
-  const response = await fetch(`${API_URL}/recovery/config`, {
+  const response = await fetch(`${ADMIN_API_URL}/recovery/config`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ businessId, recoveryConfig }),
@@ -419,7 +419,7 @@ export async function updateRecoveryConfig(
 export async function fetchDashboardSummary(
   businessId: string
 ): Promise<ApiResponse<DashboardSummary>> {
-  const response = await fetch(`${API_URL}/dashboard/summary?businessId=${businessId}`);
+  const response = await fetch(`${ADMIN_API_URL}/dashboard/summary?businessId=${businessId}`);
   return response.json();
 }
 
@@ -433,14 +433,13 @@ export async function fetchAppointments(
     limit?: number;
   }
 ): Promise<ApiResponse<Appointment[]>> {
-  const url = new URL(`${API_URL}/appointments`);
-  url.searchParams.append('businessId', businessId);
-  if (filters?.status) url.searchParams.append('status', filters.status);
-  if (filters?.startDate) url.searchParams.append('startDate', filters.startDate);
-  if (filters?.endDate) url.searchParams.append('endDate', filters.endDate);
-  if (filters?.page) url.searchParams.append('page', String(filters.page));
-  if (filters?.limit) url.searchParams.append('limit', String(filters.limit));
-  const response = await fetch(url.toString());
+  const params = new URLSearchParams({ businessId: businessId.toString() });
+  if (filters?.status) params.append('status', filters.status);
+  if (filters?.startDate) params.append('startDate', filters.startDate);
+  if (filters?.endDate) params.append('endDate', filters.endDate);
+  if (filters?.page) params.append('page', String(filters.page));
+  if (filters?.limit) params.append('limit', String(filters.limit));
+  const response = await fetch(`${ADMIN_API_URL}/appointments?${params}`);
   return response.json();
 }
 
@@ -453,13 +452,12 @@ export async function fetchFollowUps(
     limit?: number;
   }
 ): Promise<ApiResponse<FollowUp[]>> {
-  const url = new URL(`${API_URL}/follow-ups`);
-  url.searchParams.append('businessId', businessId);
-  if (filters?.status) url.searchParams.append('status', filters.status);
-  if (filters?.type) url.searchParams.append('type', filters.type);
-  if (filters?.page) url.searchParams.append('page', String(filters.page));
-  if (filters?.limit) url.searchParams.append('limit', String(filters.limit));
-  const response = await fetch(url.toString());
+  const params = new URLSearchParams({ businessId: businessId.toString() });
+  if (filters?.status) params.append('status', filters.status);
+  if (filters?.type) params.append('type', filters.type);
+  if (filters?.page) params.append('page', String(filters.page));
+  if (filters?.limit) params.append('limit', String(filters.limit));
+  const response = await fetch(`${ADMIN_API_URL}/follow-ups?${params}`);
   return response.json();
 }
 
@@ -472,5 +470,100 @@ export async function fetchConversationMessages(
   if (limit) url.searchParams.append('limit', String(limit));
   if (offset) url.searchParams.append('offset', String(offset));
   const response = await fetch(url.toString());
+  return response.json();
+}
+
+export interface CustomerDetailData {
+  customer: Customer;
+  appointments: any[];
+  conversations: { id: string; channelType: string; status: string; createdAt: string }[];
+  messages: Message[];
+  escalations: any[];
+  followUps: any[];
+  lifecycleEvents: {
+    id: string;
+    previousState: string | null;
+    newState: string;
+    triggerEvent: string;
+    notes: string | null;
+    createdAt: string;
+  }[];
+}
+
+export async function fetchCustomerDetail(
+  customerId: string,
+  businessId: string
+): Promise<ApiResponse<CustomerDetailData>> {
+  const response = await fetch(
+    `${ADMIN_API_URL}/leads/${customerId}?businessId=${businessId}`
+  );
+  return response.json();
+}
+
+export async function updateCustomerLifecycle(
+  customerId: string,
+  businessId: string,
+  lifecycleState: string
+): Promise<ApiResponse<void>> {
+  const response = await fetch(`${ADMIN_API_URL}/leads/${customerId}/lifecycle`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ businessId, lifecycleState }),
+  });
+  return response.json();
+}
+
+export async function createLead(payload: {
+  businessId: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+}): Promise<ApiResponse<Customer>> {
+  const response = await fetch(`${ADMIN_API_URL}/leads`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return response.json();
+}
+
+export async function updateCustomerProfile(
+  customerId: string,
+  payload: {
+    businessId: string;
+    name?: string;
+    email?: string | null;
+    phone?: string | null;
+  }
+): Promise<ApiResponse<Customer>> {
+  const response = await fetch(`${ADMIN_API_URL}/leads/${customerId}/profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return response.json();
+}
+
+export async function adminBookAppointment(payload: {
+  customerId: string;
+  businessId: string;
+  serviceId: string | null;
+  appointmentTime: string;
+  notes?: string;
+}): Promise<ApiResponse<Appointment>> {
+  const response = await fetch(`${ADMIN_API_URL}/appointments/book`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return response.json();
+}
+
+export async function completeAppointment(
+  appointmentId: string
+): Promise<ApiResponse<void>> {
+  const response = await fetch(`${ADMIN_API_URL}/appointments/${appointmentId}/complete`, {
+    method: 'POST',
+  });
   return response.json();
 }

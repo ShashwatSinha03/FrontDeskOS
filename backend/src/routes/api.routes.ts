@@ -10,6 +10,7 @@ import { followUpController } from '../controllers/followup.controller';
 import { recoveryController } from '../controllers/recovery.controller';
 import { cronController } from '../controllers/cron.controller';
 import { publicController } from '../controllers/public.controller';
+import { ownerController } from '../controllers/owner.controller';
 
 // ==========================================
 // Public Router — no authentication required
@@ -35,6 +36,11 @@ adminRouter.use(requireApiKey);
 
 adminRouter.get('/dashboard/summary', (req: Request, res: Response) => dashboardController.getSummary(req, res));
 adminRouter.get('/leads', (req: Request, res: Response) => dashboardController.getLeads(req, res));
+adminRouter.get('/leads/:id', (req: Request, res: Response) => ownerController.getCustomerDetail(req, res));
+adminRouter.put('/leads/:id/lifecycle', (req: Request, res: Response) => ownerController.updateLifecycle(req, res));
+adminRouter.get('/leads/:id/conversations', (req: Request, res: Response) => ownerController.getCustomerConversations(req, res));
+adminRouter.post('/leads', (req: Request, res: Response) => ownerController.createLead(req, res));
+adminRouter.put('/leads/:id/profile', (req: Request, res: Response) => ownerController.updateCustomerProfile(req, res));
 adminRouter.get('/escalations', (req: Request, res: Response) => dashboardController.getEscalations(req, res));
 adminRouter.post('/escalations/:id/resolve', (req: Request, res: Response) => dashboardController.resolveEscalation(req, res));
 
@@ -43,6 +49,7 @@ adminRouter.post('/knowledge-base/requests/:id/approve', (req: Request, res: Res
 adminRouter.post('/knowledge-base/requests/:id/reject', (req: Request, res: Response) => dashboardController.rejectKnowledgeRequest(req, res));
 
 adminRouter.get('/appointments', (req: Request, res: Response) => appointmentController.list(req, res));
+adminRouter.post('/appointments/book', (req: Request, res: Response) => appointmentController.book(req, res));
 
 adminRouter.post('/appointments/:id/cancel', (req: Request, res: Response) => appointmentController.cancel(req, res));
 adminRouter.post('/appointments/:id/reschedule', (req: Request, res: Response) => appointmentController.reschedule(req, res));

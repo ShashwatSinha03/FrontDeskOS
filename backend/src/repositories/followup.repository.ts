@@ -79,28 +79,31 @@ export class FollowUpRepository {
       page?: number;
       limit?: number;
     }
-  ): Promise<{ followUps: FollowUp[]; totalCount: number }> {
+  ): Promise<{ followUps: any[]; totalCount: number }> {
     let query = `
-      SELECT *, COUNT(*) OVER() as total_count
-      FROM follow_ups
-      WHERE business_id = $1
+      SELECT fu.*,
+             c.name as customer_name, c.email as customer_email, c.phone as customer_phone,
+             COUNT(*) OVER() as total_count
+      FROM follow_ups fu
+      LEFT JOIN customers c ON c.id = fu.customer_id
+      WHERE fu.business_id = $1
     `;
     const params: any[] = [businessId];
     let paramIndex = 2;
 
     if (filters?.status) {
-      query += ` AND status = $${paramIndex}`;
+      query += ` AND fu.status = $${paramIndex}`;
       params.push(filters.status);
       paramIndex++;
     }
 
     if (filters?.type) {
-      query += ` AND type = $${paramIndex}`;
+      query += ` AND fu.type = $${paramIndex}`;
       params.push(filters.type);
       paramIndex++;
     }
 
-    query += ` ORDER BY scheduled_at DESC`;
+    query += ` ORDER BY fu.scheduled_at DESC`;
 
     const page = pagination?.page || 1;
     const limit = pagination?.limit || 10;
@@ -116,9 +119,29 @@ export class FollowUpRepository {
     }
 
     const totalCount = parseInt(res.rows[0].total_count, 10);
-    const followUps = res.rows.map(row => this.mapToEntity(row));
+    const followUps = res.rows.map(row => ({
+      ...this.mapToEntity(row),
+      customerName: row.customer_name,
+      customerEmail: row.customer_email,
+      customerPhone: row.customer_phone,
+    }));
 
     return { followUps, totalCount };
+  }
+
+  async findByCustomerWithName(customerId: string): Promise<any[]> {
+    const query = `
+      SELECT fu.*, c.name as customer_name
+      FROM follow_ups fu
+      LEFT JOIN customers c ON c.id = fu.customer_id
+      WHERE fu.customer_id = $1
+      ORDER BY fu.scheduled_at DESC
+    `;
+    const res = await pool.query(query, [customerId]);
+    return res.rows.map(row => ({
+      ...this.mapToEntity(row),
+      customerName: row.customer_name,
+    }));
   }
 
   async findByCustomer(customerId: string): Promise<FollowUp[]> {

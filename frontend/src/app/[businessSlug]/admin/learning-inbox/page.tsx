@@ -8,6 +8,7 @@ import { DataTable, Column } from '@/components/admin/data-table';
 import { Badge } from '@/components/ui/badge';
 import { LearningInboxDetail } from '@/components/admin/learning-inbox-detail';
 import { KnowledgeRequest, KnowledgeRequestStatus } from '@/types';
+import { CustomerLink } from '@/components/admin/customer-link';
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -55,6 +56,19 @@ export default function LearningInboxPage() {
       label: 'Question',
       render: (v: string) => (
         <span className="line-clamp-1 max-w-xs">{v}</span>
+      ),
+    },
+    {
+      key: 'customerName',
+      label: 'Customer',
+      render: (v: string, row: any) => (
+        row.customerId ? (
+          <CustomerLink customerId={row.customerId} customerName={v}>
+            {v || 'Unknown'}
+          </CustomerLink>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )
       ),
     },
     {

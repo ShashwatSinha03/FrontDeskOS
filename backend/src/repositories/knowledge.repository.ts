@@ -68,22 +68,26 @@ export class KnowledgeRequestRepository {
       page?: number;
       limit?: number;
     }
-  ): Promise<{ requests: KnowledgeRequest[]; totalCount: number }> {
+  ): Promise<{ requests: any[]; totalCount: number }> {
     let query = `
-      SELECT id, business_id, conversation_id, unanswered_question, suggested_answer, status, created_at, updated_at, COUNT(*) OVER() as total_count
-      FROM knowledge_requests
-      WHERE business_id = $1
+      SELECT kr.id, kr.business_id, kr.conversation_id, kr.unanswered_question, kr.suggested_answer, kr.status, kr.created_at, kr.updated_at,
+             c.name as customer_name, c.email as customer_email,
+             COUNT(*) OVER() as total_count
+      FROM knowledge_requests kr
+      LEFT JOIN conversations conv ON conv.id = kr.conversation_id
+      LEFT JOIN customers c ON c.id = conv.customer_id
+      WHERE kr.business_id = $1
     `;
     const params: any[] = [businessId];
     let paramIndex = 2;
 
     if (filters?.status) {
-      query += ` AND status = $${paramIndex}`;
+      query += ` AND kr.status = $${paramIndex}`;
       params.push(filters.status);
       paramIndex++;
     }
 
-    query += ` ORDER BY created_at DESC`;
+    query += ` ORDER BY kr.created_at DESC`;
 
     const page = pagination?.page || 1;
     const limit = pagination?.limit || 10;
@@ -99,7 +103,11 @@ export class KnowledgeRequestRepository {
     }
 
     const totalCount = parseInt(res.rows[0].total_count, 10);
-    const requests = res.rows.map(row => this.mapToEntity(row));
+    const requests = res.rows.map(row => ({
+      ...this.mapToEntity(row),
+      customerName: row.customer_name,
+      customerEmail: row.customer_email,
+    }));
     
     return { requests, totalCount };
   }

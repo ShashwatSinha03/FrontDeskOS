@@ -7,6 +7,7 @@ import { fetchEscalations, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
 import { Badge } from '@/components/ui/badge';
 import { EscalationStatus } from '@/types';
+import { CustomerLink } from '@/components/admin/customer-link';
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-red-100 text-red-700',
@@ -14,7 +15,18 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const columns: Column[] = [
-  { key: 'id', label: 'ID', render: (v: string) => v?.slice(0, 8) + '...' },
+  {
+    key: 'customerName',
+    label: 'Customer',
+    render: (v: string, row: any) => (
+      <div className="flex items-center gap-2">
+        <CustomerLink customerId={row.customerId} customerName={v}>
+          {v || 'Unknown'}
+        </CustomerLink>
+        {row.customerEmail && <span className="text-xs text-muted-foreground hidden md:inline">{row.customerEmail}</span>}
+      </div>
+    ),
+  },
   { key: 'reason', label: 'Reason' },
   {
     key: 'status',

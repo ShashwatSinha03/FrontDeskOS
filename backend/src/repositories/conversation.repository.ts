@@ -30,6 +30,20 @@ export class ConversationRepository {
   }
 
   /**
+   * Find all conversations for a customer.
+   */
+  async findByCustomer(customerId: string): Promise<Conversation[]> {
+    const query = `
+      SELECT id, customer_id, business_id, status, channel_type, created_at, updated_at
+      FROM conversations
+      WHERE customer_id = $1
+      ORDER BY created_at DESC
+    `;
+    const res = await pool.query(query, [customerId]);
+    return res.rows.map(r => this.mapToConversationEntity(r));
+  }
+
+  /**
    * Close a conversation session.
    */
   async close(id: string): Promise<void> {
