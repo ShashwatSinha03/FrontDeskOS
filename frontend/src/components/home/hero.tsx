@@ -5,21 +5,35 @@ import { Button } from '@/components/ui/button';
 
 export function HeroSection({ businessName, slug }: { businessName: string; slug: string }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-          {businessName}
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-slate-300 max-w-2xl mx-auto">
-          Your trusted dental care provider. We combine expertise with compassion
-          to give you and your family the healthy smiles you deserve.
-        </p>
-        <div className="mt-10">
-          <Link href={`/${slug}/book`}>
-            <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100">
-              Book an Appointment
-            </Button>
-          </Link>
+    <section className="relative overflow-hidden bg-background border-b">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-muted/50 via-background to-background" />
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
+          backgroundSize: '32px 32px',
+        }}
+      />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
+        <div className="max-w-2xl">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+            {businessName}
+          </h1>
+          <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-muted-foreground max-w-lg">
+            Professional care, modern approach. We combine expertise with comfort to give you the best experience.
+          </p>
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3">
+            <Link href={`/${slug}/book`}>
+              <Button size="lg" className="w-full sm:w-auto">
+                Book an Appointment
+              </Button>
+            </Link>
+            <Link href={`/${slug}/services`}>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                View Services
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

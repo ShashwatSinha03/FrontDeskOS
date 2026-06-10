@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchPublicBusiness, updateCustomerLifecycle } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { StatusBadge, lifecycleLevel } from '@/components/design/status-badge';
 import { CustomerLifecycleState } from '@/types';
 
 const ALLOWED_STATES: CustomerLifecycleState[] = [
@@ -65,15 +67,16 @@ export function LifecycleEditor({
       <div className="flex items-center gap-2">
         {previousState && previousState !== currentState && (
           <span className="text-xs text-muted-foreground">
-            {previousState} →
+            <StatusBadge level={lifecycleLevel(previousState)}>{previousState}</StatusBadge>
+            <span className="mx-1">→</span>
           </span>
         )}
-        <button
+        <Button
+          variant="ghost" size="sm"
           onClick={() => { setSelectedState(currentState); setIsEditing(true); }}
-          className="text-xs text-blue-600 hover:text-blue-800 hover:underline whitespace-nowrap"
         >
           Edit Lifecycle
-        </button>
+        </Button>
       </div>
     );
   }
@@ -84,50 +87,40 @@ export function LifecycleEditor({
         <select
           value={selectedState}
           onChange={(e) => setSelectedState(e.target.value)}
-          className="rounded-md border border-input bg-background px-2 py-1 text-xs"
+          className="flex h-8 rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {ALLOWED_STATES.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
-        <button
+        <Button
+          size="sm"
           onClick={() => setShowConfirm(true)}
           disabled={selectedState === currentState || saving}
-          className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700 disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Save'}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost" size="sm"
           onClick={() => setIsEditing(false)}
-          className="text-xs text-muted-foreground hover:text-foreground"
         >
           Cancel
-        </button>
+        </Button>
       </div>
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="rounded-lg bg-white p-6 shadow-lg max-w-sm mx-4">
+          <div className="rounded-xl bg-card p-6 shadow-lg max-w-sm mx-4 border">
             <h3 className="font-semibold mb-2">Change Lifecycle State</h3>
             <p className="text-sm text-muted-foreground mb-1">
-              Current: <strong>{currentState}</strong>
+              Current: <StatusBadge level={lifecycleLevel(currentState)}>{currentState}</StatusBadge>
             </p>
             <p className="text-sm text-muted-foreground mb-4">
-              New: <strong>{selectedState}</strong>
+              New: <StatusBadge level={lifecycleLevel(selectedState)}>{selectedState}</StatusBadge>
             </p>
             <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="rounded border px-3 py-1.5 text-sm hover:bg-muted"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
-              >
-                Confirm
-              </button>
+              <Button variant="outline" size="sm" onClick={() => setShowConfirm(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleSave}>Confirm</Button>
             </div>
           </div>
         </div>

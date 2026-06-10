@@ -20,16 +20,16 @@ export function HomeHero({
   secondaryCta,
 }: HeroContent) {
   return (
-    <section className="relative overflow-hidden bg-black">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-black to-black" />
+    <section className="relative min-h-screen overflow-hidden bg-black">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+      <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-blue-500/5 blur-[120px]" />
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-32 pt-24 sm:px-6 sm:pb-40 sm:pt-32 lg:px-8">
+      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-4 pb-32 pt-24 sm:px-6 sm:pb-40 sm:pt-32 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="text-5xl font-bold tracking-tighter text-white sm:text-6xl lg:text-7xl">
             {headline}
           </h1>
-          <p className="mt-6 text-lg leading-relaxed text-zinc-400 sm:text-xl">
+          <p className="mt-6 text-lg leading-relaxed text-zinc-400 sm:text-xl sm:leading-relaxed">
             {subheadline}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -49,14 +49,12 @@ export function HomeHero({
           </div>
         </div>
 
-        <div className="mx-auto mt-20 max-w-2xl rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur sm:p-8">
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-            <FlowStep icon={MessageSquare} label="Lead" />
-            <ArrowRight className="h-4 w-4 text-zinc-600" />
-            <FlowStep icon={CalendarCheck} label="Appointment" />
-            <ArrowRight className="h-4 w-4 text-zinc-600" />
-            <FlowStep icon={UserCheck} label="Customer" />
-          </div>
+        <div className="mx-auto mt-20 flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+          <FlowStep icon={MessageSquare} label="Lead" />
+          <ArrowRight className="h-4 w-4 text-zinc-600" />
+          <FlowStep icon={CalendarCheck} label="Appointment" />
+          <ArrowRight className="h-4 w-4 text-zinc-600" />
+          <FlowStep icon={UserCheck} label="Customer" />
         </div>
       </div>
     </section>

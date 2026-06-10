@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { CtaContent } from '@/lib/marketing-content';
-import { ArrowRight, Mail, Phone } from 'lucide-react';
+import { Calendar, Mail, Phone } from 'lucide-react';
 
 function buildMailtoHref(mailto: { to: string; subject: string; body: string }): string {
   return `mailto:${mailto.to}?subject=${encodeURIComponent(mailto.subject)}&body=${encodeURIComponent(mailto.body)}`;
@@ -17,7 +17,7 @@ export function FinalCta({ headline, subheadline, primaryCta, secondaryActions }
     <section id="cta" className="border-t border-zinc-800 bg-black py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
             {headline}
           </h2>
 
@@ -32,10 +32,10 @@ export function FinalCta({ headline, subheadline, primaryCta, secondaryActions }
           <div className="mt-10">
             <Link
               href={primaryHref}
-              className="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 text-base font-semibold text-black shadow-lg transition hover:bg-zinc-200 sm:text-lg"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 text-base font-semibold text-black transition hover:bg-zinc-200 sm:text-lg"
             >
+              <Calendar className="h-5 w-5" />
               {primaryCta.label}
-              <ArrowRight className="h-5 w-5" />
             </Link>
           </div>
 

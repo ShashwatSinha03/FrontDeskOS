@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchPublicBusiness, updateCustomerProfile } from '@/lib/api';
+import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 
 export function CustomerProfileEditor({
@@ -52,28 +53,28 @@ export function CustomerProfileEditor({
 
   if (!editing) {
     return (
-      <button
+      <Button
+        variant="ghost" size="sm"
         onClick={() => { setEditName(name || ''); setEditEmail(email || ''); setEditPhone(phone || ''); setEditing(true); }}
-        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-blue-600"
       >
         <Pencil className="h-3 w-3" /> Edit
-      </button>
+      </Button>
     );
   }
 
   return (
-    <div className="space-y-2 p-3 rounded-lg border bg-gray-50">
+    <div className="space-y-2 p-3 rounded-lg border bg-muted/30">
       <div className="grid gap-2 sm:grid-cols-3">
-        <input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Name *" className="rounded border border-input bg-background px-2 py-1 text-sm" />
-        <input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="Email" type="email" className="rounded border border-input bg-background px-2 py-1 text-sm" />
-        <input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone" className="rounded border border-input bg-background px-2 py-1 text-sm" />
+        <input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Name *" className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+        <input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="Email" type="email" className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+        <input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone" className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
       <div className="flex gap-2 justify-end">
-        <button onClick={() => setEditing(false)} className="rounded border px-2 py-1 text-xs hover:bg-muted">Cancel</button>
-        <button onClick={handleSave} disabled={saving || !editName.trim()} className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700 disabled:opacity-50">
+        <Button variant="outline" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+        <Button size="sm" onClick={handleSave} disabled={saving || !editName.trim()}>
           {saving ? 'Saving...' : 'Save'}
-        </button>
+        </Button>
       </div>
     </div>
   );

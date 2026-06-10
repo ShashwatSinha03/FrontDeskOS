@@ -5,22 +5,12 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchLeads, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { StatusBadge, lifecycleLevel } from '@/components/design/status-badge';
+import { PageHeader } from '@/components/design/page-header';
 import { Customer, CustomerLifecycleState } from '@/types';
 import { CustomerLink } from '@/components/admin/customer-link';
 import { AddLeadDialog } from '@/components/admin/add-lead-dialog';
-
-const LIFECYCLE_COLORS: Record<string, string> = {
-  'New Inquiry': 'bg-blue-100 text-blue-700',
-  'Information Gathering': 'bg-purple-100 text-purple-700',
-  'Qualified': 'bg-teal-100 text-teal-700',
-  'Booking Opportunity': 'bg-amber-100 text-amber-700',
-  'Booked': 'bg-green-100 text-green-700',
-  'Customer': 'bg-emerald-100 text-emerald-700',
-  'Follow-Up Pending': 'bg-orange-100 text-orange-700',
-  'Escalated': 'bg-red-100 text-red-700',
-  'Lost': 'bg-gray-100 text-gray-700',
-};
 
 const columns: Column<Customer>[] = [
   {
@@ -38,9 +28,9 @@ const columns: Column<Customer>[] = [
     key: 'lifecycleState',
     label: 'State',
     render: (v: string) => (
-      <Badge className={LIFECYCLE_COLORS[v] || ''} variant="outline">
+      <StatusBadge level={lifecycleLevel(v)}>
         {v}
-      </Badge>
+      </StatusBadge>
     ),
   },
   {
@@ -100,18 +90,14 @@ export default function LeadsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Leads</h1>
-          <p className="text-muted-foreground mt-1">Manage customer inquiries and track their lifecycle.</p>
-        </div>
-        <button
-          onClick={() => setShowAddDialog(true)}
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
-        >
-          + Add Lead
-        </button>
-      </div>
+      <PageHeader
+        title="Leads"
+        description="Manage customer inquiries and track their lifecycle."
+      >
+        <Button size="sm" onClick={() => setShowAddDialog(true)}>
+          Add Lead
+        </Button>
+      </PageHeader>
 
       <AddLeadDialog
         open={showAddDialog}
@@ -123,7 +109,7 @@ export default function LeadsPage() {
         <select
           value={stateFilter}
           onChange={(e) => { setStateFilter(e.target.value); setPage(1); }}
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+          className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {STATE_FILTERS.map((s) => (
             <option key={s} value={s}>{s === 'all' ? 'All States' : s}</option>
@@ -134,7 +120,7 @@ export default function LeadsPage() {
           placeholder="Search name, email, phone..."
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm flex-1 min-w-[200px]"
+          className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring flex-1 min-w-[200px]"
         />
       </div>
 

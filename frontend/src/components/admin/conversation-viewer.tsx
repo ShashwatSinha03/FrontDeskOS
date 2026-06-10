@@ -25,37 +25,37 @@ export function ConversationViewer({ messages }: { messages: Message[] }) {
         const isAgent = msg.sender === 'agent' || msg.sender === 'human_owner';
 
         return (
-          <div
-            key={msg.id}
-            className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}
-          >
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                isCustomer
-                  ? 'bg-gray-100 text-gray-900 rounded-bl-sm'
-                  : isAgent
-                  ? 'bg-blue-600 text-white rounded-br-sm'
-                  : 'bg-gray-200 text-gray-700 rounded-br-sm'
-              }`}
+              key={msg.id}
+              className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}
             >
-              <p className="whitespace-pre-wrap break-words">{msg.content}</p>
-              <p
-                className={`text-[10px] mt-1 ${
-                  isAgent ? 'text-blue-200' : 'text-gray-400'
+              <div
+                className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  isCustomer
+                    ? 'bg-muted text-foreground rounded-bl-sm'
+                    : isAgent
+                    ? 'bg-primary text-primary-foreground rounded-br-sm'
+                    : 'bg-muted text-foreground rounded-br-sm'
                 }`}
               >
-                {new Date(msg.createdAt).toLocaleString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-                {msg.sender === 'customer' && ' • Customer'}
-                {msg.sender === 'agent' && ' • AI'}
-                {msg.sender === 'human_owner' && ' • You'}
-              </p>
+                <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                <p
+                  className={`text-[10px] mt-1 ${
+                    isAgent ? 'text-primary-foreground/60' : 'text-muted-foreground'
+                  }`}
+                >
+                  {new Date(msg.createdAt).toLocaleString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                  {msg.sender === 'customer' && ' • Customer'}
+                  {msg.sender === 'agent' && ' • AI'}
+                  {msg.sender === 'human_owner' && ' • You'}
+                </p>
+              </div>
             </div>
-          </div>
         );
       })}
       <div ref={bottomRef} />

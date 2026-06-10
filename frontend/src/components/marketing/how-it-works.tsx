@@ -9,16 +9,16 @@ export function HowItWorks({ headline, steps }: HowItWorksContent) {
         </h2>
 
         <div className="relative mx-auto mt-16 max-w-3xl">
-          <div className="absolute left-[23px] top-0 h-full w-px bg-zinc-800" />
+          <div className="absolute left-6 top-0 h-full w-px bg-zinc-800" />
           <div className="space-y-12">
             {steps.map((step) => (
-              <div key={step.number} className="relative pl-14">
-                <div className="absolute left-0 flex h-12 w-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-sm font-bold text-white">
+              <div key={step.number} className="relative pl-16">
+                <div className="absolute left-0 flex h-12 w-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-sm font-bold text-white ring-8 ring-black">
                   {step.number}
                 </div>
-                <div className="pt-1">
+                <div className="pt-1.5">
                   <h3 className="text-lg font-semibold text-white">{step.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-zinc-400">{step.description}</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{step.description}</p>
                 </div>
               </div>
             ))}

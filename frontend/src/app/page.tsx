@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { defaultContent } from '@/lib/marketing-content';
 import { HomeHero } from '@/components/marketing/hero';
 import { ProblemSection } from '@/components/marketing/problem-section';
@@ -8,6 +9,12 @@ import { IndustriesSection } from '@/components/marketing/industries-section';
 import { DemoSection } from '@/components/marketing/demo-section';
 import { FounderSection } from '@/components/marketing/founder-section';
 import { FinalCta } from '@/components/marketing/final-cta';
+
+export const metadata: Metadata = {
+  title: 'FrontDeskOS — 24/7 AI Receptionist',
+  description:
+    'FrontDeskOS acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.',
+};
 
 export default function MarketingPage() {
   const { hero, problem, solution, howItWorks, showcase, industries, demo, founder, cta } =

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchPublicBusiness, createLead } from '@/lib/api';
+import { Button } from '@/components/ui/button';
 
 export function AddLeadDialog({ open, onClose, onSuccess }: { open: boolean; onClose: () => void; onSuccess: () => void }) {
   const params = useParams();
@@ -44,30 +45,30 @@ export function AddLeadDialog({ open, onClose, onSuccess }: { open: boolean; onC
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="rounded-lg bg-white p-6 shadow-lg max-w-md w-full mx-4">
+      <div className="rounded-xl bg-card p-6 shadow-lg max-w-md w-full mx-4 border">
         <h2 className="text-lg font-semibold mb-4">Add New Lead</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             value={name} onChange={(e) => setName(e.target.value)}
             placeholder="Name *" required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           <input
             value={email} onChange={(e) => setEmail(e.target.value)}
             placeholder="Email" type="email"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           <input
             value={phone} onChange={(e) => setPhone(e.target.value)}
             placeholder="Phone"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           {error && <p className="text-xs text-red-600">{error}</p>}
           <div className="flex gap-2 justify-end pt-2">
-            <button type="button" onClick={onClose} className="rounded border px-3 py-1.5 text-sm hover:bg-muted">Cancel</button>
-            <button type="submit" disabled={saving || !name.trim()} className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-50">
+            <Button type="button" variant="outline" size="sm" onClick={onClose}>Cancel</Button>
+            <Button type="submit" size="sm" disabled={saving || !name.trim()}>
               {saving ? 'Creating...' : 'Create Lead'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

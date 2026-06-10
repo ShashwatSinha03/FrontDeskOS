@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { approveKnowledgeRequest, rejectKnowledgeRequest, fetchConversationMessages } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/design/status-badge';
 import { X, CheckCircle, XCircle } from 'lucide-react';
 import { KnowledgeRequest } from '@/types';
 
@@ -19,13 +19,6 @@ const SENDER_LABELS: Record<string, string> = {
   agent: 'AI Agent',
   human_owner: 'Staff',
   system: 'System',
-};
-
-const SENDER_COLORS: Record<string, string> = {
-  customer: 'bg-blue-100 text-blue-700',
-  agent: 'bg-green-100 text-green-700',
-  human_owner: 'bg-purple-100 text-purple-700',
-  system: 'bg-gray-100 text-gray-700',
 };
 
 export function LearningInboxDetail({ request, onClose, onAction }: Props) {
@@ -86,8 +79,8 @@ export function LearningInboxDetail({ request, onClose, onAction }: Props) {
   };
 
   return (
-    <div className="border-l bg-white w-full lg:w-[480px] shrink-0 overflow-y-auto">
-      <div className="sticky top-0 bg-white border-b px-4 py-3 flex items-center justify-between z-10">
+    <div className="border-l bg-card w-full lg:w-[480px] shrink-0 overflow-y-auto">
+      <div className="sticky top-0 bg-card border-b px-4 py-3 flex items-center justify-between z-10">
         <h3 className="font-semibold text-sm">Request Details</h3>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="h-4 w-4" />
@@ -165,19 +158,22 @@ export function LearningInboxDetail({ request, onClose, onAction }: Props) {
             <p className="mt-2 text-sm text-muted-foreground">No messages found.</p>
           ) : (
             <div className="mt-2 space-y-2">
-              {messages.map((msg: any) => (
+              {messages.map((msg: any) => {
+                const senderLevel = msg.sender === 'customer' ? 'info' : msg.sender === 'agent' ? 'success' : msg.sender === 'human_owner' ? 'purple' : 'neutral';
+                return (
                 <div key={msg.id} className="rounded-lg bg-muted/30 p-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge className={SENDER_COLORS[msg.sender] || ''} variant="outline">
+                    <StatusBadge level={senderLevel}>
                       {SENDER_LABELS[msg.sender] || msg.sender}
-                    </Badge>
+                    </StatusBadge>
                     <span className="text-xs text-muted-foreground">
                       {new Date(msg.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <p className="text-sm">{msg.content}</p>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

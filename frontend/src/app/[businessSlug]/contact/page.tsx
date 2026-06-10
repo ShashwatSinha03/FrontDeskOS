@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useBusiness } from '@/hooks/use-business';
 import { BusinessInfo } from '@/components/contact/business-info';
 import { ContactForm } from '@/components/contact/contact-form';
+import { Skeleton } from '@/components/design/skeleton';
 
 export default function ContactPage() {
   const params = useParams();
@@ -12,17 +13,28 @@ export default function ContactPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+        <div className="space-y-3 mb-12">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-5 w-72" />
+        </div>
+        <div className="grid gap-8 md:grid-cols-2">
+          <div className="space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-96 rounded-xl" />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-      <div className="text-center mb-12">
+      <div className="max-w-xl mb-12">
         <h1 className="text-3xl font-bold tracking-tight">Contact Us</h1>
-        <p className="mt-4 text-lg text-muted-foreground">
+        <p className="mt-3 text-base text-muted-foreground">
           {business ? `Get in touch with ${business.name}` : "We'd love to hear from you"}
         </p>
       </div>

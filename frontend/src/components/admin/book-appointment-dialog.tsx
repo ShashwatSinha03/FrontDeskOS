@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchPublicBusiness, fetchPublicServices, fetchAvailableSlots, adminBookAppointment } from '@/lib/api';
+import { Button } from '@/components/ui/button';
 
 export function BookAppointmentDialog({
   customerId, open, onClose, onSuccess,
@@ -66,12 +67,12 @@ export function BookAppointmentDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="rounded-lg bg-white p-6 shadow-lg max-w-md w-full mx-4">
+      <div className="rounded-xl bg-card p-6 shadow-lg max-w-md w-full mx-4 border">
         <h2 className="text-lg font-semibold mb-4">Book Appointment</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <select
             value={serviceId} onChange={(e) => setServiceId(e.target.value)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <option value="">Any Service</option>
             {services.map((s: any) => (
@@ -80,11 +81,11 @@ export function BookAppointmentDialog({
           </select>
           <input
             type="date" value={date} onChange={(e) => setDate(e.target.value)} required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           <select
             value={time} onChange={(e) => setTime(e.target.value)} required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             disabled={!date}
           >
             <option value="">Select time</option>
@@ -95,15 +96,14 @@ export function BookAppointmentDialog({
           <textarea
             value={notes} onChange={(e) => setNotes(e.target.value)}
             placeholder="Notes (optional)"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            rows={2}
+            className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           {error && <p className="text-xs text-red-600">{error}</p>}
           <div className="flex gap-2 justify-end pt-2">
-            <button type="button" onClick={onClose} className="rounded border px-3 py-1.5 text-sm hover:bg-muted">Cancel</button>
-            <button type="submit" disabled={saving || !date || !time} className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-50">
+            <Button type="button" variant="outline" size="sm" onClick={onClose}>Cancel</Button>
+            <Button type="submit" size="sm" disabled={saving || !date || !time}>
               {saving ? 'Booking...' : 'Book Appointment'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

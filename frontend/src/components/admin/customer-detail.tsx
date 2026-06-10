@@ -5,55 +5,18 @@ import { useParams } from 'next/navigation';
 import useSWR, { mutate } from 'swr';
 import { fetchCustomerDetail, fetchPublicBusiness, fetchConversationMessages } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { StatusBadge, lifecycleLevel, statusLevel } from '@/components/design/status-badge';
+import { MetricCard } from '@/components/design/metric-card';
 import { ConversationViewer } from '@/components/admin/conversation-viewer';
 import { LifecycleEditor } from '@/components/admin/lifecycle-editor';
 import { CustomerProfileEditor } from '@/components/admin/customer-profile-editor';
 import { BookAppointmentDialog } from '@/components/admin/book-appointment-dialog';
 import { DataTable, Column } from '@/components/admin/data-table';
 import {
-  Phone, Mail, Calendar, Clock, AlertTriangle,
-  ArrowRight, MessageSquare, Activity, CalendarPlus,
+  Phone, Mail, Calendar, Clock, AlertTriangle, CalendarDays,
+  MessageSquare, Activity, CalendarPlus,
 } from 'lucide-react';
-
-const LIFECYCLE_COLORS: Record<string, string> = {
-  'New Inquiry': 'bg-blue-100 text-blue-700 border-blue-200',
-  'Information Gathering': 'bg-purple-100 text-purple-700 border-purple-200',
-  'Qualified': 'bg-teal-100 text-teal-700 border-teal-200',
-  'Booking Opportunity': 'bg-amber-100 text-amber-700 border-amber-200',
-  'Booked': 'bg-green-100 text-green-700 border-green-200',
-  'Customer': 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  'Follow-Up Pending': 'bg-orange-100 text-orange-700 border-orange-200',
-  'Escalated': 'bg-red-100 text-red-700 border-red-200',
-  'Lost': 'bg-gray-100 text-gray-700 border-gray-200',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-  rescheduled: 'bg-blue-100 text-blue-700',
-  resolved: 'bg-green-100 text-green-700',
-  sent: 'bg-green-100 text-green-700',
-};
-
-const APPT_STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-  rescheduled: 'bg-blue-100 text-blue-700',
-};
-
-const ESCALATION_COLORS: Record<string, string> = {
-  pending: 'bg-red-100 text-red-700',
-  resolved: 'bg-green-100 text-green-700',
-};
-
-const FOLLOWUP_STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  sent: 'bg-green-100 text-green-700',
-  cancelled: 'bg-gray-100 text-gray-700',
-};
 
 function ConversationMessages({ conversationId }: { conversationId: string | null }) {
   const { data: msgsData, error, isLoading } = useSWR(
@@ -63,7 +26,7 @@ function ConversationMessages({ conversationId }: { conversationId: string | nul
   );
   const convMessages = msgsData?.success ? (msgsData.data as any[]) || [] : [];
 
-  if (isLoading) return <div className="h-32 rounded bg-muted animate-pulse" />;
+  if (isLoading) return <div className="h-32 rounded-lg border bg-muted/30 animate-pulse" />;
   if (error) return <p className="text-sm text-red-500">Failed to load messages.</p>;
 
   return <ConversationViewer messages={convMessages as any} />;
@@ -73,13 +36,13 @@ const TABS = ['Overview', 'Timeline', 'Conversations', 'Appointments', 'Escalati
 
 type Tab = typeof TABS[number];
 
-function classifyEscalation(reason: string): { label: string; color: string } {
+function classifyEscalation(reason: string): { label: string; level: 'danger' | 'purple' | 'orange' | 'warning' | 'neutral' } {
   const lower = reason.toLowerCase();
-  if (lower.includes('emergency') || lower.includes('urgent')) return { label: 'Emergency', color: 'bg-red-100 text-red-700 border-red-300' };
-  if (lower.includes('lawsuit') || lower.includes('sue') || lower.includes('attorney') || lower.includes('lawyer') || lower.includes('legal')) return { label: 'Legal', color: 'bg-purple-100 text-purple-700 border-purple-300' };
-  if (lower.includes('refund') || lower.includes('chargeback') || lower.includes('compensation')) return { label: 'Refund', color: 'bg-orange-100 text-orange-700 border-orange-300' };
-  if (lower.includes('complaint') || lower.includes('bad review') || lower.includes('bbb')) return { label: 'Complaint', color: 'bg-amber-100 text-amber-700 border-amber-300' };
-  return { label: 'General', color: 'bg-gray-100 text-gray-700 border-gray-300' };
+  if (lower.includes('emergency') || lower.includes('urgent')) return { label: 'Emergency', level: 'danger' };
+  if (lower.includes('lawsuit') || lower.includes('sue') || lower.includes('attorney') || lower.includes('lawyer') || lower.includes('legal')) return { label: 'Legal', level: 'purple' };
+  if (lower.includes('refund') || lower.includes('chargeback') || lower.includes('compensation')) return { label: 'Refund', level: 'orange' };
+  if (lower.includes('complaint') || lower.includes('bad review') || lower.includes('bbb')) return { label: 'Complaint', level: 'warning' };
+  return { label: 'General', level: 'neutral' };
 }
 
 function buildTimeline(
@@ -167,22 +130,25 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 rounded bg-muted animate-pulse" />
-        <div className="grid gap-4 md:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-lg bg-muted animate-pulse" />
+        <div className="h-8 w-48 rounded-md bg-muted animate-pulse" />
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl border bg-card p-5">
+              <div className="h-4 w-24 rounded bg-muted animate-pulse mb-3" />
+              <div className="h-8 w-16 rounded bg-muted animate-pulse" />
+            </div>
           ))}
         </div>
-        <div className="h-64 rounded-lg bg-muted animate-pulse" />
+        <div className="h-64 rounded-xl border bg-muted/30 animate-pulse" />
       </div>
     );
   }
 
   if (error || !detail) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-        <AlertTriangle className="h-8 w-8 mx-auto text-red-400 mb-2" />
-        <p className="text-sm text-red-600">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center">
+        <AlertTriangle className="h-8 w-8 mx-auto text-red-400 mb-3" />
+        <p className="text-sm font-medium text-red-600">
           {error ? 'Failed to load customer details.' : 'Customer not found.'}
         </p>
       </div>
@@ -198,7 +164,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
     { key: 'serviceName', label: 'Service', render: (v: string) => v || '—' },
     { key: 'appointmentTime', label: 'Date & Time', render: (v: string) => v ? new Date(v).toLocaleString() : '—' },
     { key: 'status', label: 'Status', render: (v: string) => (
-      <Badge className={APPT_STATUS_COLORS[v] || ''} variant="outline">{v}</Badge>
+      <StatusBadge level={statusLevel(v)}>{v}</StatusBadge>
     )},
     { key: 'notes', label: 'Notes', render: (v: string) => v || '—' },
   ];
@@ -208,13 +174,13 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
       const sev = classifyEscalation(v);
       return (
         <div className="flex items-center gap-2">
-          <Badge className={sev.color} variant="outline">{sev.label}</Badge>
+          <StatusBadge level={sev.level}>{sev.label}</StatusBadge>
           <span>{v}</span>
         </div>
       );
     }},
     { key: 'status', label: 'Status', render: (v: string) => (
-      <Badge className={ESCALATION_COLORS[v] || ''} variant="outline">{v}</Badge>
+      <StatusBadge level={statusLevel(v)}>{v}</StatusBadge>
     )},
     { key: 'createdAt', label: 'Created', render: (v: string) => v ? new Date(v).toLocaleString() : '—' },
   ];
@@ -226,7 +192,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
     }},
     { key: 'scheduledAt', label: 'Scheduled', render: (v: string) => v ? new Date(v).toLocaleString() : '—' },
     { key: 'status', label: 'Status', render: (v: string) => (
-      <Badge className={FOLLOWUP_STATUS_COLORS[v] || ''} variant="outline">{v}</Badge>
+      <StatusBadge level={statusLevel(v)}>{v}</StatusBadge>
     )},
     { key: 'triggerReason', label: 'Reason', render: (v: string) => v || '—' },
   ];
@@ -239,30 +205,30 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold">{customer.name || 'Unnamed Customer'}</h1>
-                <Badge className={LIFECYCLE_COLORS[customer.lifecycleState] || ''} variant="outline">
+                <h1 className="text-2xl font-semibold tracking-tight">{customer.name || 'Unnamed Customer'}</h1>
+                <StatusBadge level={lifecycleLevel(customer.lifecycleState)}>
                   {customer.lifecycleState}
-                </Badge>
+                </StatusBadge>
               </div>
 
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-muted-foreground">
                 {customer.email && (
-                  <span className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1.5">
                     <Mail className="h-3.5 w-3.5" />
                     {customer.email}
                   </span>
                 )}
                 {customer.phone && (
-                  <span className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1.5">
                     <Phone className="h-3.5 w-3.5" />
                     {customer.phone}
                   </span>
                 )}
-                <span className="flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5" />
                   Created {new Date(customer.createdAt).toLocaleDateString()}
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5" />
                   Last interaction {new Date(customer.lastInteractionAt).toLocaleDateString()}
                 </span>
@@ -288,14 +254,14 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
       </Card>
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 border-b overflow-x-auto">
+      <div className="flex gap-0 border-b overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === tab
-                ? 'border-blue-600 text-blue-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -306,52 +272,11 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
 
       {/* Tab Content */}
       {activeTab === 'Overview' && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Appointments
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{appointments.length}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Conversations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{conversations.length}</p>
-              <p className="text-xs text-muted-foreground mt-1">{allMessages.length} messages</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                Escalations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{escalations.length}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                Follow-Ups
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{followUps.length}</p>
-            </CardContent>
-          </Card>
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+          <MetricCard label="Appointments" value={appointments.length} icon={CalendarDays} />
+          <MetricCard label="Conversations" value={conversations.length} icon={MessageSquare} />
+          <MetricCard label="Escalations" value={escalations.length} icon={AlertTriangle} />
+          <MetricCard label="Follow-Ups" value={followUps.length} icon={Activity} />
         </div>
       )}
 
@@ -365,14 +290,14 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
             </Card>
           ) : (
             <>
-              <div className="flex gap-1 border-b overflow-x-auto">
+              <div className="flex gap-0 border-b overflow-x-auto">
                 {conversations.map((conv) => (
                   <button
                     key={conv.id}
                     onClick={() => setSelectedConversationId(conv.id)}
                     className={`px-3 py-2 text-xs font-medium border-b-2 whitespace-nowrap transition-colors ${
                       selectedConversationId === conv.id
-                        ? 'border-blue-600 text-blue-600'
+                        ? 'border-primary text-primary'
                         : 'border-transparent text-muted-foreground hover:text-foreground'
                     }`}
                   >
@@ -390,17 +315,17 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
       {activeTab === 'Timeline' && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Timeline</CardTitle>
+            <CardTitle className="text-base font-semibold">Timeline</CardTitle>
           </CardHeader>
           <CardContent>
             {timeline.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">No events yet.</p>
+              <p className="text-sm text-muted-foreground py-8 text-center">No events yet.</p>
             ) : (
-              <div className="relative pl-6 border-l-2 border-gray-200 space-y-4">
+              <div className="relative pl-6 border-l-2 border-border space-y-5">
                 {timeline.map((event, i) => {
-                  const typeColors: Record<string, string> = {
+                  const typeDot: Record<string, string> = {
                     lead: 'bg-blue-500',
-                    activity: 'bg-gray-400',
+                    activity: 'bg-zinc-400',
                     appointment: 'bg-green-500',
                     escalation: 'bg-red-500',
                     followup: 'bg-amber-500',
@@ -409,11 +334,11 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
                   };
                   return (
                     <div key={i} className="relative">
-                      <div className={`absolute -left-[25px] top-1 h-3 w-3 rounded-full ${typeColors[event.type] || 'bg-gray-400'}`} />
+                      <div className={`absolute -left-[25px] top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-background ${typeDot[event.type] || 'bg-zinc-400'}`} />
                       <p className="text-xs text-muted-foreground">
-                        {event.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {event.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </p>
-                      <p className="text-sm font-medium">{event.label}</p>
+                      <p className="text-sm font-medium mt-0.5">{event.label}</p>
                     </div>
                   );
                 })}
@@ -426,13 +351,10 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
       {activeTab === 'Appointments' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Appointment History</h2>
-            <button
-              onClick={() => setShowBookDialog(true)}
-              className="inline-flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-700"
-            >
+            <h2 className="text-base font-semibold">Appointment History</h2>
+            <Button size="sm" onClick={() => setShowBookDialog(true)}>
               <CalendarPlus className="h-3.5 w-3.5" /> Book Appointment
-            </button>
+            </Button>
           </div>
           <DataTable
             columns={apptColumns}
@@ -454,7 +376,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
 
       {activeTab === 'Escalations' && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Escalations</h2>
+          <h2 className="text-base font-semibold">Escalations</h2>
           <DataTable
             columns={escColumns}
             data={escalations}
@@ -469,7 +391,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
 
       {activeTab === 'Follow-Ups' && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Follow-Ups</h2>
+          <h2 className="text-base font-semibold">Follow-Ups</h2>
           <DataTable
             columns={fuColumns}
             data={followUps}

@@ -5,15 +5,10 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchFollowUps, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge, statusLevel } from '@/components/design/status-badge';
+import { PageHeader } from '@/components/design/page-header';
 import { FollowUpStatus, FollowUpType } from '@/types';
 import { CustomerLink } from '@/components/admin/customer-link';
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  sent: 'bg-green-100 text-green-700',
-  cancelled: 'bg-gray-100 text-gray-700',
-};
 
 const TYPE_LABELS: Record<string, string> = {
   re_engagement: 'Re-engagement',
@@ -48,9 +43,9 @@ const columns: Column[] = [
     key: 'status',
     label: 'Status',
     render: (v: string) => (
-      <Badge className={STATUS_COLORS[v] || ''} variant="outline">
+      <StatusBadge level={statusLevel(v)}>
         {v}
-      </Badge>
+      </StatusBadge>
     ),
   },
   {
@@ -97,16 +92,16 @@ export default function FollowUpsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Follow-Ups</h1>
-        <p className="text-muted-foreground mt-1">Automated re-engagement messages scheduled for customers.</p>
-      </div>
+      <PageHeader
+        title="Follow-Ups"
+        description="Automated re-engagement messages scheduled for customers."
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+          className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {STATUS_FILTERS.map((s) => (
             <option key={s} value={s}>{s === 'all' ? 'All Statuses' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
@@ -115,7 +110,7 @@ export default function FollowUpsPage() {
         <select
           value={typeFilter}
           onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+          className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {TYPE_FILTERS.map((t) => (
             <option key={t} value={t}>{t === 'all' ? 'All Types' : TYPE_LABELS[t] || t}</option>

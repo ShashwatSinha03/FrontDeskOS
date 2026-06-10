@@ -26,13 +26,13 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
   const basePath = `/${slug}/admin`;
 
   return (
-    <aside className="w-64 border-r bg-white shrink-0 hidden md:block">
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href={`/${slug}`} className="font-semibold text-sm text-muted-foreground hover:text-foreground">
+    <aside className="w-56 border-r bg-card shrink-0 hidden md:flex flex-col">
+      <div className="flex h-14 items-center border-b px-5">
+        <Link href={`/${slug}`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           {businessName}
         </Link>
       </div>
-      <nav className="flex flex-col gap-1 p-4">
+      <nav className="flex flex-col gap-0.5 p-3 flex-1">
         {NAV_ITEMS.map((item) => {
           const fullHref = `${basePath}${item.href}`;
           const isActive = pathname === fullHref || (item.href === '' && pathname === basePath);
@@ -42,13 +42,13 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
               key={item.href}
               href={fullHref}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                 isActive
                   ? 'bg-primary/10 text-primary'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-3.5 w-3.5" />
               {item.label}
             </Link>
           );

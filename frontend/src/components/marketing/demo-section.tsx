@@ -4,18 +4,21 @@ export function DemoSection({ headline, messages }: DemoContent) {
   return (
     <section className="border-t border-zinc-800 bg-black py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          {headline}
-        </h2>
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            {headline}
+          </h2>
+        </div>
 
         <div className="mx-auto mt-16 max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-6">
-          <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+          <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
             <div className="flex gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
-              <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
-              <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+              <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+              <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
+              <div className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
             </div>
-            <span className="ml-2 text-xs text-zinc-500">AI Receptionist</span>
+            <span className="text-xs font-medium text-zinc-400">AI Receptionist · Live</span>
+            <span className="ml-auto h-2 w-2 rounded-full bg-green-500" />
           </div>
 
           <div className="mt-4 space-y-4">

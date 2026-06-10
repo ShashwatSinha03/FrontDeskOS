@@ -5,16 +5,11 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetchKnowledgeRequests, fetchPublicBusiness } from '@/lib/api';
 import { DataTable, Column } from '@/components/admin/data-table';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge, statusLevel } from '@/components/design/status-badge';
+import { PageHeader } from '@/components/design/page-header';
 import { LearningInboxDetail } from '@/components/admin/learning-inbox-detail';
 import { KnowledgeRequest, KnowledgeRequestStatus } from '@/types';
 import { CustomerLink } from '@/components/admin/customer-link';
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  approved: 'bg-green-100 text-green-700',
-  rejected: 'bg-gray-100 text-gray-700',
-};
 
 const STATUS_TABS: { label: string; value: KnowledgeRequestStatus | 'all' }[] = [
   { label: 'All', value: 'all' },
@@ -82,9 +77,9 @@ export default function LearningInboxPage() {
       key: 'status',
       label: 'Status',
       render: (v: string) => (
-        <Badge className={STATUS_COLORS[v] || ''} variant="outline">
+        <StatusBadge level={statusLevel(v)}>
           {v}
-        </Badge>
+        </StatusBadge>
       ),
     },
     {
@@ -102,15 +97,13 @@ export default function LearningInboxPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Learning Inbox</h1>
-        <p className="text-muted-foreground mt-1">
-          Review and approve answers to questions the AI couldn't answer.
-        </p>
-      </div>
+      <PageHeader
+        title="Learning Inbox"
+        description="Review and approve answers to questions the AI couldn't answer."
+      />
 
       {/* Status tabs */}
-      <div className="flex gap-1 border-b">
+      <div className="flex gap-0 border-b">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}

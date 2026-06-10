@@ -1,66 +1,130 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '' },
   { label: 'Services', href: '/services' },
-  { label: 'Book Appointment', href: '/book' },
   { label: 'Contact', href: '/contact' },
 ];
 
 export function Header({ businessName, slug }: { businessName: string; slug: string }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const isActive = (href: string) => {
+    if (href === '') return pathname === `/${slug}`;
+    return pathname.startsWith(`/${slug}${href}`);
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header
+      className={cn(
+        'sticky top-0 z-50 border-b transition-all duration-300',
+        scrolled
+          ? 'bg-background/95 backdrop-blur-md border-border'
+          : 'bg-background border-transparent'
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href={`/${slug}`} className="text-xl font-bold tracking-tight">
+        <Link href={`/${slug}`} className="text-lg font-semibold tracking-tight">
           {businessName}
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-1">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={`/${slug}${item.href}`}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={cn(
+                'px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                isActive(item.href)
+                  ? 'text-foreground bg-muted'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <div className="ml-4">
+            <Link href={`/${slug}/book`}>
+              <Button size="sm">Book Appointment</Button>
+            </Link>
+          </div>
+        </nav>
+
+        <div className="flex items-center gap-3 md:hidden">
+          <Link href={`/${slug}/book`}>
+            <Button size="sm">Book</Button>
+          </Link>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="relative h-9 w-9 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
+            aria-label="Toggle menu"
+          >
+            <div className="relative h-5 w-5">
+              <span
+                className={cn(
+                  'absolute left-0 top-0.5 h-px w-full bg-foreground transition-all duration-300',
+                  mobileOpen && 'top-2 rotate-45'
+                )}
+              />
+              <span
+                className={cn(
+                  'absolute left-0 top-2.5 h-px w-full bg-foreground transition-all duration-300',
+                  mobileOpen && 'opacity-0'
+                )}
+              />
+              <span
+                className={cn(
+                  'absolute left-0 top-[calc(20px-4.5px)] h-px w-full bg-foreground transition-all duration-300',
+                  mobileOpen && 'top-2 -rotate-45'
+                )}
+              />
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          'md:hidden overflow-hidden transition-all duration-300 ease-in-out',
+          mobileOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+        )}
+      >
+        <nav className="flex flex-col gap-1 border-t px-4 py-3">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={`/${slug}${item.href}`}
+              className={cn(
+                'px-3 py-2.5 text-sm font-medium rounded-md transition-colors',
+                isActive(item.href)
+                  ? 'text-foreground bg-muted'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              )}
             >
               {item.label}
             </Link>
           ))}
         </nav>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
       </div>
-
-      {mobileOpen && (
-        <div className="md:hidden border-t">
-          <nav className="flex flex-col px-4 py-4 gap-3">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={`/${slug}${item.href}`}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
-                onClick={() => setMobileOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
     </header>
   );
 }

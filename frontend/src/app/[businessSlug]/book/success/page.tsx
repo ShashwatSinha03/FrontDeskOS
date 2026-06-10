@@ -39,8 +39,13 @@ export default function BookingSuccessPage() {
   if (!data) {
     return (
       <div className="max-w-lg mx-auto py-16 px-4 text-center space-y-4">
-        <h1 className="text-2xl font-bold">Appointment Confirmed</h1>
-        <p className="text-muted-foreground">Your appointment was booked successfully.</p>
+        <div className="flex justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-muted/30">
+            <CheckCircle className="h-6 w-6 text-green-500" />
+          </div>
+        </div>
+        <h1 className="text-xl font-semibold">Appointment Confirmed</h1>
+        <p className="text-sm text-muted-foreground">Your appointment was booked successfully.</p>
         <Link href={`/${slug}`}>
           <Button>Back to Home</Button>
         </Link>
@@ -56,46 +61,52 @@ export default function BookingSuccessPage() {
 
   return (
     <div className="max-w-lg mx-auto py-12 px-4 space-y-8">
-      <div className="text-center space-y-3">
-        <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-        <h1 className="text-3xl font-bold">Appointment Confirmed!</h1>
-        <p className="text-muted-foreground">
-          Your appointment has been booked successfully. A confirmation will be sent to {data.customerEmail}.
-        </p>
+      <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border bg-muted/30">
+            <CheckCircle className="h-7 w-7 text-green-500" />
+          </div>
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Appointment Confirmed!</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            A confirmation will be sent to {data.customerEmail}.
+          </p>
+        </div>
       </div>
 
-      <Card>
-        <CardContent className="space-y-4 pt-6">
+      <Card className="border">
+        <CardContent className="divide-y p-0">
           {data.serviceName && (
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
+            <div className="flex items-center gap-3 px-5 py-4">
+              <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
               <div>
-                <p className="font-medium">{data.serviceName}</p>
+                <p className="text-sm font-medium">{data.serviceName}</p>
                 {data.serviceDuration && (
-                  <p className="text-sm text-muted-foreground">{data.serviceDuration} minutes</p>
+                  <p className="text-xs text-muted-foreground">{data.serviceDuration} minutes</p>
                 )}
               </div>
             </div>
           )}
-          <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
-            <p className="font-medium">{dateStr}</p>
+          <div className="flex items-center gap-3 px-5 py-4">
+            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+            <p className="text-sm font-medium">{dateStr}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Clock className="h-5 w-5 text-muted-foreground shrink-0" />
-            <p className="font-medium">{timeStr}</p>
+          <div className="flex items-center gap-3 px-5 py-4">
+            <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+            <p className="text-sm font-medium">{timeStr}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <User className="h-5 w-5 text-muted-foreground shrink-0" />
+          <div className="flex items-center gap-3 px-5 py-4">
+            <User className="h-4 w-4 text-muted-foreground shrink-0" />
             <div>
-              <p className="font-medium">{data.customerName}</p>
-              <p className="text-sm text-muted-foreground">{data.customerEmail} · {data.customerPhone}</p>
+              <p className="text-sm font-medium">{data.customerName}</p>
+              <p className="text-xs text-muted-foreground">{data.customerEmail} &middot; {data.customerPhone}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5">
         <a href={googleCalUrl} target="_blank" rel="noopener noreferrer">
           <Button variant="outline" className="w-full">Add to Google Calendar</Button>
         </a>

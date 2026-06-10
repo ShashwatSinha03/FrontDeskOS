@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Bot, Calendar, Clock, Sparkles, Send, MessageCircle } from 'lucide-react';
+import { Bot, Calendar, Clock, Sparkles, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useChat } from '@/contexts/chat-context';
+import { cn } from '@/lib/utils';
 
 const QUICK_ACTIONS = [
   { label: 'Book Appointment', message: 'I\'d like to book an appointment' },
@@ -16,19 +17,29 @@ const FEATURES = [
   {
     icon: Sparkles,
     title: 'AI-Powered Answers',
-    description: 'Get instant, intelligent responses to all your questions about our services, hours, and more.',
+    description: 'Instant, intelligent responses to your questions.',
   },
   {
     icon: Calendar,
     title: 'Instant Booking',
-    description: 'Schedule your appointment right here in the chat without waiting on hold.',
+    description: 'Schedule your appointment right in the chat.',
   },
   {
     icon: Clock,
     title: '24/7 Availability',
-    description: 'Our AI assistant is here to help you anytime, day or night.',
+    description: 'Help whenever you need it, day or night.',
   },
 ];
+
+function TypingIndicator() {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: '0ms' }} />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: '150ms' }} />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: '300ms' }} />
+    </span>
+  );
+}
 
 export function AiAssistant() {
   const { messages, sendMessage, sending, sessionReady, businessName, setIsOpen: setChatOpen } = useChat();
@@ -55,49 +66,40 @@ export function AiAssistant() {
     }
   };
 
-  const handleQuickAction = (message: string) => {
-    setInput(message);
-    if (!showChat) setShowChat(true);
-  };
-
   const handleSendQuickAction = async (message: string) => {
     if (!showChat) setShowChat(true);
     await sendMessage(message);
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted/30 py-20">
+    <section className="border-t py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-            <Bot className="h-4 w-4" />
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
+            <Bot className="h-3.5 w-3.5" />
             AI Assistant
           </div>
-          <h2 className="text-4xl font-bold tracking-tight">
-            Questions?{' '}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Ask Away.
-            </span>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Questions? Ask Away.
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Get instant answers, book appointments, and learn more about {businessName} — all without picking up the phone.
+          <p className="mt-3 text-base text-muted-foreground">
+            Get instant answers, book appointments, and learn more about {businessName} &mdash; all without picking up the phone.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {FEATURES.map((feature, i) => {
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          {FEATURES.map((feature) => {
             const Icon = feature.icon;
             return (
               <div
                 key={feature.title}
-                className="group relative rounded-2xl border bg-card p-6 transition-all hover:shadow-lg hover:-translate-y-0.5"
-                style={{ animation: `fadeInUp 0.6s ease-out ${i * 0.15}s both` }}
+                className="rounded-lg border bg-card p-5"
               >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon className="h-6 w-6" />
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border bg-background">
+                  <Icon className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold">{feature.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="text-sm font-semibold">{feature.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{feature.description}</p>
               </div>
             );
           })}
@@ -110,7 +112,7 @@ export function AiAssistant() {
                 key={qa.label}
                 variant="outline"
                 size="sm"
-                className="rounded-full transition-all hover:bg-primary hover:text-primary-foreground"
+                className="rounded-full"
                 onClick={() => handleSendQuickAction(qa.message)}
                 disabled={sending || !sessionReady}
               >
@@ -121,16 +123,16 @@ export function AiAssistant() {
         </div>
 
         <div className="mx-auto mt-12 max-w-2xl">
-          <div className="rounded-2xl border bg-card shadow-sm">
+          <div className="rounded-lg border bg-card">
             <div
-              className="flex cursor-pointer items-center justify-between border-b px-6 py-4 transition-colors hover:bg-muted/50"
+              className="flex cursor-pointer items-center justify-between border-b px-5 py-3.5 transition-colors hover:bg-muted/30"
               onClick={() => setShowChat(!showChat)}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                  <MessageCircle className="h-4 w-4 text-primary" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-full border bg-background">
+                  <span className="text-[10px] font-semibold">{businessName.charAt(0)}</span>
                 </div>
-                <span className="font-medium">Chat with {businessName}</span>
+                <span className="text-sm font-medium">Chat with {businessName}</span>
               </div>
               <div className="flex items-center gap-2">
                 {messages.length > 1 && (
@@ -139,7 +141,10 @@ export function AiAssistant() {
                   </span>
                 )}
                 <svg
-                  className={`h-5 w-5 text-muted-foreground transition-transform ${showChat ? 'rotate-180' : ''}`}
+                  className={cn(
+                    'h-4 w-4 text-muted-foreground transition-transform duration-200',
+                    showChat && 'rotate-180'
+                  )}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -151,19 +156,22 @@ export function AiAssistant() {
 
             {showChat && (
               <>
-                <div className="h-72 overflow-y-auto px-6 py-4 space-y-4">
-                  {messages.map((msg, i) => (
+                <div className="h-72 overflow-y-auto px-5 py-4 space-y-3">
+                  {messages.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`flex ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'}`}
-                      style={{ animation: i > 0 ? `fadeIn 0.3s ease-out both` : undefined }}
+                      className={cn(
+                        'flex',
+                        msg.sender === 'customer' ? 'justify-end' : 'justify-start'
+                      )}
                     >
                       <div
-                        className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                        className={cn(
+                          'max-w-[80%] rounded-lg px-3.5 py-2 text-sm leading-relaxed',
                           msg.sender === 'customer'
-                            ? 'bg-primary text-primary-foreground rounded-br-sm'
-                            : 'bg-muted text-foreground rounded-bl-sm'
-                        }`}
+                            ? 'bg-foreground text-background'
+                            : 'bg-muted text-foreground'
+                        )}
                       >
                         {msg.content}
                       </div>
@@ -171,19 +179,15 @@ export function AiAssistant() {
                   ))}
                   {sending && (
                     <div className="flex justify-start">
-                      <div className="max-w-[80%] rounded-2xl rounded-bl-sm bg-muted px-4 py-2.5 text-sm text-muted-foreground">
-                        <span className="inline-flex gap-1">
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-current" style={{ animationDelay: '0ms' }} />
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-current" style={{ animationDelay: '150ms' }} />
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-current" style={{ animationDelay: '300ms' }} />
-                        </span>
+                      <div className="max-w-[80%] rounded-lg bg-muted px-3.5 py-2.5 text-sm">
+                        <TypingIndicator />
                       </div>
                     </div>
                   )}
                   <div ref={messagesEndRef} />
                 </div>
 
-                <div className="border-t px-6 py-4">
+                <div className="border-t px-5 py-3.5">
                   <div className="flex items-center gap-2">
                     <input
                       value={input}
@@ -192,11 +196,11 @@ export function AiAssistant() {
                       placeholder="Type your message..."
                       maxLength={1000}
                       disabled={sending || !sessionReady}
-                      className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                      className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                     />
                     <Button
                       size="icon"
-                      className="h-10 w-10 shrink-0 rounded-xl"
+                      className="h-9 w-9 shrink-0 rounded-lg"
                       onClick={handleSend}
                       disabled={!input.trim() || sending || !sessionReady}
                     >
@@ -205,7 +209,7 @@ export function AiAssistant() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-10 w-10 shrink-0 rounded-xl"
+                      className="h-9 w-9 shrink-0 rounded-lg"
                       onClick={() => setChatOpen(true)}
                       title="Open full chat"
                     >
@@ -220,7 +224,6 @@ export function AiAssistant() {
           </div>
         </div>
       </div>
-
     </section>
   );
 }

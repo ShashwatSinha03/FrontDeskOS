@@ -1,15 +1,71 @@
+import Link from 'next/link';
+import { Mail, Phone, MapPin } from 'lucide-react';
+
+const NAV_LINKS = [
+  { label: 'Home', href: '' },
+  { label: 'Services', href: '/services' },
+  { label: 'Book Appointment', href: '/book' },
+  { label: 'Contact', href: '/contact' },
+];
+
+const LEGAL_LINKS = [
+  { label: 'Privacy Policy', href: '#' },
+  { label: 'Terms of Service', href: '#' },
+];
+
 export function Footer({ businessName }: { businessName: string }) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t bg-muted/40 py-8">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="text-sm text-muted-foreground">
+    <footer className="border-t bg-muted/30">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="lg:col-span-2">
+            <h3 className="text-lg font-semibold tracking-tight">{businessName}</h3>
+            <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+              Professional care tailored to you. Schedule your visit and experience the difference.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold mb-3">Navigation</h4>
+            <ul className="space-y-2">
+              {NAV_LINKS.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold mb-3">Legal</h4>
+            <ul className="space-y-2">
+              {LEGAL_LINKS.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
             &copy; {currentYear} {businessName}. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Powered by FrontDeskOS
+            Powered by <span className="font-medium">FrontDeskOS</span>
           </p>
         </div>
       </div>
