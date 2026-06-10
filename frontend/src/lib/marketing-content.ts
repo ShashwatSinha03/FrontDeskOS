@@ -190,12 +190,7 @@ export const defaultContent: MarketingContent = {
       'FrontDeskOS acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.\n\nWhile your staff focuses on serving customers, FrontDeskOS makes sure no inquiry gets missed.',
     primaryCta: {
       label: 'Book a Demo',
-      href: '#cta',
-      mailto: {
-        to: 'sinhashashwat21@gmail.com',
-        subject: 'FrontDeskOS Demo Request',
-        body: 'Hi Shashwat,\n\nI\'d like to learn more about FrontDeskOS for my business.\n\nBusiness Name:\nIndustry:\nMonthly Customer Inquiries:\n\nThanks.',
-      },
+      href: 'https://calendly.com/sinhashashwat21/30min',
     },
     secondaryActions: {
       email: 'sinhashashwat21@gmail.com',
