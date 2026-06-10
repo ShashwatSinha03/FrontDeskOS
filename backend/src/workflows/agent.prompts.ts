@@ -120,7 +120,7 @@ INTENT CATEGORIES:
 - "reschedule"     → Wants to change the time/date of an existing appointment
 - "cancellation"   → Wants to cancel an existing appointment
 - "lead_capture"   → Interested but not ready to book, wants a callback or follow-up, or providing name/phone/email when the conversation context is about interest/lead (NOT booking)
-- "escalation"     → Message is urgent, distressed, contains these keywords: [${escalationKeywords}], or complaint
+- "escalation"     → Message is urgent, distressed, mentions pain/emergency/infection, OR mentions any of these keywords: [${escalationKeywords}], OR mentions: refund, complaint, legal, lawsuit, attorney, lawyer, chargeback, negligence, sue, malpractice, damage, compensation, bad review, BBB
 - "human_request"  → Explicitly asks to speak to a human, receptionist, or the owner
 - "unknown"        → None of the above, or cannot determine intent
 
@@ -357,7 +357,8 @@ TASK: Acknowledge the customer's concern and let them know the team will reach o
 - Be empathetic and calm.
 - Do NOT try to resolve the underlying issue yourself.
 - If they mention severe pain, emergency, bleeding, infection, swelling: urge them to contact the clinic immediately for urgent care.
-- If they mention refund disputes or legal threats: acknowledge and flag for the team without engaging.
+- If they mention refund disputes, billing complaints, or chargebacks: acknowledge the concern and assure them the billing team will review.
+- If they mention legal threats, lawsuits, attorneys, malpractice, or negligence: be extra careful — acknowledge, do NOT admit fault or promise outcomes, simply flag for the team.
 - If they asked to speak to a human: "Of course! I've notified our team and someone will be in touch very soon."
 - Do NOT promise a specific timeframe unless you know it.
 - Keep it short — 1 to 2 warm, reassuring sentences.

@@ -21,8 +21,23 @@ import {
 } from '../repositories';
 import { recoveryService } from './recovery';
 import { conversationAgent } from '../workflows/agent.graph';
-import { ChannelType, Customer, Conversation, Message, AgentResult } from '../types';
+import { ChannelType, Customer, Conversation, Message, AgentResult, ConversationIntent, CustomerLifecycleState } from '../types';
 import pool from '../config/db';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Internal type for the agent graph output
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface AgentStateOutput {
+  intent: ConversationIntent;
+  intentConfidence: number;
+  reply: string;
+  updatedLifecycleState?: CustomerLifecycleState;
+  escalationId?: string;
+  appointmentId?: string;
+  knowledgeRequestId?: string;
+  metadata: Record<string, any>;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public Input / Output Interfaces
@@ -121,14 +136,29 @@ export class ChatService {
 
     // ── 6. Invoke the LangGraph Conversation Agent ───────────────────────────
     const t0 = Date.now();
-    const agentOutput = await conversationAgent.invoke({
-      userMessage: input.content,
-      customer,
-      conversation,
-      business,
-      services,
-      history: history.slice(0, -1), // exclude the message we just inserted
-    });
+    let agentOutput: AgentStateOutput;
+    try {
+      agentOutput = await conversationAgent.invoke({
+        userMessage: input.content,
+        customer,
+        conversation,
+        business,
+        services,
+        history: history.slice(0, -1), // exclude the message we just inserted
+      });
+    } catch (err) {
+      console.error('❌ Graph invocation crashed — returning safe fallback:', err);
+      agentOutput = {
+        intent: 'unknown' as ConversationIntent,
+        intentConfidence: 0,
+        reply: "I'm having a little trouble processing that request right now. Could you try rephrasing it? If needed, I can also connect you with the clinic team.",
+        updatedLifecycleState: undefined,
+        escalationId: undefined,
+        appointmentId: undefined,
+        knowledgeRequestId: undefined,
+        metadata: { handlerNode: 'graphFallback' as const, graphError: String(err) },
+      };
+    }
 
     const totalMs = Date.now() - t0;
     console.log(`✅ Agent invocation complete in ${totalMs}ms | Intent: ${agentOutput.intent}`);

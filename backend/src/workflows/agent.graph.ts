@@ -46,9 +46,10 @@ import {
 /**
  * Reads the classified intent from state and returns the name of the target handler node.
  * This is the conditional edge from detectIntentNode to the appropriate handler.
+ * Falls back to 'unknownNode' for any unmapped or null intent so the graph never crashes.
  */
 function routeByIntent(state: AgentState): string {
-  const nodeName = INTENT_TO_NODE[state.intent];
+  const nodeName = INTENT_TO_NODE[state.intent] || 'unknownNode';
   console.log(`🔀 Routing intent "${state.intent}" → ${nodeName}`);
   return nodeName;
 }

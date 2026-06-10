@@ -45,6 +45,40 @@ import {
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPER: Safely parse LLM JSON output
 // ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Filters out non-substantive messages so they never become knowledge requests.
+ * Only messages that look like genuine questions or requests for business
+ * information should produce learning-inbox entries.
+ */
+function isGenuineQuestion(message: string): boolean {
+  const trimmed = message.trim().toLowerCase();
+  // Pure greetings and pleasantries
+  const noisePatterns = [
+    /^(hi|hello|hey|yo|sup|howdy)\b/i,
+    /^(good\s*(morning|afternoon|evening|day))\b/i,
+    /^(thanks|thank\s*you|thx|ty)\b/i,
+    /^(bye|goodbye|cya|see\s*ya|later)\b/i,
+    /^(ok|okay|k|kk|sure|alright|fine|got\s*it)\b/i,
+    /^(yes|yeah|yep|yup|no|nope|nah)\b/i,
+    /^(lol|lmao|rofl|haha)\b/i,
+    /^(what'?s\s*up|how('?s| is) it going|how are you)\b/i,
+    /^(nice|great|awesome|perfect|cool|sounds\s*good)\b/i,
+    /^(idk|i\s*don'?t\s*know|i\s*guess)\b/i,
+    /^[.!?\\s]{0,5}$/,
+    // Pure numbers, single words without question marks
+    /^\d{1,3}$/,
+  ];
+  for (const pattern of noisePatterns) {
+    if (pattern.test(trimmed)) return false;
+  }
+  // If it contains a question mark or wh-word, it's likely genuine
+  if (/[?]/.test(trimmed)) return true;
+  if (/^(what|when|where|why|how|who|which|do|does|can|could|would|will|is|are|have|has|did)\b/i.test(trimmed)) return true;
+  // Very short messages are unlikely to be substantive questions
+  if (trimmed.length < 6) return false;
+  return true;
+}
 function safeParseJson<T>(text: string): T | null {
   try {
     // Strip markdown code fences if the LLM wraps output in ```json ... ```
@@ -149,10 +183,15 @@ export async function informationNode(state: AgentState): Promise<Partial<AgentS
     state.userMessage
   );
 
-  const reply = await provider.chat([
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: state.userMessage },
-  ], { temperature: 0.2 });
+  let reply = "Let me find that information for you. Could you please give me a moment?";
+  try {
+    reply = await provider.chat([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: state.userMessage },
+    ], { temperature: 0.2 });
+  } catch (err) {
+    console.error('❌ Information node LLM error:', err);
+  }
 
   return {
     reply,
@@ -174,10 +213,15 @@ export async function pricingNode(state: AgentState): Promise<Partial<AgentState
     state.userMessage
   );
 
-  const reply = await provider.chat([
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: state.userMessage },
-  ], { temperature: 0.1 });
+  let reply = "Let me look up our pricing for you. One moment please.";
+  try {
+    reply = await provider.chat([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: state.userMessage },
+    ], { temperature: 0.1 });
+  } catch (err) {
+    console.error('❌ Pricing node LLM error:', err);
+  }
 
   return {
     reply,
@@ -470,10 +514,15 @@ export async function escalationNode(state: AgentState): Promise<Partial<AgentSt
     reason
   );
 
-  const reply = await provider.chat([
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: state.userMessage },
-  ], { temperature: 0.2 });
+  let reply = "I understand this is important. I've flagged this for our team and someone will follow up shortly.";
+  try {
+    reply = await provider.chat([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: state.userMessage },
+    ], { temperature: 0.2 });
+  } catch (err) {
+    console.error('❌ Escalation node LLM error:', err);
+  }
 
   return {
     reply,
@@ -551,19 +600,21 @@ export async function unknownNode(state: AgentState): Promise<Partial<AgentState
     console.error('❌ Unknown node LLM error:', err);
   }
 
-  // Log to the Learning Inbox for owner review
+  // Log to the Learning Inbox for owner review — only for genuine questions
   let knowledgeRequestId: string | undefined;
-  try {
-    const kr = await knowledgeRequestRepository.create({
-      businessId: state.business.id,
-      conversationId: state.conversation.id,
-      unansweredQuestion: state.userMessage,
-      suggestedAnswer,
-    });
-    knowledgeRequestId = kr.id;
-    console.log(`📚 Knowledge request created: ${knowledgeRequestId}`);
-  } catch (err) {
-    console.error('❌ Unknown node: Error creating knowledge request:', err);
+  if (isGenuineQuestion(state.userMessage)) {
+    try {
+      const kr = await knowledgeRequestRepository.create({
+        businessId: state.business.id,
+        conversationId: state.conversation.id,
+        unansweredQuestion: state.userMessage,
+        suggestedAnswer,
+      });
+      knowledgeRequestId = kr.id;
+      console.log(`📚 Knowledge request created: ${knowledgeRequestId}`);
+    } catch (err) {
+      console.error('❌ Unknown node: Error creating knowledge request:', err);
+    }
   }
 
   return {

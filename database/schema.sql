@@ -157,7 +157,8 @@ CREATE TABLE IF NOT EXISTS customer_sessions (
   customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
   business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
   last_active_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Customer Channels Mapping Table (Consolidates multiple channels to one customer record)
