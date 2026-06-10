@@ -4,75 +4,22 @@ import { useState, useRef, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X } from 'lucide-react';
-import { sendChatMessage } from '@/lib/api';
-import { ensureSession } from '@/lib/session';
+import { useChat } from '@/contexts/chat-context';
 
-interface ChatMessage {
-  id: string;
-  content: string;
-  sender: 'customer' | 'agent';
-}
-
-export function ChatWidget({ businessId, businessName }: { businessId: string; businessName: string }) {
-  const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: '0', content: `Hi! Welcome to ${businessName}. How can we help you today?`, sender: 'agent' },
-  ]);
+export function ChatWidget() {
+  const { messages, isOpen, setIsOpen, sendMessage, sending, sessionReady, businessName } = useChat();
   const [input, setInput] = useState('');
-  const [sending, setSending] = useState(false);
-  const [sessionReady, setSessionReady] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    ensureSession(businessId).then(() => setSessionReady(true)).catch(() => setSessionReady(true));
-  }, [businessId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     const content = input.trim();
     if (!content || sending) return;
     setInput('');
-    setSending(true);
-
-    const userMsg: ChatMessage = { id: crypto.randomUUID(), content, sender: 'customer' };
-    setMessages((prev) => [...prev, userMsg]);
-
-    try {
-      const sessionId = await ensureSession(businessId);
-      const res = await sendChatMessage({
-        businessId,
-        channelType: 'web_chat',
-        channelIdentity: sessionId,
-        content,
-        sessionId,
-      });
-
-      if (res.success && res.data?.replyMessage) {
-        const agentMsg: ChatMessage = {
-          id: res.data.replyMessage.id,
-          content: res.data.replyMessage.content,
-          sender: 'agent',
-        };
-        setMessages((prev) => [...prev, agentMsg]);
-      } else {
-        setMessages((prev) => [...prev, {
-          id: crypto.randomUUID(),
-          content: "Sorry, I'm having trouble connecting. Please try again later.",
-          sender: 'agent',
-        }]);
-      }
-    } catch {
-      setMessages((prev) => [...prev, {
-        id: crypto.randomUUID(),
-        content: "Sorry, something went wrong. Please try again.",
-        sender: 'agent',
-      }]);
-    } finally {
-      setSending(false);
-    }
+    sendMessage(content);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -83,14 +30,14 @@ export function ChatWidget({ businessId, businessName }: { businessId: string; b
   };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button
           size="icon"
           className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
           aria-label="Open chat"
         >
-          {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+          {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">

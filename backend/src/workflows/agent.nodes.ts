@@ -38,6 +38,7 @@ import {
   buildEscalationPrompt,
   buildGreetingPrompt,
   buildUnknownPrompt,
+  buildLeadCapturePrompt,
   INTENT_TO_NODE,
 } from './agent.prompts';
 
@@ -262,6 +263,9 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
       serviceId?: string;
       date?: string;
       time?: string;
+      customerName?: string;
+      customerEmail?: string;
+      customerPhone?: string;
     }
 
     const parsed = safeParseJson<BookingResult>(rawOutput);
@@ -272,6 +276,15 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
       if (!isNaN(appointmentTime.getTime()) && appointmentTime > new Date()) {
         try {
           const serviceId = parsed.serviceId || null;
+
+          if (parsed.customerName || parsed.customerEmail || parsed.customerPhone) {
+            await customerRepository.updateProfile(state.customer.id, {
+              name: parsed.customerName,
+              email: parsed.customerEmail,
+              phone: parsed.customerPhone,
+            }).catch(err => console.error('❌ BookingNode: Error updating customer profile:', err));
+          }
+
           const appointment = await appointmentRepository.create({
             customerId: state.customer.id,
             businessId: state.business.id,
@@ -553,6 +566,72 @@ export async function unknownNode(state: AgentState): Promise<Partial<AgentState
       handlerNode: 'unknownNode',
       handlerMs: Date.now() - t0,
       suggestedAnswer,
+    },
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NODE 10: leadCaptureNode
+// ─────────────────────────────────────────────────────────────────────────────
+export async function leadCaptureNode(state: AgentState): Promise<Partial<AgentState>> {
+  const t0 = Date.now();
+  const provider = LLMProviderFactory.getProvider();
+
+  const systemPrompt = buildLeadCapturePrompt(
+    state.business,
+    state.history,
+    state.userMessage
+  );
+
+  const customerInfo = `Already collected — Name: ${state.customer.name || 'not provided'}, Email: ${state.customer.email || 'not provided'}, Phone: ${state.customer.phone || 'not provided'}`;
+
+  let reply = "No problem at all. If you'd like, I can have the clinic reach out with more information. What's the best way to contact you?";
+  let updatedName: string | undefined;
+  let updatedEmail: string | undefined;
+  let updatedPhone: string | undefined;
+
+  try {
+    const rawOutput = await provider.chat([
+      { role: 'system', content: `${systemPrompt}\n\n${customerInfo}` },
+      { role: 'user', content: state.userMessage },
+    ], { temperature: 0.3, responseFormat: 'json' });
+
+    interface LeadCaptureResult {
+      reply: string;
+      name?: string;
+      email?: string;
+      phone?: string;
+      allCollected: boolean;
+    }
+
+    const parsed = safeParseJson<LeadCaptureResult>(rawOutput);
+    if (parsed?.reply) reply = parsed.reply;
+    if (parsed?.name) updatedName = parsed.name;
+    if (parsed?.email) updatedEmail = parsed.email;
+    if (parsed?.phone) updatedPhone = parsed.phone;
+  } catch (err) {
+    console.error('❌ LeadCaptureNode LLM error:', err);
+  }
+
+  if (updatedName || updatedEmail || updatedPhone) {
+    try {
+      await customerRepository.updateProfile(state.customer.id, {
+        name: updatedName,
+        email: updatedEmail,
+        phone: updatedPhone,
+      });
+      console.log(`✅ LeadCaptureNode: Customer profile updated with collected info`);
+    } catch (err) {
+      console.error('❌ LeadCaptureNode: Error updating customer profile:', err);
+    }
+  }
+
+  return {
+    reply,
+    updatedLifecycleState: (updatedName || updatedEmail || updatedPhone) ? 'Qualified' : undefined,
+    metadata: {
+      handlerNode: 'leadCaptureNode',
+      handlerMs: Date.now() - t0,
     },
   };
 }

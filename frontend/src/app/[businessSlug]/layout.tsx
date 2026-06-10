@@ -1,6 +1,7 @@
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ChatWidget } from '@/components/chat/chat-widget';
+import { ChatProvider } from '@/contexts/chat-context';
 
 async function getBusiness(slug: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -34,11 +35,13 @@ export default async function BusinessLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header businessName={business.name} slug={businessSlug} />
-      <main className="flex-1">{children}</main>
-      <Footer businessName={business.name} />
-      <ChatWidget businessId={business.id} businessName={business.name} />
-    </div>
+    <ChatProvider businessId={business.id} businessName={business.name}>
+      <div className="flex min-h-screen flex-col">
+        <Header businessName={business.name} slug={businessSlug} />
+        <main className="flex-1">{children}</main>
+        <Footer businessName={business.name} />
+        <ChatWidget />
+      </div>
+    </ChatProvider>
   );
 }

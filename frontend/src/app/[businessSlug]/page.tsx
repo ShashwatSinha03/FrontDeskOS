@@ -6,6 +6,7 @@ import { HeroSection } from '@/components/home/hero';
 import { ServicesOverview } from '@/components/home/services-overview';
 import { AboutSection } from '@/components/home/about-section';
 import { CtaBanner } from '@/components/home/cta-banner';
+import { AiAssistant } from '@/components/chat/assistant-section';
 
 export default function HomePage() {
   const params = useParams();
@@ -34,6 +35,7 @@ export default function HomePage() {
       <ServicesOverview services={business.services} slug={slug} />
       <AboutSection />
       <CtaBanner slug={slug} />
+      <AiAssistant />
     </>
   );
 }

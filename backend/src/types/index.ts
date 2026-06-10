@@ -277,6 +277,7 @@ export type ConversationIntent =
   | 'booking'
   | 'reschedule'
   | 'cancellation'
+  | 'lead_capture'
   | 'escalation'
   | 'human_request'
   | 'unknown';

@@ -36,6 +36,7 @@ import {
   escalationNode,
   greetingNode,
   unknownNode,
+  leadCaptureNode,
 } from './agent.nodes';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -67,6 +68,7 @@ const graph = new StateGraph(AgentStateAnnotation)
   .addNode('escalationNode', escalationNode)
   .addNode('greetingNode', greetingNode)
   .addNode('unknownNode', unknownNode)
+  .addNode('leadCaptureNode', leadCaptureNode)
 
   // Entry point
   .addEdge(START, 'intentDetector')
@@ -85,6 +87,7 @@ const graph = new StateGraph(AgentStateAnnotation)
       cancellationNode: 'cancellationNode',
       escalationNode: 'escalationNode',
       unknownNode: 'unknownNode',
+      leadCaptureNode: 'leadCaptureNode',
     }
   )
 
@@ -96,7 +99,8 @@ const graph = new StateGraph(AgentStateAnnotation)
   .addEdge('cancellationNode', END)
   .addEdge('escalationNode', END)
   .addEdge('greetingNode', END)
-  .addEdge('unknownNode', END);
+  .addEdge('unknownNode', END)
+  .addEdge('leadCaptureNode', END);
 
 // Compile the graph once at module load time
 export const conversationAgent = graph.compile();
