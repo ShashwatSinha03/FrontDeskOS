@@ -67,10 +67,24 @@ export interface FounderContent {
   story: string;
 }
 
+export interface CtaPrimaryAction {
+  label: string;
+  href: string;
+  mailto?: {
+    to: string;
+    subject: string;
+    body: string;
+  };
+}
+
 export interface CtaContent {
   headline: string;
   subheadline: string;
-  primaryCta: { label: string; href: string };
+  primaryCta: CtaPrimaryAction;
+  secondaryActions: {
+    email: string;
+    phone: string;
+  };
 }
 
 export interface MarketingContent {
@@ -173,7 +187,19 @@ export const defaultContent: MarketingContent = {
   cta: {
     headline: 'Stop Losing Customers After Hours.',
     subheadline:
-      'Let FrontDeskOS handle inquiries, bookings, and follow-ups while your team focuses on delivering great service.',
-    primaryCta: { label: 'Book a Demo', href: '#cta' },
+      'FrontDeskOS acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.\n\nWhile your staff focuses on serving customers, FrontDeskOS makes sure no inquiry gets missed.',
+    primaryCta: {
+      label: 'Book a Demo',
+      href: '#cta',
+      mailto: {
+        to: 'sinhashashwat21@gmail.com',
+        subject: 'FrontDeskOS Demo Request',
+        body: 'Hi Shashwat,\n\nI\'d like to learn more about FrontDeskOS for my business.\n\nBusiness Name:\nIndustry:\nMonthly Customer Inquiries:\n\nThanks.',
+      },
+    },
+    secondaryActions: {
+      email: 'sinhashashwat21@gmail.com',
+      phone: '+91 63072 34110',
+    },
   },
 };
