@@ -1,6 +1,28 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import { DemoContent } from '@/lib/marketing-content';
 
 export function DemoSection({ headline, messages }: DemoContent) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="border-t border-zinc-800 bg-black py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -10,7 +32,10 @@ export function DemoSection({ headline, messages }: DemoContent) {
           </h2>
         </div>
 
-        <div className="mx-auto mt-16 max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-6">
+        <div
+          ref={ref}
+          className="mx-auto mt-16 max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-6"
+        >
           <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
             <div className="flex gap-1.5">
               <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
@@ -22,22 +47,28 @@ export function DemoSection({ headline, messages }: DemoContent) {
           </div>
 
           <div className="mt-4 space-y-4">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.sender === 'customer' ? 'justify-start' : 'justify-end'}`}
-              >
+            {messages.map((msg, i) => {
+              const isCustomer = msg.sender === 'customer';
+              return (
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                    msg.sender === 'customer'
-                      ? 'rounded-bl-sm bg-zinc-800 text-zinc-200'
-                      : 'rounded-br-sm bg-blue-600 text-white'
-                  }`}
+                  key={i}
+                  className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}
                 >
-                  {msg.text}
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed transition-all duration-500 ${
+                      isCustomer
+                        ? 'rounded-bl-sm bg-zinc-800 text-zinc-200'
+                        : 'rounded-br-sm bg-blue-600 text-white'
+                    } ${visible ? 'translate-x-0 opacity-100' : `${isCustomer ? '-translate-x-6' : 'translate-x-6'} opacity-0`}`}
+                    style={{
+                      transitionDelay: visible ? `${i * 750}ms` : '0ms',
+                    }}
+                  >
+                    {msg.text}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
