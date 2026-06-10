@@ -85,7 +85,8 @@ export function formatHistory(messages: Message[], limit: number = 20): string {
   return visible
     .map(m => {
       const role = m.sender === 'customer' ? 'Customer' : 'Assistant';
-      return `${role}: ${m.content}`;
+      const intentTag = m.metadata?.intent ? ` [intent: ${m.metadata.intent}]` : '';
+      return `${role}:${intentTag} ${m.content}`;
     })
     .join('\n');
 }
@@ -109,20 +110,24 @@ export function buildIntentDetectionPrompt(
 You are an intent classification system for ${business.name}, a ${business.businessType} business.
 Your ONLY job is to classify the customer's latest message into exactly one intent category.
 
+IMPORTANT: Use the conversation history to understand context. If the previous assistant message had [intent: booking] and was asking for personal info, then the customer providing name/email/phone is continuing the booking flow, NOT lead_capture.
+
 INTENT CATEGORIES:
 - "greeting"       → Simple greetings, hellos, "hi", "hey", "good morning", "good afternoon", "good evening", "what's up"
 - "information"    → General questions about the business, services, opening hours, location, etc.
 - "pricing"        → Any question about costs, fees, prices, payment
-- "booking"        → Wants to book, schedule, or make a new appointment
+- "booking"        → Wants to book, schedule, or make a new appointment, OR providing name/phone/email after being asked by the assistant in a booking flow
 - "reschedule"     → Wants to change the time/date of an existing appointment
 - "cancellation"   → Wants to cancel an existing appointment
-- "lead_capture"   → Interested but not ready to book, wants more info first, wants a callback or follow-up
+- "lead_capture"   → Interested but not ready to book, wants a callback or follow-up, or providing name/phone/email when the conversation context is about interest/lead (NOT booking)
 - "escalation"     → Message is urgent, distressed, contains these keywords: [${escalationKeywords}], or complaint
 - "human_request"  → Explicitly asks to speak to a human, receptionist, or the owner
 - "unknown"        → None of the above, or cannot determine intent
 
 CONVERSATION HISTORY (for context only):
 ${formatHistory(history, 10)}
+
+CURRENT DATE: ${new Date().toISOString().slice(0, 10)}
 
 Respond ONLY with valid JSON. No explanations. No markdown. Example:
 {"intent": "booking", "confidence": 0.95, "reasoning": "Customer says 'I want to book an appointment'"}
@@ -155,6 +160,7 @@ TASK: Answer the customer's question using ONLY the approved FAQs and business c
 - If you genuinely cannot answer from the context, say: "I don't want to guess and give you incorrect information. Let me have the clinic team help with that."
 - NEVER make up information not present in the context.
 - Keep it short — 1 to 3 sentences.
+- Do NOT push booking unless the customer specifically asks to book. Let them ask for more info naturally.
 `.trim();
 }
 
@@ -178,9 +184,10 @@ TASK: Answer the pricing question using ONLY the services list above.
 - ALWAYS give price ranges (e.g. "between $80 and $150") — NEVER exact prices.
 - If a specific service is asked about and it's listed, give its range.
 - If the service isn't listed, say: "I can check that for you! Could you tell me more about what treatment you're looking for?"
-- End with an offer to book: "Would you like to schedule a consultation?"
+- Do NOT end every reply with a booking push. Wait for them to express interest first.
+- If they seem interested, a gentle "Let me know if you'd like to schedule something" is fine.
 
-Reply in 2–3 warm, professional sentences.
+Reply in 1–3 warm, natural sentences.
 `.trim();
 }
 
@@ -198,7 +205,7 @@ TASK: The customer just greeted you. Respond naturally like a warm receptionist.
 
 - Greet them back warmly — vary your response. Don't use the same opening every time.
 - Do NOT say "Welcome to ${business.name}" or introduce yourself every time.
-- Briefly mention what you can help with (appointments, ${serviceNames}).
+- Do NOT list services in your greeting. A simple offer to help is enough.
 - Ask how you can help today.
 - Do NOT push booking immediately.
 
@@ -206,8 +213,9 @@ Examples of good replies:
   "Hi! 😊 What can I help you with today?"
   "Good morning! Hope you're doing well. How can I help today?"
   "Doing great, thanks for asking 😊 What can I help you with today?"
+  "Hey there! What can I do for you?"
 
-Reply in 1–3 warm, friendly sentences. Be natural — talk like a real receptionist, not a script.
+IMPORTANT: Keep it very short — 1 to 2 sentences maximum. No service lists. No long offers. Just a warm greeting and a question.
 `.trim();
 }
 
@@ -216,7 +224,8 @@ export function buildBookingPrompt(
   services: Service[],
   history: Message[],
   userMessage: string,
-  availableSlots: string[]
+  availableSlots: string[],
+  currentDate?: string
 ): string {
   const slotsText = availableSlots.length > 0
     ? `Available slots today: ${availableSlots.join(', ')}`
@@ -242,6 +251,8 @@ ${slotsText}
 AVAILABLE SERVICE IDS (use these exact IDs):
 ${servicesList}
 
+CURRENT DATE: ${currentDate || new Date().toISOString().slice(0, 10)} (use this as reference for relative dates like "next Monday", "tomorrow", etc.)
+
 TASK: Collect booking details and help the customer book.
 
 Collect these in order: service, date, time, name, phone, email.
@@ -255,12 +266,12 @@ Use this JSON structure:
 - If customer has confirmed date, time, service, name, phone, and email: {"action": "book", "reply": "confirmation message", "serviceId": "exact-uuid-from-list", "date": "YYYY-MM-DD", "time": "HH:mm", "customerName": "full name", "customerEmail": "email", "customerPhone": "phone"}
 
 Rules:
-- The date must be in YYYY-MM-DD format.
+- The date must be in YYYY-MM-DD format, using the CURRENT DATE as reference. For example, "next Monday" from CURRENT DATE would be June 15, 2026.
 - The time must be in HH:mm format (24-hour).
-- Only set action to "book" when the customer has explicitly confirmed a specific date AND time AND you have their name, phone, and email.
-- Use "collect_info" to ask for whatever is still missing.
-- When all details are collected, confirm everything clearly before booking:
-  "Perfect. I have:\n\n• [Service]\n• [Date] at [Time]\n• [Name]\n• [Phone]\n• [Email]\n\nWould you like me to confirm this appointment?"
+- Set action to "book" when ALL of: customer has specified a date AND time AND service, AND you have their name, phone, and email. Do NOT wait for a separate confirmation message.
+- If the customer provided all details including name/phone/email in their message, go ahead and book directly.
+- Use "collect_info" to ask for whatever is still missing — one field at a time.
+- When booking, confirm clearly: "Perfect, your [Service] appointment is booked for [Date] at [Time]."
 - NEVER confirm a booking without all required details.
 `.trim();
 }
@@ -269,7 +280,8 @@ export function buildReschedulePrompt(
   business: Business,
   services: Service[],
   history: Message[],
-  userMessage: string
+  userMessage: string,
+  currentDate?: string
 ): string {
   return `
 ${GLOBAL_GUARDRAILS}
@@ -280,6 +292,8 @@ CONVERSATION HISTORY:
 ${formatHistory(history)}
 
 CURRENT CUSTOMER MESSAGE: "${userMessage}"
+
+CURRENT DATE: ${currentDate || new Date().toISOString().slice(0, 10)} (use this as reference for relative dates)
 
 TASK: Help the customer reschedule their existing appointment.
 
@@ -386,8 +400,17 @@ Respond in JSON:
 export function buildLeadCapturePrompt(
   business: Business,
   history: Message[],
-  userMessage: string
+  userMessage: string,
+  existingName?: string,
+  existingEmail?: string,
+  existingPhone?: string
 ): string {
+  const collected = [
+    existingName ? `Name: ${existingName}` : null,
+    existingEmail ? `Email: ${existingEmail}` : null,
+    existingPhone ? `Phone: ${existingPhone}` : null,
+  ].filter(Boolean).join(', ') || 'None yet';
+
   return `
 ${GLOBAL_GUARDRAILS}
 
@@ -398,14 +421,27 @@ ${formatHistory(history)}
 
 CURRENT CUSTOMER MESSAGE: "${userMessage}"
 
+ALREADY COLLECTED: ${collected}
+
 TASK: The customer is interested but not ready to book. Collect their information for follow-up.
 
-- Acknowledge their interest warmly.
-- Offer to have the clinic team reach out with more information.
-- Ask for their name, phone, and email — one at a time, only what's missing.
-- Example: "No problem. If you'd like, I can have the clinic reach out with more information. What's the best phone number to contact you?"
+Only ask for what's still missing. Do NOT ask for information already collected.
+If the customer provides any missing info in their message, extract it into the JSON fields.
 
-Keep it short — 1 to 3 sentences. Ask one question at a time.
+Respond in JSON format:
+{
+  "reply": "your message to the customer",
+  "name": "extract name from current message or null",
+  "email": "extract email from current message or null",
+  "phone": "extract phone from current message or null",
+  "allCollected": true if name+email+phone are all present (check ALREADY COLLECTED + this message)
+}
+
+Rules:
+- Acknowledge their interest warmly.
+- If everything is collected, say: "Thanks! I've noted your details and the clinic will reach out to you soon."
+- Only ask for missing pieces — one at a time.
+- Keep it short — 1 to 3 sentences. Ask one question at a time.
 `.trim();
 }
 

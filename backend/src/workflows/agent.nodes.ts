@@ -244,7 +244,8 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
     state.services,
     state.history,
     state.userMessage,
-    availableSlots
+    availableSlots,
+    new Date().toISOString().slice(0, 10)
   );
 
   let rawOutput = '';
@@ -271,20 +272,25 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
     const parsed = safeParseJson<BookingResult>(rawOutput);
     if (parsed?.reply) reply = parsed.reply;
 
+    // Save any customer info provided, regardless of action
+    if (parsed?.customerName || parsed?.customerEmail || parsed?.customerPhone) {
+      try {
+        await customerRepository.updateProfile(state.customer.id, {
+          name: parsed.customerName || undefined,
+          email: parsed.customerEmail || undefined,
+          phone: parsed.customerPhone || undefined,
+        });
+        console.log(`✅ BookingNode: Customer profile updated`);
+      } catch (err) {
+        console.error('❌ BookingNode: Error updating customer profile:', err);
+      }
+    }
+
     if (parsed?.action === 'book' && parsed.date && parsed.time) {
       const appointmentTime = new Date(`${parsed.date}T${parsed.time}:00`);
       if (!isNaN(appointmentTime.getTime()) && appointmentTime > new Date()) {
         try {
           const serviceId = parsed.serviceId || null;
-
-          if (parsed.customerName || parsed.customerEmail || parsed.customerPhone) {
-            await customerRepository.updateProfile(state.customer.id, {
-              name: parsed.customerName,
-              email: parsed.customerEmail,
-              phone: parsed.customerPhone,
-            }).catch(err => console.error('❌ BookingNode: Error updating customer profile:', err));
-          }
-
           const appointment = await appointmentRepository.create({
             customerId: state.customer.id,
             businessId: state.business.id,
@@ -329,7 +335,8 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
     state.business,
     state.services,
     state.history,
-    state.userMessage
+    state.userMessage,
+    new Date().toISOString().slice(0, 10)
   );
 
   let rawOutput = '';
@@ -575,15 +582,29 @@ export async function unknownNode(state: AgentState): Promise<Partial<AgentState
 // ─────────────────────────────────────────────────────────────────────────────
 export async function leadCaptureNode(state: AgentState): Promise<Partial<AgentState>> {
   const t0 = Date.now();
+
+  const hasName = !!state.customer.name && state.customer.name !== state.customer.id;
+  const hasEmail = !!state.customer.email;
+  const hasPhone = !!state.customer.phone;
+
+  // All info already collected — confirm and done
+  if (hasName && hasEmail && hasPhone) {
+    return {
+      reply: `Thanks, ${state.customer.name}! I've noted your details and the clinic will reach out to you soon. Is there anything else I can help with?`,
+      metadata: { handlerNode: 'leadCaptureNode', handlerMs: Date.now() - t0 },
+    };
+  }
+
   const provider = LLMProviderFactory.getProvider();
 
   const systemPrompt = buildLeadCapturePrompt(
     state.business,
     state.history,
-    state.userMessage
+    state.userMessage,
+    state.customer.name && state.customer.name !== state.customer.id ? state.customer.name : undefined,
+    state.customer.email || undefined,
+    state.customer.phone || undefined
   );
-
-  const customerInfo = `Already collected — Name: ${state.customer.name || 'not provided'}, Email: ${state.customer.email || 'not provided'}, Phone: ${state.customer.phone || 'not provided'}`;
 
   let reply = "No problem at all. If you'd like, I can have the clinic reach out with more information. What's the best way to contact you?";
   let updatedName: string | undefined;
@@ -592,7 +613,7 @@ export async function leadCaptureNode(state: AgentState): Promise<Partial<AgentS
 
   try {
     const rawOutput = await provider.chat([
-      { role: 'system', content: `${systemPrompt}\n\n${customerInfo}` },
+      { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.3, responseFormat: 'json' });
 
