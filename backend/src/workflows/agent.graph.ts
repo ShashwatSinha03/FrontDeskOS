@@ -8,7 +8,8 @@
  *   START
  *     │
  *     ▼
- *  intentDetector ──(conditional)──► informationNode
+ *  intentDetector ──(conditional)──► greetingNode
+ *                                  ► informationNode
  *                                  ► pricingNode
  *                                  ► bookingNode
  *                                  ► rescheduleNode
@@ -33,6 +34,7 @@ import {
   rescheduleNode,
   cancellationNode,
   escalationNode,
+  greetingNode,
   unknownNode,
 } from './agent.nodes';
 
@@ -63,6 +65,7 @@ const graph = new StateGraph(AgentStateAnnotation)
   .addNode('rescheduleNode', rescheduleNode)
   .addNode('cancellationNode', cancellationNode)
   .addNode('escalationNode', escalationNode)
+  .addNode('greetingNode', greetingNode)
   .addNode('unknownNode', unknownNode)
 
   // Entry point
@@ -74,6 +77,7 @@ const graph = new StateGraph(AgentStateAnnotation)
     routeByIntent,
     {
       // Map node names to actual node references (LangGraph route map)
+      greetingNode: 'greetingNode',
       informationNode: 'informationNode',
       pricingNode: 'pricingNode',
       bookingNode: 'bookingNode',
@@ -91,6 +95,7 @@ const graph = new StateGraph(AgentStateAnnotation)
   .addEdge('rescheduleNode', END)
   .addEdge('cancellationNode', END)
   .addEdge('escalationNode', END)
+  .addEdge('greetingNode', END)
   .addEdge('unknownNode', END);
 
 // Compile the graph once at module load time

@@ -271,6 +271,7 @@ export interface FollowUp {
 
 /** All intents the Conversation Agent can classify and route. */
 export type ConversationIntent =
+  | 'greeting'
   | 'information'
   | 'pricing'
   | 'booking'

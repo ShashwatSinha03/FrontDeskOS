@@ -36,6 +36,7 @@ import {
   buildReschedulePrompt,
   buildCancellationPrompt,
   buildEscalationPrompt,
+  buildGreetingPrompt,
   buildUnknownPrompt,
   INTENT_TO_NODE,
 } from './agent.prompts';
@@ -467,7 +468,36 @@ export async function escalationNode(state: AgentState): Promise<Partial<AgentSt
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NODE 8: unknownNode
+// NODE 8: greetingNode
+// ─────────────────────────────────────────────────────────────────────────────
+export async function greetingNode(state: AgentState): Promise<Partial<AgentState>> {
+  const t0 = Date.now();
+  const provider = LLMProviderFactory.getProvider();
+
+  const systemPrompt = buildGreetingPrompt(
+    state.business,
+    state.services
+  );
+
+  let reply = `Hi! 👋 Welcome to ${state.business.name}.\n\nI'm here to help with appointments, treatments, pricing, and general clinic information.\n\nHow can I help you today?`;
+
+  try {
+    reply = await provider.chat([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: state.userMessage },
+    ], { temperature: 0.4 });
+  } catch (err) {
+    console.error('❌ Greeting node LLM error:', err);
+  }
+
+  return {
+    reply,
+    metadata: { handlerNode: 'greetingNode', handlerMs: Date.now() - t0 },
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NODE 9: unknownNode
 // ─────────────────────────────────────────────────────────────────────────────
 export async function unknownNode(state: AgentState): Promise<Partial<AgentState>> {
   const t0 = Date.now();
@@ -485,7 +515,7 @@ export async function unknownNode(state: AgentState): Promise<Partial<AgentState
   }
 
   let rawOutput = '';
-  let reply = "That's a great question! I'll check on that and get back to you soon. In the meantime, would you like to book an appointment?";
+  let reply = "I don't have that information right now, but I can have our team follow up with you. If you'd like, I can also help schedule an appointment or answer questions about our services.";
   let suggestedAnswer: string | null = null;
 
   try {

@@ -104,6 +104,7 @@ You are an intent classification system for ${business.name}, a ${business.busin
 Your ONLY job is to classify the customer's latest message into exactly one intent category.
 
 INTENT CATEGORIES:
+- "greeting"       → Simple greetings, hellos, "hi", "hey", "good morning", "good afternoon", "good evening", "what's up"
 - "information"    → General questions about the business, services, opening hours, location, etc.
 - "pricing"        → Any question about costs, fees, prices, payment
 - "booking"        → Wants to book, schedule, or make a new appointment
@@ -174,6 +175,28 @@ TASK: Answer the pricing question using ONLY the services list above.
 - End with an offer to book: "Would you like to schedule a consultation?"
 
 Reply in 2–3 warm, professional sentences.
+`.trim();
+}
+
+export function buildGreetingPrompt(
+  business: Business,
+  services: Service[]
+): string {
+  const serviceNames = services.map(s => s.name).join(', ');
+  return `
+${GLOBAL_GUARDRAILS}
+
+BUSINESS: ${business.name}
+
+TASK: The customer just said hello or greeted you. Welcome them warmly as a friendly receptionist would.
+
+- Greet them by the clinic name.
+- Briefly introduce yourself (friendly dental receptionist).
+- Naturally mention what you can help with: appointments, treatments, pricing, insurance, general info (${serviceNames}).
+- Ask how you can help today.
+- Do NOT push booking immediately.
+
+Reply in 2–3 warm, friendly sentences.
 `.trim();
 }
 
@@ -326,10 +349,11 @@ ${formatHistory(history)}
 CURRENT CUSTOMER MESSAGE: "${userMessage}"
 
 TASK: The customer has asked something you don't have a confirmed answer for.
-- Acknowledge their question positively.
-- Let them know you're checking: "Great question! I'll check on that and get back to you soon."
-- Also offer something helpful in the meantime: offer to book an appointment or connect them with the team.
-- Do NOT make up an answer.
+
+- Acknowledge their question warmly: "That's a great question!"
+- Say you don't have that information right now but can have the team follow up.
+- Offer to help with something else — scheduling an appointment or answering questions about services.
+- Do NOT make up an answer. Do NOT say "I'll check on that and get back to you soon" — be specific that the team will follow up.
 
 Also produce a "suggestedAnswer" — your best attempt at answering based on general knowledge of ${business.businessType} businesses.
 This will be reviewed by the owner before it goes live.
@@ -347,6 +371,7 @@ Respond in JSON:
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const INTENT_TO_NODE: Record<ConversationIntent, string> = {
+  greeting: 'greetingNode',
   information: 'informationNode',
   pricing: 'pricingNode',
   booking: 'bookingNode',
