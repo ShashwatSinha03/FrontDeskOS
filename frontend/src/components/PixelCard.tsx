@@ -157,7 +157,7 @@ interface PixelCardProps {
   colors?: string;
   noFocus?: boolean;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 interface VariantConfig {

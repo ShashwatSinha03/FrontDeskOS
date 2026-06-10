@@ -49,29 +49,27 @@ export function HomeHero({
             {subheadline}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <PixelCard
-              variant="pink"
-              className="!inline-grid !h-auto !w-auto !aspect-auto !rounded-xl !border-0"
+            <Link
+              href={primaryCta.href}
+              className="relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-white px-6 py-3 text-sm font-semibold text-black"
             >
-              <Link
-                href={primaryCta.href}
-                className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white"
-              >
-                {primaryCta.label}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </PixelCard>
-            <PixelCard
-              variant="pink"
-              className="!inline-grid !h-auto !w-auto !aspect-auto !rounded-xl !border !border-zinc-800"
+              <PixelCard
+                variant="pink"
+                className="absolute inset-0 !h-full !w-full !rounded-none !border-0"
+              />
+              <span className="relative z-10">{primaryCta.label}</span>
+              <ArrowRight className="relative z-10 h-4 w-4" />
+            </Link>
+            <Link
+              href={secondaryCta.href}
+              className="relative inline-flex items-center gap-2 overflow-hidden rounded-xl border border-zinc-800 px-6 py-3 text-sm font-medium text-zinc-300"
             >
-              <Link
-                href={secondaryCta.href}
-                className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300"
-              >
-                {secondaryCta.label}
-              </Link>
-            </PixelCard>
+              <PixelCard
+                variant="pink"
+                className="absolute inset-0 !h-full !w-full !rounded-none !border-0"
+              />
+              <span className="relative z-10">{secondaryCta.label}</span>
+            </Link>
           </div>
         </div>
 
