@@ -1,12 +1,20 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import BorderGlow from '@/components/BorderGlow';
 import { HeroContent } from '@/lib/marketing-content';
 import { ArrowRight, MessageSquare, CalendarCheck, UserCheck } from 'lucide-react';
 import LightRays from '@/components/LightRays';
 
-function FlowStep({ icon: Icon, label }: { icon: any; label: string }) {
+function FlowStep({ icon: Icon, label, visible, delay }: { icon: any; label: string; visible: boolean; delay: number }) {
   return (
-    <div className="flex items-center gap-3">
+    <div
+      className={`flex items-center gap-3 transition-all duration-500 ${
+        visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
+      }`}
+      style={{ transitionDelay: visible ? `${delay}ms` : '0ms' }}
+    >
       <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/50">
         <Icon className="h-5 w-5 text-blue-400" />
       </div>
@@ -21,6 +29,24 @@ export function HomeHero({
   primaryCta,
   secondaryCta,
 }: HeroContent) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const glowProps = {
     edgeSensitivity: 30,
     glowColor: '40 80 80' as const,
@@ -81,12 +107,22 @@ export function HomeHero({
           </div>
         </div>
 
-        <div className="mx-auto mt-20 flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-          <FlowStep icon={MessageSquare} label="Lead" />
-          <ArrowRight className="h-4 w-4 text-zinc-600" />
-          <FlowStep icon={CalendarCheck} label="Appointment" />
-          <ArrowRight className="h-4 w-4 text-zinc-600" />
-          <FlowStep icon={UserCheck} label="Customer" />
+        <div ref={ref} className="mx-auto mt-20 flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+          <FlowStep icon={MessageSquare} label="Lead" visible={visible} delay={0} />
+          <ArrowRight
+            className={`h-4 w-4 text-zinc-600 transition-all duration-500 ${
+              visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
+            }`}
+            style={{ transitionDelay: visible ? '850ms' : '0ms' }}
+          />
+          <FlowStep icon={CalendarCheck} label="Appointment" visible={visible} delay={1700} />
+          <ArrowRight
+            className={`h-4 w-4 text-zinc-600 transition-all duration-500 ${
+              visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
+            }`}
+            style={{ transitionDelay: visible ? '2550ms' : '0ms' }}
+          />
+          <FlowStep icon={UserCheck} label="Customer" visible={visible} delay={3400} />
         </div>
       </div>
     </section>
