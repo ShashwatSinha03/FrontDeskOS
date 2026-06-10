@@ -34,7 +34,7 @@ export function DemoSection({ headline, messages }: DemoContent) {
 
         <div
           ref={ref}
-          className="mx-auto mt-16 max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-6"
+          className="mx-auto mt-16 max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-6"
         >
           <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
             <div className="flex gap-1.5">
@@ -43,7 +43,7 @@ export function DemoSection({ headline, messages }: DemoContent) {
               <div className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
             </div>
             <span className="text-xs font-medium text-zinc-400">AI Receptionist · Live</span>
-            <span className="ml-auto h-2 w-2 rounded-full bg-green-500" />
+            <span className="ml-auto h-2 w-2 animate-pulse rounded-full bg-green-500" />
           </div>
 
           <div className="mt-4 space-y-4">
@@ -61,7 +61,7 @@ export function DemoSection({ headline, messages }: DemoContent) {
                         : 'rounded-br-sm bg-blue-600 text-white'
                     } ${visible ? 'translate-x-0 opacity-100' : `${isCustomer ? '-translate-x-6' : 'translate-x-6'} opacity-0`}`}
                     style={{
-                      transitionDelay: visible ? `${i * 750}ms` : '0ms',
+                      transitionDelay: visible ? `${i * 850}ms` : '0ms',
                     }}
                   >
                     {msg.text}
