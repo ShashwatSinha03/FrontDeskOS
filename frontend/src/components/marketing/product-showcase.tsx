@@ -1,5 +1,6 @@
 import { ShowcaseContent } from '@/lib/marketing-content';
 import { MessageSquare, LayoutDashboard, CalendarCheck, AlertTriangle, Repeat } from 'lucide-react';
+import SpotlightCard from '@/components/SpotlightCard';
 
 const icons = [MessageSquare, LayoutDashboard, CalendarCheck, AlertTriangle, Repeat];
 
@@ -17,16 +18,13 @@ export function ProductShowcase({ headline, items }: ShowcaseContent) {
           {items.map((item, i) => {
             const Icon = icons[i] || MessageSquare;
             return (
-              <div
-                key={i}
-                className="group rounded-xl border border-zinc-800 bg-zinc-900/30 p-6 transition hover:border-zinc-700 hover:bg-zinc-900/60"
-              >
+              <SpotlightCard key={i} className="group">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/50">
                   <Icon className="h-5 w-5 text-zinc-400 transition group-hover:text-blue-400" />
                 </div>
                 <h3 className="mt-4 text-sm font-semibold text-white">{item.label}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-zinc-500">{item.description}</p>
-              </div>
+              </SpotlightCard>
             );
           })}
         </div>
