@@ -12,6 +12,7 @@ import { cronController } from '../controllers/cron.controller';
 import { publicController } from '../controllers/public.controller';
 import { ownerController } from '../controllers/owner.controller';
 import { onboardingRouter } from './onboarding.routes';
+import { founderRouter } from './founder.routes';
 
 // ==========================================
 // Public Router — no authentication required
@@ -73,5 +74,8 @@ adminRouter.put('/recovery/config', (req: Request, res: Response) => recoveryCon
 
 // Onboarding wizard routes
 adminRouter.use(onboardingRouter);
+
+// Founder OS routes (cross-business aggregation)
+adminRouter.use('/founder', founderRouter);
 
 export { publicRouter, adminRouter };

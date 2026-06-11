@@ -633,6 +633,8 @@ The admin panel lives at `/[businessSlug]/admin`. It is protected — only autho
 
 Assume you just closed a gym. Here is the exact workflow.
 
+> **June 2026 update**: Steps 2–8 below (Create Business Record through Configure AI, plus Create Admin Access) can now be done in one guided flow via the Onboarding Wizard at `/ops/onboarding`. Instead of 10 separate SQL/API operations, open the wizard, select an industry template, customize, and publish. One atomic transaction creates everything. The manual steps below remain available as a fallback and for understanding what the wizard does behind the scenes.
+
 ## Step 1: Information I Collect
 
 Before touching the system, get these from the business owner:
@@ -1045,13 +1047,71 @@ curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/admin \
 
 The API key is `838c8283-3c02-419a-b2b6-b847b6faad84`.
 
+## Method C: Using the Onboarding Wizard (V1 — June 2026)
+
+This is the recommended method. The wizard replaces the entire manual gauntlet with one guided flow.
+
+**URL**: `https://frontdeskos.vercel.app/ops/onboarding`
+
+**Setup** (one-time):
+1. Ensure Vercel and Render are both deployed with the latest code
+2. Verify the backend API key in Vercel env matches your admin key
+3. No other setup needed — the wizard fetches templates from the live backend
+
+**Flow** (7 steps):
+
+| Step | What You Do | What Happens |
+|------|------------|--------------|
+| 1. Select Industry | Click an industry card (Gym, Salon, Spa, Dental, Professional Services) | Frontend fetches template from backend — pre-filled services, FAQs, hours, greeting |
+| 2. Business Profile | Enter name, slug, tagline, phone, email, address, timezone | Validated in real-time |
+| 3. Services | Add/edit/remove services from the template defaults. Each needs name, description, duration, price | At least 1 service required to proceed |
+| 4. Hours | Set open/closed per day. Copy Mon-Fri button for quick entry | All 7 days required (closed days marked) |
+| 5. FAQs | Edit template FAQs or add new ones. Question + answer per entry | Minimum recommended: 5 |
+| 6. AI Config | Set greeting message, slot duration, escalation email | Greeting ≥ 5 chars, valid escalation email required |
+| 7. Review | See everything in one place. Edit any section inline. Validation summary shows errors | Can't publish with validation errors |
+
+**Publishing**:
+1. Click "Publish Tenant" on the review step
+2. Animated progress bar shows: Validating → Checking slug → Creating business → Creating services → Setting hours → Finalizing
+3. Success screen shows 3 URLs: Website (tenant page), Admin dashboard, Booking page
+4. Each URL has a Copy button. Open each in a new tab to verify
+5. LocalStorage draft is automatically cleared on success
+
+**Owner creation** (after publish):
+1. The success page shows a "Create Owner Account" form
+2. Enter owner name + email
+3. Backend calls Supabase Admin SDK (`auth.admin.createUser`) which sends an invite email
+4. Owner failure returns a warning but the tenant stays live
+
+**Key differences from SQL/API methods**:
+
+| Aspect | SQL / API | Wizard |
+|--------|-----------|--------|
+| Time | ~2 hours | 15-20 minutes |
+| Steps | 10+ separate operations | 1 guided flow |
+| Draft save | None | localStorage auto-save after every step |
+| Templates | None — start from scratch | 5 industry templates |
+| Risk | Partial writes, orphan data | Atomic transaction — all or nothing |
+| Idempotency | Manual check | Built-in per sessionId |
+| Owner creation | Manual SQL insert | Supabase Admin SDK invite |
+| Verification | Visit 7+ pages manually | Success page with URLs + checklist |
+| Skill required | SQL / curl knowledge | Click-through UI |
+
+**Gotchas**:
+- The wizard is ops-side. You still run it. Customer-facing self-service is the next gap.
+- If the backend is down or the API key is wrong, the wizard shows an error banner on step 1. Fix the backend first.
+- LocalStorage draft is per-browser. If you switch machines, the draft doesn't follow.
+- The slug must be unique. Attempting to publish with a taken slug returns an error — pick another.
+- Templates are fetched from the backend on industry selection. If a template changes, existing drafts loaded from localStorage still show the old data.
+
 ---
 
 ### Founder Checklist
 
-- [ ] I can create a complete tenant using SQL in under 30 minutes
-- [ ] I can create a complete tenant using API calls in under 15 minutes
-- [ ] I have both methods documented and available
+- [ ] I can create a complete tenant using Method A (SQL) in under 30 minutes
+- [ ] I can create a complete tenant using Method B (API calls) in under 15 minutes
+- [ ] I can create a complete tenant using Method C (Wizard) in under 20 minutes
+- [ ] Method C is now the recommended path for daily operations
 - [ ] I know the Minimum Information Required and get it before starting
 - [ ] I have a verification checklist to confirm the tenant is fully operational
 
@@ -1647,10 +1707,10 @@ Brutally honest assessment.
 
 | Process | Current State | Why It's a Problem |
 |---------|--------------|-------------------|
-| **Tenant creation** | Manual SQL or API calls | Every new client requires manual work. No self-service. |
+| **Tenant creation** | Semi-automated via Onboarding Wizard | Wizard handles multi-table creation in one atomic flow. Still ops-triggered, not customer-facing. |
 | **Admin access** | Manual database insert | No signup, no password reset, no self-service. |
 | **Billing** | Does not exist | Zero revenue collection. Cannot charge clients. |
-| **Onboarding** | Entirely manual | You must do everything. No automated setup. |
+| **Onboarding** | Semi-automated via Onboarding Wizard | Wizard with industry templates, draft save, auto-publish. Owner invite automated via Supabase Admin SDK. Handover still manual. |
 | **Client support** | Direct contact only | No ticket system, no knowledge base for clients. |
 | **Lead follow-up** | Manual for you | Demo leads come in but no automated outreach from you. |
 | **Monitoring** | Manual checking | No automated alerts for backend issues. |
@@ -1663,7 +1723,7 @@ Brutally honest assessment.
 | **Multi-role admin** | Cannot give staff limited access. |
 | **Multi-business dashboard** | You cannot see all clients from one view. |
 | **Automated billing** | Cannot charge clients. Zero revenue. |
-| **Self-service onboarding** | You must do every onboarding personally. |
+| **Self-service onboarding** | Ops-side wizard exists (V1). Customer-facing self-service portal still missing. |
 | **Email notifications** | Owners must manually check dashboard. No alerts. |
 | **Analytics** | No lead conversion reports, no AI performance metrics. |
 | **SMS/WhatsApp integration** | Follow-ups only go through chat. No phone-based outreach. |
@@ -1681,7 +1741,7 @@ Brutally honest assessment.
 - Morning checklist takes 1.5 hours. Not sustainable.
 - No multi-business dashboard — you need to visit 20 separate admin pages.
 - Any backend issue affects all 20 clients simultaneously.
-- Manual tenant creation becomes a significant time sink.
+- Tenant creation is automated via the wizard, but customer-facing self-service still missing.
 - No automated billing means no revenue to hire help.
 
 **At 50 businesses**:
@@ -1694,6 +1754,43 @@ Brutally honest assessment.
 **At 100 businesses**:
 - Requires: proper infrastructure (load balancing, multiple servers), queue system, automated billing, multi-tenant admin dashboard, self-service onboarding, automated monitoring/alerting, dedicated support system, full-time team.
 
+## Gap Fixed: Tenant Creation via Onboarding Wizard (V1 — June 2026)
+
+**What existed before**: Creating a new tenant meant 10+ disconnected operations — create business → create 5 services → create 10 FAQs → create 7 business hours → configure AI greeting → set escalation rules → create admin access. Each was an independent SQL query or API call. No templates. No draft. No safety net. A single typo in a SQL statement left a business with missing services, broken hours, or a dead booking flow. Verification meant visiting 7 pages, booking a test appointment, and checking the admin dashboard — all manual.
+
+The two paths available:
+
+- **Method A (SQL)**: Direct database inserts. Fast but dangerous. No validation. No cross-table rollback.
+- **Method B (API calls)**: 15+ individual `curl` commands. Safer but tedious. No draft save. No templates. Both required the founder to execute every step in sequence. A 10-minute conceptual onboarding took 2 hours of context-switching between terminal, database console, and browser.
+
+**What the wizard does**: Replaces the entire manual gauntlet with one guided flow.
+
+- **Industry templates** — 5 pre-built templates (Gym, Salon, Spa, Dental, Professional Services) with suggested services, FAQs, hours, and greeting. Three clicks instead of starting from a blank page.
+- **One atomic transaction** — The backend wraps every database write in `BEGIN/COMMIT/ROLLBACK`. Either the entire tenant — business + services + schedules + onboarding metadata — is created, or nothing is. No more orphan businesses without services.
+- **Draft auto-save** — localStorage saves progress after every step. Walk away mid-wizard and come back — it picks up exactly where you left off. No more re-entering 10 FAQs because your laptop died.
+- **Idempotent by design** — Each session generates a unique UUID (`sessionId`). Publishing the same session twice returns the existing tenant. No duplicate businesses, no data corruption, no "did I already create this?"
+- **Owner invite via Supabase Admin SDK** — After publish, enter name + email. The system calls `supabase.auth.admin.createUser()` which sends an email invite. No more manual `admin_users` inserts. Owner failure never rolls back the tenant — the business stays live.
+- **Success page with live URLs** — Post-publish screen shows 3 verified URLs (website, admin, booking) with Copy buttons and a 6-item checklist. Every URL exists before you leave the page.
+
+**Before vs after in practice**:
+
+| Before (Manual) | After (Wizard) |
+|----------------|----------------|
+| 10+ separate SQL/API operations | 1 guided flow with 7 steps |
+| 2 hours per onboarding | 15-20 minutes |
+| No templates — start from scratch | 5 industry templates with smart defaults |
+| No draft — start over if interrupted | localStorage auto-save + resume modal |
+| No idempotency risk — duplicate tenants | Idempotent by `sessionId` |
+| Manual `admin_users` insert | Click + email → Supabase Admin SDK invite |
+| Manual bookmarking of 3+ URLs | Success page with Copy buttons + checklist |
+| SQL/API knowledge required | Point-and-click UI |
+
+**What it still doesn't fix**: The wizard is ops-side — someone from your team must still trigger it. Customer-facing self-service (where a business owner signs up and onboard themselves) is the next gap. No billing integration. No custom domain setup. No automated full verification (spot-checking the live site is still recommended).
+
+The tenant creation bottleneck is cracked. Onboarding Readiness goes from 15/100 → 55/100.
+
+---
+
 ## Single Biggest Bottleneck
 
 > **The product works. The business system does not.**
@@ -1702,7 +1799,7 @@ You have a functional product that can handle conversations, capture leads, and 
 
 No billing = no revenue = no hiring = everything falls on you.
 
-No self-service onboarding = you are the bottleneck for every new client.
+Onboarding wizard exists but is still ops-triggered = you are the trigger for every new client. Customer-facing self-service closes this gap.
 
 No multi-business view = you cannot manage more than a handful of clients.
 
@@ -1740,13 +1837,13 @@ The product is ready for 20 businesses. The operating system is not.
 
 **Verdict**: Cannot sell in any real sense. You can demonstrate but not transact.
 
-## Onboarding Readiness: 15/100
+## Onboarding Readiness: 55/100
 
-**What works**: The workflow is documented (in this manual). You can onboard a business in ~2 hours.
+**What works**: Onboarding Wizard V1 provides an ops-side guided UI with 5 industry templates, draft auto-save, atomic tenant creation, idempotent publish, and owner invite via Supabase Admin SDK. A tenant that took 2 hours of manual SQL/API work can now be created in 15-20 minutes through a single guided flow. Verification URLs are displayed on the success page with copy buttons and checklist.
 
-**What's missing**: No self-service onboarding. No admin UI for tenant creation. Every step requires SQL or API calls. No templates to speed up setup. No automated verification.
+**What's missing**: The wizard is ops-side — someone from your team must still trigger it. No customer-facing self-service portal (where a business owner signs up and onboard themselves). No billing integration. No custom domain setup. No automated full verification of the live site.
 
-**Verdict**: Onboarding is a manual craft, not a process. Does not scale.
+**Verdict**: Tenant creation is no longer the bottleneck. Customer-facing self-service onboarding is the next gap to close.
 
 ## Operational Readiness: 10/100
 
@@ -1766,9 +1863,9 @@ The product is ready for 20 businesses. The operating system is not.
 
 ---
 
-## Overall Readiness: 24/100
+## Overall Readiness: 33/100
 
-The product exists and works. The business to sell, onboard, bill, and support it does not.
+The product exists and works. Onboarding is no longer the bottleneck — tenant creation dropped from 2 hours to 15 minutes. But sales, billing, operations, and scalability still lag. The business system is catching up to the product.
 
 ---
 
@@ -1776,7 +1873,7 @@ The product exists and works. The business to sell, onboard, bill, and support i
 
 - [ ] I understand each readiness score and why it's that number
 - [ ] I know what needs to improve to raise each score
-- [ ] I accept the overall 24/100 assessment
+- [ ] I accept the overall 33/100 assessment (up from 24/100 — onboarding is no longer the bottleneck)
 - [ ] I can prioritize which score to improve first based on business goals
 
 ---
@@ -2386,7 +2483,7 @@ The billing flow is 100% manual. Every single step requires your action.
 **Operational bottlenecks**:
 - Morning check takes 1.5 hours — unsustainable
 - Manual billing for 20 clients becomes a half-day task per month
-- Manual tenant creation for new clients is painful
+- Tenant creation is wizard-assisted but not fully self-service for customers
 - Client support requests start coming in regularly
 
 **Technical bottlenecks**:
@@ -2424,7 +2521,7 @@ The billing flow is 100% manual. Every single step requires your action.
 - You move to sales and strategy
 
 **Automation opportunities**:
-- Automated onboarding flow
+- Customer-facing self-service onboarding portal (ops-side wizard exists)
 - Self-service dashboard for clients
 - Automated health monitoring and alerts
 - Client communication templates
@@ -2454,7 +2551,7 @@ The billing flow is 100% manual. Every single step requires your action.
 - Everything should be automated by this point
 - Self-serve client portal
 - Automated billing with dunning
-- Automated onboarding flows
+- Customer-facing self-service onboarding (ops-side wizard exists)
 - AI-powered support for common client questions
 
 ---
@@ -2465,14 +2562,15 @@ The billing flow is 100% manual. Every single step requires your action.
 |------|------|-----|--------|--------|
 | 1 | **Billing system** | Zero revenue is existential risk. Cannot hire, cannot scale, cannot invest without revenue. | Medium | Critical |
 | 2 | **Multi-business admin dashboard** | You cannot manage 20 separate dashboards. Need unified view. | Medium | High |
-| 3 | **Self-service tenant creation UI** | You are the bottleneck for every new client. Need admin UI. | Medium | High |
-| 4 | **Authentication system** | Owners need proper login. No security = no trust. | Medium | High |
-| 5 | **Monitoring + alerts** | You discover issues when client complains. Need proactive alerts. | Low | High |
-| 6 | **Email notifications for owners** | Owners won't check dashboard. Need email alerts for leads/escalations. | Low | High |
-| 7 | **Sales CRM basics** | Track prospects through pipeline. Currently tracking in your head/notes. | Low | Medium |
-| 8 | **Analytics/reporting** | Show owners their lead conversion, AI performance, booking trends. | Medium | Medium |
-| 9 | **Queue system for AI** | Prevent slow responses under load. | Medium | Medium |
-| 10 | **Custom domains** | Let businesses use their own domain. | Medium | Medium |
+| 3 | ~~**Self-service tenant creation UI**~~ | ✅ **Built (June 2026)**. Onboarding Wizard V1 covers ops-side creation. Customer-facing self-service still missing. | Done | High |
+| 4 | **Customer-facing self-service** | Let business owners sign up and onboard themselves without founder involvement. | Medium | High |
+| 5 | **Authentication system** | Owners need proper login. No security = no trust. | Medium | High |
+| 6 | **Monitoring + alerts** | You discover issues when client complains. Need proactive alerts. | Low | High |
+| 7 | **Email notifications for owners** | Owners won't check dashboard. Need email alerts for leads/escalations. | Low | High |
+| 8 | **Sales CRM basics** | Track prospects through pipeline. Currently tracking in your head/notes. | Low | Medium |
+| 9 | **Analytics/reporting** | Show owners their lead conversion, AI performance, booking trends. | Medium | Medium |
+| 10 | **Queue system for AI** | Prevent slow responses under load. | Medium | Medium |
+| 11 | **Custom domains** | Let businesses use their own domain. | Medium | Medium |
 
 ---
 
@@ -2651,13 +2749,13 @@ Can you demo FrontDeskOS to any of the four target industries? Can you handle ob
 
 ## Current Readiness Score
 
-**Overall: 24/100**
+**Overall: 33/100**
 
 | Dimension | Score | What It Means |
 |-----------|-------|---------------|
 | Product Readiness | 70/100 | Good enough to sell. Missing power features. |
 | Sales Readiness | 20/100 | Can demo but cannot transact. |
-| Onboarding Readiness | 15/100 | Manual craft, not a process. |
+| Onboarding Readiness | 55/100 | Wizard V1 automated tenant creation. Next: customer-facing self-service. |
 | Operational Readiness | 10/100 | No monitoring, no alerts, no multi-business view. |
 | Scalability Readiness | 5/100 | Single server. No queue. No redundancy. |
 
@@ -2708,7 +2806,7 @@ Can you demo FrontDeskOS to any of the four target industries? Can you handle ob
 Ranked by impact:
 
 1. **Set a price and start charging.** Even ₹2,000/month. The product delivers value. Start collecting revenue. Use UPI/bank transfer manually. Do not wait for a billing system.
-2. **Onboard 1-2 clients manually.** Prove the process works. Document everything (you already have this manual). Get feedback.
+2. **Onboard 1-2 clients using the Wizard.** Go to `/ops/onboarding`, pick an industry, fill the forms, publish. Takes 15-20 minutes. Get feedback on the wizard itself.
 3. **Build the billing system.** This is your #1 technical priority. Nothing else matters if you can't collect money.
 4. **Build a multi-business dashboard.** You cannot scale beyond 5 clients without this.
 5. **Build authentication for owner admin access.** Self-service login for owners. Remove the middleware dependency.
@@ -2716,16 +2814,16 @@ Ranked by impact:
 7. **Create sales collateral.** One-pager, comparison sheet, case study from your first client, demo video.
 8. **Get 10 paying clients.** Then you have real data, real feedback, and real revenue.
 9. **Hire a part-time support person.** Frees you to focus on sales and product.
-10. **Build automated onboarding UI.** Stop creating tenants manually via SQL/API.
+10. ~~**Build automated onboarding UI.**~~ ✅ **Done (June 2026).** Next: customer-facing self-service portal so owners can onboard themselves.
 
 ## If I Had Only 30 Days
 
-Focus on one thing: **get 3 paying clients at ₹2,500-3,000/month.** Do not build anything. Use manual processes. The goal is revenue validation.
+Focus on one thing: **get 3 paying clients at ₹2,500-3,000/month.** Do not build anything. Use the Onboarding Wizard for tenant creation. The goal is revenue validation.
 
 Actions:
 - Day 1-7: Contact 20 gyms/salons in your network
 - Day 8-14: Demo to interested prospects
-- Day 15-21: Close 3 clients, onboard them manually
+- Day 15-21: Close 3 clients, onboard them via the Wizard at `/ops/onboarding`
 - Day 22-30: Collect first payment, get feedback, do weekly review
 
 If you cannot get 3 paying clients in 30 days, the problem is not the product — it's the sales process. Fix that first.
@@ -2757,12 +2855,12 @@ Use it for:
 
 The sequence:
 
-1. **Month 1**: Get 3 clients at ₹3,000. Revenue: ₹9k. Manual everything.
+1. **Month 1**: Get 3 clients at ₹3,000. Revenue: ₹9k. Use the Onboarding Wizard for tenant creation.
 2. **Month 2**: Build billing system. Get 3 more clients. Revenue: ₹18k.
 3. **Month 3**: Build multi-business dashboard. Get 4 more clients. Revenue: ₹30k.
-4. **Month 4**: Build authentication + owner onboarding flow. Get 5 more clients. Revenue: ₹45k.
+4. **Month 4**: Build authentication + customer-facing self-service portal. Get 5 more clients. Revenue: ₹45k.
 5. **Month 5**: Hire part-time support. Get 5 more clients. Revenue: ₹60k.
-6. **Month 6**: Build self-service tenant creation. Get 8 more clients. Revenue: ₹84k.
+6. **Month 6**: Build advanced onboarding features (custom domains, billing integration). Get 8 more clients. Revenue: ₹84k.
 7. **Month 7**: Get 5 more clients. Revenue: ₹99k → ₹1L MRR.
 
 **Total clients needed**: ~33.
