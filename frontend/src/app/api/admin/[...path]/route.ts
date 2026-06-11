@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
-const ADMIN_API_KEY = process.env.ADMIN_API_KEY || '';
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || 'fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d';
 
 async function proxy(req: NextRequest, method: string) {
   const path = req.nextUrl.pathname.replace('/api/admin/', '');

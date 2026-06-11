@@ -33,7 +33,7 @@ const configSchema = z.object({
   ANTHROPIC_MODEL: z.string().default('claude-3-5-sonnet-20240620'),
 
   // Admin Auth
-  ADMIN_API_KEY: z.string().default('dev-api-key-change-in-production'),
+  ADMIN_API_KEY: z.string().default('fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d'),
 }).refine((data) => {
   // Enforce that active provider has its respective API key
   if (data.LLM_PROVIDER === 'groq' && !data.GROQ_API_KEY) {
