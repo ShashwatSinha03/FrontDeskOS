@@ -25,6 +25,7 @@ import {
   appointmentRepository,
   conversationRepository,
 } from '../repositories';
+import { notificationService } from '../services/notification.service';
 import pool from '../config/db';
 import { ConversationIntent } from '../types';
 import { AgentState } from './agent.state';
@@ -551,6 +552,15 @@ export async function escalationNode(state: AgentState): Promise<Partial<AgentSt
     });
     escalationId = escalation.id;
     console.log(`🚨 Escalation created: ${escalationId} (reason: ${reason})`);
+
+    notificationService.create({
+      businessId: state.business.id,
+      type: 'escalation_raised',
+      title: 'Escalation Raised',
+      message: `${state.customer.name || 'A customer'} escalated: ${reason}`,
+      entityType: 'escalation',
+      entityId: escalation.id,
+    }).catch((err) => console.error('[Notifications] Failed to create escalation_raised:', err));
   } catch (err) {
     console.error('❌ Escalation: Error creating escalation record:', err);
   }

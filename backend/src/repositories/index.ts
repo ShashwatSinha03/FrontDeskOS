@@ -8,6 +8,7 @@ import { FollowUpRepository } from './followup.repository';
 import { AvailabilityRepository } from './availability.repository';
 import { SessionRepository } from './session.repository';
 import { LifecycleEventRepository } from './lifecycle-event.repository';
+import { NotificationRepository } from './notification.repository';
 
 // Export instantiated singleton repository instances for runtime dependency injection
 export const businessRepository = new BusinessRepository();
@@ -20,6 +21,7 @@ export const followUpRepository = new FollowUpRepository();
 export const availabilityRepository = new AvailabilityRepository();
 export const sessionRepository = new SessionRepository();
 export const lifecycleEventRepository = new LifecycleEventRepository();
+export const notificationRepository = new NotificationRepository();
 
 // Export classes for typing and custom initialization in testing environments
 export {
@@ -33,4 +35,5 @@ export {
   AvailabilityRepository,
   SessionRepository,
   LifecycleEventRepository,
+  NotificationRepository,
 };

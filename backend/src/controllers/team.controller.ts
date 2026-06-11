@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { createClient } from '@supabase/supabase-js';
 import pool from '../config/db';
 import config from '../config';
+import { notificationService } from '../services/notification.service';
 
 export class TeamController {
   async list(req: Request, res: Response): Promise<void> {
@@ -62,6 +63,12 @@ export class TeamController {
 
       console.log(`[Team] Staff invited: business=${businessId} userId=${authUser.user.id} role=${staffRole}`);
 
+      await notificationService.create({
+        businessId, type: 'staff_invited', title: 'Staff Invited',
+        message: `${name || email} was invited as ${staffRole}.`,
+        entityType: 'staff_profile', entityId: insertResult.rows[0].id,
+      });
+
       res.status(201).json({
         success: true,
         data: {
@@ -111,6 +118,9 @@ export class TeamController {
       const { id } = req.params;
       const businessId = req.membership!.businessId;
 
+      const nameRes = await pool.query('SELECT full_name FROM staff_profiles WHERE id = $1 AND business_id = $2', [id, businessId]);
+      const removedName = nameRes.rows[0]?.full_name || 'A staff member';
+
       const result = await pool.query(
         `DELETE FROM staff_profiles WHERE id = $1 AND business_id = $2 AND role = 'staff'`,
         [id, businessId]
@@ -120,6 +130,12 @@ export class TeamController {
         res.status(404).json({ success: false, error: 'Staff member not found or cannot be removed' });
         return;
       }
+
+      await notificationService.create({
+        businessId, type: 'staff_removed', title: 'Staff Removed',
+        message: `${removedName} was removed from the team.`,
+        entityType: 'staff_profile', entityId: id,
+      });
 
       res.json({ success: true, data: { removed: true } });
     } catch (error) {
@@ -146,7 +162,16 @@ export class TeamController {
 
       console.log(`[Team] Staff promoted to owner: profileId=${id} business=${businessId}`);
 
-      res.json({ success: true, data: result.rows[0] });
+      const promProfile = result.rows[0];
+      const promNameRes = await pool.query('SELECT full_name FROM staff_profiles WHERE id = $1', [id]);
+      const promName = promNameRes.rows[0]?.full_name || 'A staff member';
+      await notificationService.create({
+        businessId, type: 'staff_promoted', title: 'Staff Promoted',
+        message: `${promName} promoted to owner.`,
+        entityType: 'staff_profile', entityId: id,
+      });
+
+      res.json({ success: true, data: promProfile });
     } catch (error) {
       console.error('[Team] Promote error:', error);
       res.status(500).json({ success: false, error: 'Failed to promote staff' });

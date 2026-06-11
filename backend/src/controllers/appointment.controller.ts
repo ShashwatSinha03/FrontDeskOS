@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { appointmentService } from '../services';
+import { notificationService } from '../services/notification.service';
 import { appointmentRepository, sessionRepository, customerRepository, conversationRepository } from '../repositories';
 
 const uuidParam = z.string().uuid('Invalid UUID parameter');
@@ -99,6 +100,17 @@ export class AppointmentController {
         appointmentTime: new Date(parsed.appointmentTime),
         notes: parsed.notes,
       });
+
+      const bookCustomer = await customerRepository.findById(customerId);
+      const bookName = bookCustomer?.name || parsed.name || 'A customer';
+      notificationService.create({
+        businessId: parsed.businessId,
+        type: 'appointment_booked',
+        title: 'Appointment Booked',
+        message: `${bookName} booked an appointment on ${new Date(parsed.appointmentTime).toLocaleString()}.`,
+        entityType: 'appointment',
+        entityId: appointment.id,
+      }).catch((err) => console.error('[Notifications] Failed to create appointment_booked:', err));
 
       res.status(201).json({
         success: true,

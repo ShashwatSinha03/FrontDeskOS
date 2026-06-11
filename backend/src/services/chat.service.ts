@@ -20,6 +20,7 @@ import {
   sessionRepository,
 } from '../repositories';
 import { recoveryService } from './recovery';
+import { notificationService } from './notification.service';
 import { conversationAgent } from '../workflows/agent.graph';
 import { ChannelType, Customer, Conversation, Message, AgentResult, ConversationIntent, CustomerLifecycleState } from '../types';
 import pool from '../config/db';
@@ -85,6 +86,16 @@ export class ChatService {
         input.customerPhone || (input.channelType !== 'web_chat' ? input.channelIdentity : null)
       );
       await customerRepository.linkChannel(customer.id, input.channelType, input.channelIdentity);
+
+      const leadName = customer.name || 'A visitor';
+      notificationService.create({
+        businessId: input.businessId,
+        type: 'lead_captured',
+        title: 'New Lead Captured',
+        message: `${leadName} submitted an inquiry.`,
+        entityType: 'customer',
+        entityId: customer.id,
+      }).catch((err) => console.error('[Notifications] Failed to create lead_captured:', err));
     } else {
       // Enrich profile with any newly provided details
       const profileUpdates: Partial<Pick<Customer, 'name' | 'email' | 'phone'>> = {};

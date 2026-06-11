@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { getDashboard, updateLeadLifecycle, updateAppointmentStatus, resolveEscalation } from '@/lib/api/ops';
 import { ActivityFeed } from '@/components/admin/activity-feed';
+import { AttentionRequired } from '@/components/admin/attention-required';
 
 export default function AdminDashboardPage() {
   const params = useParams();
@@ -96,7 +97,11 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="md:col-span-1">
+              <AttentionRequired />
+            </div>
+            <div className="md:col-span-2 space-y-4">
             <div className="rounded-lg border">
               <div className="border-b px-4 py-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Today&apos;s Appointments</h2>
@@ -227,6 +232,7 @@ export default function AdminDashboardPage() {
                 <ActivityFeed activities={data?.recentActivity || []} loading={false} />
               </div>
             </div>
+          </div>
           </div>
 
           <div className="flex flex-wrap gap-2">

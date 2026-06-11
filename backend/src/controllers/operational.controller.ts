@@ -6,6 +6,7 @@ import {
   appointmentRepository,
   escalationRepository,
 } from '../repositories';
+import { notificationService } from '../services/notification.service';
 import { CustomerLifecycleState, AppointmentStatus, EscalationStatus } from '../types';
 
 const LEAD_STATES: CustomerLifecycleState[] = [
@@ -132,6 +133,25 @@ export class OperationalController {
       }
 
       await customerRepository.updateLifecycleState(id, lifecycleState as CustomerLifecycleState, 'dashboard:manual_update');
+
+      const name = customer.name || 'A lead';
+      if (lifecycleState === 'Qualified') {
+        await notificationService.create({
+          businessId, type: 'lead_qualified', title: 'Lead Qualified',
+          message: `${name} was qualified.`, entityType: 'customer', entityId: id,
+        });
+      } else if (lifecycleState === 'Customer' || lifecycleState === 'Booked') {
+        await notificationService.create({
+          businessId, type: 'lead_won', title: 'Lead Won',
+          message: `${name} became a customer.`, entityType: 'customer', entityId: id,
+        });
+      } else if (lifecycleState === 'Lost') {
+        await notificationService.create({
+          businessId, type: 'lead_lost', title: 'Lead Lost',
+          message: `${name} was marked as lost.`, entityType: 'customer', entityId: id,
+        });
+      }
+
       res.json({ success: true, data: { id, lifecycleState } });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -184,6 +204,26 @@ export class OperationalController {
       }
 
       await appointmentRepository.updateStatus(id, status as AppointmentStatus, businessId);
+
+      const custResult = await pool.query('SELECT name FROM customers WHERE id = $1', [appointment.customerId]);
+      const custName = custResult.rows[0]?.name || 'A customer';
+      if (status === 'confirmed') {
+        await notificationService.create({
+          businessId, type: 'appointment_confirmed', title: 'Appointment Confirmed',
+          message: `Appointment with ${custName} confirmed.`, entityType: 'appointment', entityId: id,
+        });
+      } else if (status === 'completed') {
+        await notificationService.create({
+          businessId, type: 'appointment_completed', title: 'Appointment Completed',
+          message: `Appointment with ${custName} completed.`, entityType: 'appointment', entityId: id,
+        });
+      } else if (status === 'cancelled') {
+        await notificationService.create({
+          businessId, type: 'appointment_cancelled', title: 'Appointment Cancelled',
+          message: `Appointment with ${custName} cancelled.`, entityType: 'appointment', entityId: id,
+        });
+      }
+
       res.json({ success: true, data: { id, status } });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -212,6 +252,15 @@ export class OperationalController {
       }
 
       await appointmentRepository.reschedule(id, new Date(appointmentTime), notes);
+
+      const custResult = await pool.query('SELECT name FROM customers WHERE id = $1', [appointment.customerId]);
+      const custName = custResult.rows[0]?.name || 'A customer';
+      await notificationService.create({
+        businessId, type: 'appointment_rescheduled', title: 'Appointment Rescheduled',
+        message: `Appointment with ${custName} rescheduled to ${new Date(appointmentTime).toLocaleString()}.`,
+        entityType: 'appointment', entityId: id,
+      });
+
       res.json({ success: true, data: { id, appointmentTime } });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -257,6 +306,13 @@ export class OperationalController {
       const schema = z.object({ resolutionNote: z.string().optional() });
       const { resolutionNote } = schema.parse(req.body);
 
+      const escResult = await pool.query('SELECT * FROM escalations WHERE id = $1 AND business_id = $2', [id, businessId]);
+      if (escResult.rows.length === 0) {
+        res.status(404).json({ success: false, error: 'Escalation not found' });
+        return;
+      }
+      const escalation = escResult.rows[0];
+
       await escalationRepository.resolve(id, businessId);
 
       if (resolutionNote) {
@@ -270,6 +326,14 @@ export class OperationalController {
           [req.user!.id, id, businessId],
         );
       }
+
+      const custResult = await pool.query('SELECT name FROM customers WHERE id = $1', [escalation.customer_id]);
+      const custName = custResult.rows[0]?.name || 'A customer';
+      await notificationService.create({
+        businessId, type: 'escalation_resolved', title: 'Escalation Resolved',
+        message: `Escalation for ${custName} resolved.`,
+        entityType: 'escalation', entityId: id,
+      });
 
       res.json({ success: true, data: { id, resolved: true } });
     } catch (error: any) {

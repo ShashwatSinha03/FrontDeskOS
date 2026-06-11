@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/sidebar';
+import { NotificationBell } from '@/components/admin/notification-bell';
 import { createClient } from '@/lib/supabase/server';
 
 async function getBusiness(slug: string) {
@@ -66,11 +67,16 @@ export default async function AdminLayout({
         businessName={business.name}
         slug={businessSlug}
       />
-      <main className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          {children}
-        </div>
-      </main>
+      <div className="flex flex-1 flex-col overflow-auto">
+        <header className="flex items-center justify-end border-b px-6 py-2.5">
+          <NotificationBell />
+        </header>
+        <main className="flex-1">
+          <div className="mx-auto max-w-7xl px-6 py-8">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
