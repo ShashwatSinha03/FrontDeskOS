@@ -134,7 +134,7 @@ export class OnboardingService {
         slug: existing.slug,
         tenantUrl: `https://frontdeskos.vercel.app/${existing.slug}`,
         adminUrl: `https://frontdeskos.vercel.app/${existing.slug}/admin`,
-        bookingUrl: `https://frontdeskos.vercel.app/${existing.slug}/booking`,
+        bookingUrl: `https://frontdeskos.vercel.app/${existing.slug}/book`,
         createdAt: new Date().toISOString(),
       };
     }
@@ -221,7 +221,7 @@ export class OnboardingService {
       slug: result.slug,
       tenantUrl: `https://frontdeskos.vercel.app/${result.slug}`,
       adminUrl: `https://frontdeskos.vercel.app/${result.slug}/admin`,
-      bookingUrl: `https://frontdeskos.vercel.app/${result.slug}/booking`,
+      bookingUrl: `https://frontdeskos.vercel.app/${result.slug}/book`,
       createdAt: result.createdAt.toISOString(),
     };
   }
