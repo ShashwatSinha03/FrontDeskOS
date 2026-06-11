@@ -34,6 +34,10 @@ const configSchema = z.object({
 
   // Admin Auth
   ADMIN_API_KEY: z.string().default('fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d'),
+  // NOTE: Changing this value requires matching changes in:
+  //   frontend/src/app/api/admin/[...path]/route.ts (hardcoded)
+  //   backend/.env.example
+  //   backend/vitest.config.ts
 }).refine((data) => {
   // Enforce that active provider has its respective API key
   if (data.LLM_PROVIDER === 'groq' && !data.GROQ_API_KEY) {
