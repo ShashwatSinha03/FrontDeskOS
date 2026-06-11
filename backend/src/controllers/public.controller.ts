@@ -3,6 +3,7 @@ import { z } from 'zod';
 import crypto from 'crypto';
 import pool from '../config/db';
 import { businessRepository, sessionRepository, customerRepository, conversationRepository } from '../repositories';
+import { subscriptionService } from '../services/subscription.service';
 
 export class PublicController {
   async getBusiness(req: Request, res: Response): Promise<void> {
@@ -95,6 +96,12 @@ export class PublicController {
       const business = await businessRepository.findBySlug(slug);
       if (!business) {
         res.status(404).json({ success: false, error: 'Business not found' });
+        return;
+      }
+
+      const leadCap = await subscriptionService.getSubscriptionCapabilities(business.id);
+      if (!leadCap.canCaptureLeads) {
+        res.status(403).json({ success: false, error: 'This business is currently unavailable for new inquiries.' });
         return;
       }
 

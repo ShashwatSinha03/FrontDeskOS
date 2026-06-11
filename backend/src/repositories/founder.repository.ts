@@ -423,6 +423,72 @@ export class FounderRepository {
     };
   }
 
+  // ─── Subscription Health ─────────────────────────────────
+  async getSubscriptionHealth(): Promise<{
+    mrr: number;
+    activeCount: number;
+    pastDueCount: number;
+    suspendedCount: number;
+    cancelledCount: number;
+    totalCount: number;
+    statusDistribution: Record<string, number>;
+  }> {
+    const res = await pool.query(`
+      SELECT
+        COALESCE(SUM(amount) FILTER (WHERE status = 'active'), 0) as mrr,
+        COUNT(*) FILTER (WHERE status = 'active') as active_count,
+        COUNT(*) FILTER (WHERE status = 'past_due') as past_due_count,
+        COUNT(*) FILTER (WHERE status = 'suspended') as suspended_count,
+        COUNT(*) FILTER (WHERE status = 'cancelled') as cancelled_count,
+        COUNT(*) as total_count
+      FROM (
+        SELECT DISTINCT ON (business_id) status, amount
+        FROM subscriptions
+        ORDER BY business_id, created_at DESC
+      ) latest
+    `);
+    const row = res.rows[0];
+
+    const distRes = await pool.query(`
+      SELECT COALESCE(status, 'unknown') as status, COUNT(*) as cnt
+      FROM (
+        SELECT DISTINCT ON (business_id) status
+        FROM subscriptions
+        ORDER BY business_id, created_at DESC
+      ) latest
+      GROUP BY status
+    `);
+    const distribution: Record<string, number> = {};
+    for (const r of distRes.rows) {
+      distribution[r.status] = parseInt(r.cnt);
+    }
+
+    return {
+      mrr: parseFloat(row.mrr),
+      activeCount: parseInt(row.active_count),
+      pastDueCount: parseInt(row.past_due_count),
+      suspendedCount: parseInt(row.suspended_count),
+      cancelledCount: parseInt(row.cancelled_count),
+      totalCount: parseInt(row.total_count),
+      statusDistribution: distribution,
+    };
+  }
+
+  async getBillingEvents(subscriptionId: string) {
+    const res = await pool.query(
+      `SELECT * FROM billing_events WHERE subscription_id = $1 ORDER BY created_at DESC LIMIT 50`,
+      [subscriptionId]
+    );
+    return res.rows;
+  }
+
+  async updateBillingNotes(subscriptionId: string, notes: string): Promise<void> {
+    await pool.query(
+      `UPDATE subscriptions SET billing_notes = $1, updated_at = NOW() WHERE id = $2`,
+      [notes, subscriptionId]
+    );
+  }
+
   // ─── Subscriptions ──────────────────────────────────────
   async listSubscriptionsPaginated(params: {
     page: number;

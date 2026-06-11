@@ -9,7 +9,7 @@ import { StatusBadge } from '@/components/design/status-badge';
 import { DataTable } from '@/components/admin/data-table';
 import { EmptyState } from '@/components/design/empty-state';
 import { Button } from '@/components/ui/button';
-import { fetchOverview, fetchBusinesses, fetchActivity, FounderOverview, FounderBusiness, ActivityEvent } from '@/lib/founder';
+import { fetchOverview, fetchBusinesses, fetchActivity, fetchSubscriptionHealth, FounderOverview, FounderBusiness, ActivityEvent, SubscriptionHealth } from '@/lib/founder';
 
 const HEALTH_BADGE: Record<string, 'success' | 'warning' | 'danger'> = {
   healthy: 'success',
@@ -21,6 +21,7 @@ export default function FounderOverviewPage() {
   const [overview, setOverview] = useState<FounderOverview | null>(null);
   const [businesses, setBusinesses] = useState<FounderBusiness[]>([]);
   const [activity, setActivity] = useState<ActivityEvent[]>([]);
+  const [subHealth, setSubHealth] = useState<SubscriptionHealth | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,14 +29,16 @@ export default function FounderOverviewPage() {
     setLoading(true);
     setError(null);
     try {
-      const [ovRes, bizRes, actRes] = await Promise.all([
+      const [ovRes, bizRes, actRes, subRes] = await Promise.all([
         fetchOverview(),
         fetchBusinesses({ page: 1, limit: 5 }),
         fetchActivity(8),
+        fetchSubscriptionHealth().catch(() => null),
       ]);
       setOverview(ovRes.data);
       setBusinesses(bizRes.data);
       setActivity(actRes.data);
+      if (subRes) setSubHealth(subRes.data);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -87,6 +90,20 @@ export default function FounderOverviewPage() {
           <MetricCard
             label="Monthly Revenue"
             value={`₹${overview.monthlyRevenue.toLocaleString('en-IN')}`}
+            icon={DollarSign}
+          />
+        </div>
+      )}
+
+      {/* Subscription Health Cards */}
+      {subHealth && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <MetricCard label="Active Subscriptions" value={subHealth.activeCount} icon={CreditCard} />
+          <MetricCard label="Past Due" value={subHealth.pastDueCount} icon={AlertTriangle} />
+          <MetricCard label="Suspended" value={subHealth.suspendedCount} icon={AlertTriangle} />
+          <MetricCard
+            label="Estimated MRR"
+            value={`₹${subHealth.mrr.toLocaleString('en-IN')}`}
             icon={DollarSign}
           />
         </div>

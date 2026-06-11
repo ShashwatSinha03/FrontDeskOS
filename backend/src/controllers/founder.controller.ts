@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import founderRepository from '../repositories/founder.repository';
+import { subscriptionService } from '../services/subscription.service';
 
 const uuidSchema = z.string().uuid('Invalid UUID');
 
@@ -233,6 +234,78 @@ export class FounderController {
       }
       console.error('[Founder] updateSubscription error:', error);
       res.status(500).json({ success: false, error: 'Failed to update subscription' });
+    }
+  }
+
+  async getSubscriptionHealth(req: Request, res: Response): Promise<void> {
+    try {
+      const health = await founderRepository.getSubscriptionHealth();
+      res.json({ success: true, data: health });
+    } catch (error) {
+      console.error('[Founder] getSubscriptionHealth error:', error);
+      res.status(500).json({ success: false, error: 'Failed to fetch subscription health' });
+    }
+  }
+
+  async getSubscriptionEvents(req: Request, res: Response): Promise<void> {
+    try {
+      const id = uuidSchema.parse(req.params.id);
+      const events = await founderRepository.getBillingEvents(id);
+      res.json({ success: true, data: events });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, errors: error.errors });
+        return;
+      }
+      console.error('[Founder] getSubscriptionEvents error:', error);
+      res.status(500).json({ success: false, error: 'Failed to fetch billing events' });
+    }
+  }
+
+  async changeSubscriptionStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const id = uuidSchema.parse(req.params.id);
+      const schema = z.object({
+        status: z.enum(['active', 'past_due', 'suspended', 'cancelled']),
+        note: z.string().optional(),
+      });
+      const { status, note } = schema.parse(req.body);
+
+      const result = await subscriptionService.updateSubscriptionStatus(
+        id, status, req.profile?.id, note
+      );
+
+      if (!result.success) {
+        res.status(400).json({ success: false, error: result.error });
+        return;
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, errors: error.errors });
+        return;
+      }
+      console.error('[Founder] changeSubscriptionStatus error:', error);
+      res.status(500).json({ success: false, error: 'Failed to change subscription status' });
+    }
+  }
+
+  async updateBillingNotes(req: Request, res: Response): Promise<void> {
+    try {
+      const id = uuidSchema.parse(req.params.id);
+      const schema = z.object({ notes: z.string() });
+      const { notes } = schema.parse(req.body);
+
+      await founderRepository.updateBillingNotes(id, notes);
+      res.json({ success: true });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, errors: error.errors });
+        return;
+      }
+      console.error('[Founder] updateBillingNotes error:', error);
+      res.status(500).json({ success: false, error: 'Failed to update billing notes' });
     }
   }
 

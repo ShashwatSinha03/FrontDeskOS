@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip internal Next.js paths
@@ -18,7 +18,58 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Skip auth pages and auth callbacks
+  if (pathname.startsWith('/login') || pathname.startsWith('/auth')) {
+    return NextResponse.next();
+  }
+
+  // Protect /ops/* routes — require auth + SUPER_ADMIN
+  if (pathname.startsWith('/ops')) {
+    let response = NextResponse.next({ request: { headers: request.headers } });
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return request.cookies.getAll(); },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              request.cookies.set(name, value);
+              response.cookies.set(name, value, options);
+            });
+          },
+        },
+      }
+    );
+
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    try {
+      const meRes = await fetch(`${request.nextUrl.origin}/api/admin/me`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const meJson = await meRes.json();
+
+      if (!meJson.success || meJson.data?.global_role !== 'SUPER_ADMIN') {
+        return NextResponse.redirect(new URL('/unauthorized', request.url));
+      }
+    } catch {
+      return NextResponse.redirect(new URL('/unauthorized', request.url));
+    }
+
+    return response;
+  }
+
   // Skip if already on a slug path (e.g. /some-slug/...)
+  // Public pages: /:slug, /:slug/book, /:slug/contact, /:slug/services
+  // Also passes through /:slug/admin/* (handled in a later batch)
   if (pathname.match(/^\/[a-z0-9]+(?:[-][a-z0-9]+)*(?:\/|$)/)) {
     return NextResponse.next();
   }

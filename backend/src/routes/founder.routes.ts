@@ -23,6 +23,10 @@ founderRouter.get('/escalations', (req: Request, res: Response) => founderContro
 founderRouter.get('/subscriptions', (req: Request, res: Response) => founderController.listSubscriptions(req, res));
 founderRouter.post('/subscriptions', (req: Request, res: Response) => founderController.createSubscription(req, res));
 founderRouter.patch('/subscriptions/:id', (req: Request, res: Response) => founderController.updateSubscription(req, res));
+founderRouter.get('/subscriptions/health', (req: Request, res: Response) => founderController.getSubscriptionHealth(req, res));
+founderRouter.get('/subscriptions/:id/events', (req: Request, res: Response) => founderController.getSubscriptionEvents(req, res));
+founderRouter.post('/subscriptions/:id/change-status', (req: Request, res: Response) => founderController.changeSubscriptionStatus(req, res));
+founderRouter.put('/subscriptions/:id/notes', (req: Request, res: Response) => founderController.updateBillingNotes(req, res));
 
 // Activity feed
 founderRouter.get('/activity', (req: Request, res: Response) => founderController.listActivity(req, res));

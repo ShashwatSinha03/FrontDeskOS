@@ -210,3 +210,53 @@ export async function updateSubscription(id: string, data: {
 export async function fetchActivity(limit = 20): Promise<{ success: boolean; data: ActivityEvent[] }> {
   return fetcher(`${ADMIN_API_URL}/activity?limit=${limit}`);
 }
+
+export interface SubscriptionHealth {
+  mrr: number;
+  activeCount: number;
+  pastDueCount: number;
+  suspendedCount: number;
+  cancelledCount: number;
+  totalCount: number;
+  statusDistribution: Record<string, number>;
+}
+
+export interface BillingEvent {
+  id: string;
+  subscription_id: string;
+  business_id: string;
+  event_type: string;
+  previous_status: string | null;
+  new_status: string | null;
+  note: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export async function fetchSubscriptionHealth(): Promise<{ success: boolean; data: SubscriptionHealth }> {
+  return fetcher(`${ADMIN_API_URL}/subscriptions/health`);
+}
+
+export async function fetchSubscriptionEvents(id: string): Promise<{ success: boolean; data: BillingEvent[] }> {
+  return fetcher(`${ADMIN_API_URL}/subscriptions/${id}/events`);
+}
+
+export async function changeSubscriptionStatus(id: string, status: string, note?: string): Promise<void> {
+  const res = await fetch(`${ADMIN_API_URL}/subscriptions/${id}/change-status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, note }),
+  });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error || 'Failed to change status');
+}
+
+export async function updateBillingNotes(id: string, notes: string): Promise<void> {
+  const res = await fetch(`${ADMIN_API_URL}/subscriptions/${id}/notes`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ notes }),
+  });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error || 'Failed to update notes');
+}

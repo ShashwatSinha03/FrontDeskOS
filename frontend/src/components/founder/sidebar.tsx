@@ -12,6 +12,7 @@ import {
   CreditCard,
   Activity,
   PlusCircle,
+  UserCog,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { label: 'Leads', href: '/ops/leads', icon: Users },
   { label: 'Appointments', href: '/ops/appointments', icon: CalendarCheck },
   { label: 'Escalations', href: '/ops/escalations', icon: AlertTriangle },
+  { label: 'Users', href: '/ops/users', icon: UserCog },
   { label: 'Subscriptions', href: '/ops/subscriptions', icon: CreditCard },
   { label: 'Activity', href: '/ops/activity', icon: Activity },
 ];

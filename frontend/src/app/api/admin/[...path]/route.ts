@@ -10,6 +10,10 @@ async function proxy(req: NextRequest, method: string) {
 
   const headers: Record<string, string> = { 'x-api-key': ADMIN_API_KEY };
 
+  // Forward Authorization header (Bearer token) for session-based auth
+  const authHeader = req.headers.get('authorization');
+  if (authHeader) headers['Authorization'] = authHeader;
+
   let body: BodyInit | undefined;
   if (method !== 'GET' && method !== 'HEAD') {
     const contentType = req.headers.get('content-type');

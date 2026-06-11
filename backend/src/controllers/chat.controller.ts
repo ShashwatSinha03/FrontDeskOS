@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { chatService } from '../services';
+import { subscriptionService } from '../services/subscription.service';
 
 const chatMessageSchema = z.object({
   businessId: z.string().uuid('businessId must be a valid UUID'),
@@ -21,7 +22,17 @@ export class ChatController {
     try {
       // Validate request payload
       const parsed = chatMessageSchema.parse(req.body);
-      
+
+      // Check subscription — AI blocked for suspended/cancelled
+      const capabilities = await subscriptionService.getSubscriptionCapabilities(parsed.businessId);
+      if (!capabilities.canUseAI) {
+        res.status(403).json({
+          success: false,
+          error: 'This business is currently unavailable for automated assistance.',
+        });
+        return;
+      }
+
       // Coordinate logic through service layers
       const result = await chatService.handleIncomingMessage(parsed);
       

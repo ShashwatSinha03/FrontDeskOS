@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { appointmentService } from '../services';
 import { appointmentRepository, sessionRepository, customerRepository, conversationRepository } from '../repositories';
+import { subscriptionService } from '../services/subscription.service';
 
 const uuidParam = z.string().uuid('Invalid UUID parameter');
 
@@ -64,6 +65,12 @@ export class AppointmentController {
 
       const parsed = schema.parse(req.body);
 
+      const bookingCap = await subscriptionService.getSubscriptionCapabilities(parsed.businessId);
+      if (!bookingCap.canUseBooking) {
+        res.status(403).json({ success: false, error: 'This business is currently unavailable for bookings.' });
+        return;
+      }
+
       let customerId = parsed.customerId;
       if (!customerId && parsed.sessionId) {
         const session = await sessionRepository.findBySessionId(parsed.sessionId);
@@ -125,6 +132,13 @@ export class AppointmentController {
       });
 
       const parsed = schema.parse(req.query);
+
+      const slotCap = await subscriptionService.getSubscriptionCapabilities(parsed.businessId);
+      if (!slotCap.canUseBooking) {
+        res.status(200).json({ success: true, data: [] });
+        return;
+      }
+
       const slots = await appointmentService.getAvailableSlots(
         parsed.businessId,
         parsed.date,

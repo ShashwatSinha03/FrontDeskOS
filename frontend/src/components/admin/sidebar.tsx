@@ -10,6 +10,7 @@ import {
   Mail,
   AlertTriangle,
   BookOpen,
+  CreditCard,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -19,6 +20,8 @@ const NAV_ITEMS = [
   { label: 'Follow-Ups', href: '/follow-ups', icon: Mail },
   { label: 'Escalations', href: '/escalations', icon: AlertTriangle },
   { label: 'Learning Inbox', href: '/learning-inbox', icon: BookOpen },
+  { label: 'Team', href: '/settings?tab=team', icon: Users },
+  { label: 'Billing', href: '/billing', icon: CreditCard },
 ];
 
 export function AdminSidebar({ businessName, slug }: { businessName: string; slug: string }) {
@@ -35,7 +38,8 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
       <nav className="flex flex-col gap-0.5 p-3 flex-1">
         {NAV_ITEMS.map((item) => {
           const fullHref = `${basePath}${item.href}`;
-          const isActive = pathname === fullHref || (item.href === '' && pathname === basePath);
+          const fullPath = fullHref.split('?')[0];
+          const isActive = pathname === fullPath || (item.href === '' && pathname === basePath);
           const Icon = item.icon;
           return (
             <Link
