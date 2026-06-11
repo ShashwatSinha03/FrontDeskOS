@@ -50,7 +50,7 @@ function SuccessContent() {
     localStorage.setItem(CHECKLIST_KEY, JSON.stringify(next));
   };
 
-  const handleOwnerComplete = ({ email, dashboardUrl }: { email: string; dashboardUrl: string }) => {
+  const handleOwnerComplete = ({ email, dashboardUrl }: { email: string; dashboardUrl: string; password?: string }) => {
     setOwnerDone(true);
     toggleItem('owner');
   };

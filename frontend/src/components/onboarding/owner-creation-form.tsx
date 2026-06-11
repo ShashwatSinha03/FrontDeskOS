@@ -8,7 +8,7 @@ import { createOwnerInvite } from '@/lib/onboarding';
 
 interface OwnerCreationFormProps {
   businessId: string;
-  onComplete: (result: { email: string; dashboardUrl: string }) => void;
+  onComplete: (result: { email: string; dashboardUrl: string; password?: string }) => void;
   onSkip: () => void;
 }
 
@@ -17,6 +17,7 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
   const [email, setEmail] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [created, setCreated] = useState<{ email: string; password: string; dashboardUrl: string } | null>(null);
 
   const isValid = name.trim().length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -28,7 +29,10 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
 
     try {
       const result = await createOwnerInvite(businessId, name.trim(), email.trim());
-      onComplete({ email: result.email, dashboardUrl: result.dashboardUrl });
+      if (result.password) {
+        setCreated({ email: result.email, password: result.password, dashboardUrl: result.dashboardUrl });
+      }
+      onComplete({ email: result.email, dashboardUrl: result.dashboardUrl, password: result.password });
     } catch (err: any) {
       setError(err.message || 'Failed to create owner');
     } finally {
@@ -36,12 +40,61 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
     }
   };
 
+  const copyPassword = () => {
+    if (created) navigator.clipboard.writeText(created.password);
+  };
+
+  if (created) {
+    return (
+      <Card className="border-emerald-500/20">
+        <CardHeader>
+          <CardTitle className="text-lg text-emerald-600 dark:text-emerald-400">Owner Created</CardTitle>
+          <CardDescription>
+            Share these credentials with the owner. They can change their password after logging in.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Sign-in URL</p>
+              <p className="text-sm font-medium">{created.dashboardUrl}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Email</p>
+              <p className="text-sm font-medium">{created.email}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Temporary Password</p>
+              <div className="flex items-center gap-2">
+                <code className="rounded border bg-background px-2 py-0.5 text-sm font-mono">{created.password}</code>
+                <button
+                  onClick={copyPassword}
+                  className="shrink-0 rounded-md border px-2 py-1 text-xs hover:bg-accent"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            This password will not be shown again. Save it before continuing.
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button onClick={() => onComplete({ email: created.email, dashboardUrl: created.dashboardUrl, password: created.password })} className="w-full">
+            Done — I&apos;ve saved the credentials
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
   return (
     <Card className="border-primary/20">
       <CardHeader>
         <CardTitle className="text-lg">Create Owner Account</CardTitle>
         <CardDescription>
-          Send an invite to the business owner so they can access the admin dashboard.
+          Create a login account for the business owner so they can access the admin dashboard.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
@@ -64,9 +117,6 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <p className="text-xs text-muted-foreground">
-              An invite email will be sent to this address.
-            </p>
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
         </CardContent>
@@ -75,7 +125,7 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
             Skip for now
           </Button>
           <Button type="submit" disabled={!isValid || saving} className="flex-1">
-            {saving ? 'Sending invite...' : 'Send Invite'}
+            {saving ? 'Creating account...' : 'Create Account'}
           </Button>
         </CardFooter>
       </form>

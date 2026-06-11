@@ -92,6 +92,7 @@ export interface OwnerInviteResult {
   ownerId: string | null;
   email: string;
   name: string;
+  password?: string;
   dashboardUrl: string;
   message: string;
 }

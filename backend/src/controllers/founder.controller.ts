@@ -1,7 +1,13 @@
+import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { createClient } from '@supabase/supabase-js';
 import pool from '../config/db';
 import config from '../config';
+
+function generatePassword(length = 12): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from(randomBytes(length), (b) => chars[b % chars.length]).join('');
+}
 
 export class FounderController {
   async getOverview(req: Request, res: Response): Promise<void> {
@@ -144,11 +150,16 @@ export class FounderController {
 
       let ownerUserId = userId;
 
+      let generatedPassword: string | undefined;
+
       if (!ownerUserId) {
         if (!email) {
           res.status(400).json({ success: false, error: 'Email is required to create a new owner' });
           return;
         }
+
+        const password = generatePassword();
+        generatedPassword = password;
 
         const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_ROLE_KEY, {
           auth: { autoRefreshToken: false, persistSession: false },
@@ -156,6 +167,7 @@ export class FounderController {
 
         const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
           email,
+          password,
           email_confirm: true,
           user_metadata: { full_name: name || email },
         });
@@ -179,7 +191,11 @@ export class FounderController {
 
       res.json({
         success: true,
-        data: { profileId: insertResult.rows[0].id, userId: ownerUserId },
+        data: {
+          profileId: insertResult.rows[0].id,
+          userId: ownerUserId,
+          ...(generatedPassword ? { password: generatedPassword } : {}),
+        },
       });
     } catch (error) {
       console.error('[Founder] Assign owner error:', error);

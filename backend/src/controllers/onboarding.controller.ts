@@ -1,9 +1,15 @@
+import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 import config from '../config';
 import pool from '../config/db';
 import { onboardingService } from '../services/onboarding/onboarding.service';
+
+function generatePassword(length = 12): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from(randomBytes(length), (b) => chars[b % chars.length]).join('');
+}
 
 export class OnboardingController {
   async getTemplates(req: Request, res: Response): Promise<void> {
@@ -153,7 +159,9 @@ export class OnboardingController {
       }
       const slug = bizRes.rows[0].slug;
 
-      // Create Supabase Auth user with invite
+      // Generate a secure random password so the founder can share it with the owner
+      const password = generatePassword();
+
       const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_ROLE_KEY, {
         auth: {
           autoRefreshToken: false,
@@ -163,6 +171,7 @@ export class OnboardingController {
 
       const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
         email: parsed.email,
+        password,
         email_confirm: true,
         user_metadata: {
           full_name: parsed.name,
@@ -173,7 +182,6 @@ export class OnboardingController {
 
       if (authError || !authUser.user) {
         console.error(`[Onboarding] Supabase auth user creation failed:`, authError);
-        // Tenant stays active — owner creation failure does NOT rollback tenant
         res.status(201).json({
           success: true,
           data: {
@@ -187,7 +195,6 @@ export class OnboardingController {
         return;
       }
 
-      // Create staff_profile linked to auth user
       const insertQuery = `
         INSERT INTO staff_profiles (user_id, business_id, role, full_name)
         VALUES ($1, $2, 'owner', $3)
@@ -203,8 +210,9 @@ export class OnboardingController {
           ownerId: insertRes.rows[0].id,
           email: parsed.email,
           name: parsed.name,
+          password,
           dashboardUrl: `https://frontdeskos.vercel.app/${slug}/admin`,
-          message: 'Owner account created. An invite email has been sent to the owner.',
+          message: 'Owner account created. Share the password below with the owner.',
         },
       });
     } catch (error: any) {

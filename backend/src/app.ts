@@ -8,6 +8,7 @@ import { teamRouter } from './routes/team.routes';
 import { settingsRouter } from './routes/settings.routes';
 import { operationalRouter } from './routes/operational.routes';
 import { notificationRouter } from './routes/notification.routes';
+import { analyticsRouter } from './routes/analytics.routes';
 import { createRateLimiter } from './middleware/rate-limit';
 
 const app = express();
@@ -45,6 +46,7 @@ app.use('/api', teamRouter);
 app.use('/api', settingsRouter);
 app.use('/api', operationalRouter);
 app.use('/api', notificationRouter);
+app.use('/api', analyticsRouter);
 app.use('/api', adminRouter);
 
 app.get('/health', (req: Request, res: Response) => {

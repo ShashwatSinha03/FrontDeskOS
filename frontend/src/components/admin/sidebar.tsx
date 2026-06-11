@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
+  BarChart3,
   Users,
   CalendarCheck,
   Mail,
@@ -15,6 +16,7 @@ import {
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '', icon: LayoutDashboard },
+  { label: 'Analytics', href: '/analytics', icon: BarChart3 },
   { label: 'Leads', href: '/leads', icon: Users },
   { label: 'Appointments', href: '/appointments', icon: CalendarCheck },
   { label: 'Follow-Ups', href: '/follow-ups', icon: Mail },
