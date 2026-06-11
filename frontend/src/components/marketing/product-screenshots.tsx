@@ -169,7 +169,7 @@ function AppointmentsMockup({ visible }: { visible: boolean }) {
     <div className="space-y-4 p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <div className="h-4 w-28 rounded bg-zinc-700" />
-        <div className="h-7 w-28 rounded-lg bg-blue-600 px-3 text-[11px] text-white flex items-center font-medium">
+        <div className="h-8 w-36 rounded-lg bg-blue-600 px-3 text-xs text-white flex items-center justify-center font-medium">
           + Book Appointment
         </div>
       </div>
@@ -236,7 +236,7 @@ function ConversationMockup({ visible }: { visible: boolean }) {
   ];
 
   return (
-    <div className="flex h-full flex-col p-4 sm:p-6">
+    <div className="flex flex-col p-4 sm:p-6">
       <div className="flex items-center gap-2 border-b border-zinc-700 pb-3">
         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600">
           <span className="text-[10px] font-bold text-white">AI</span>
