@@ -3,6 +3,7 @@
 import { Suspense, useState, FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { setAuthToken } from '@/lib/founder';
 
 export default function LoginPage() {
   return (
@@ -59,6 +60,8 @@ function LoginForm() {
       router.push('/');
       return;
     }
+
+    setAuthToken(session.access_token);
 
     const res = await fetch('/api/admin/me', {
       headers: { Authorization: `Bearer ${session.access_token}` },

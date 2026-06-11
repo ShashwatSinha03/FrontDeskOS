@@ -9,7 +9,8 @@ import { StatusBadge } from '@/components/design/status-badge';
 import { DataTable } from '@/components/admin/data-table';
 import { EmptyState } from '@/components/design/empty-state';
 import { Button } from '@/components/ui/button';
-import { fetchOverview, fetchBusinesses, fetchActivity, fetchSubscriptionHealth, FounderOverview, FounderBusiness, ActivityEvent, SubscriptionHealth } from '@/lib/founder';
+import { setAuthToken, fetchOverview, fetchBusinesses, fetchActivity, fetchSubscriptionHealth, FounderOverview, FounderBusiness, ActivityEvent, SubscriptionHealth } from '@/lib/founder';
+import { createClient } from '@/lib/supabase/client';
 
 const HEALTH_BADGE: Record<string, 'success' | 'warning' | 'danger'> = {
   healthy: 'success',
@@ -46,7 +47,12 @@ export default function FounderOverviewPage() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    createClient().auth.getSession().then(({ data: { session } }) => {
+      if (session?.access_token) setAuthToken(session.access_token);
+    });
+    load();
+  }, []);
 
   if (error) {
     return (

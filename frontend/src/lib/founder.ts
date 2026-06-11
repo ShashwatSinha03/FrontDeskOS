@@ -109,8 +109,20 @@ export interface PaginatedResponse<T> {
   limit: number;
 }
 
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  authToken = token;
+}
+
+export function getAuthToken(): string | null {
+  return authToken;
+}
+
 async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, options);
+  const headers: Record<string, string> = {};
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  const res = await fetch(url, { ...options, headers: { ...headers, ...options?.headers } });
   const json = await res.json();
   if (!json.success) throw new Error(json.error || 'API request failed');
   return json;
