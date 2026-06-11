@@ -1,35 +1,35 @@
 'use client';
 
 import { Suspense, useState, FormEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <Suspense fallback={
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Loading...</p>
       </div>
     }>
-      <LoginForm />
+      <SignupForm />
     </Suspense>
   );
 }
 
-function LoginForm() {
+function SignupForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect');
-
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   function validate(): string | null {
+    if (!name.trim()) return 'Name is required';
     if (!email.trim()) return 'Email is required';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Invalid email format';
     if (!password) return 'Password is required';
+    if (password.length < 6) return 'Password must be at least 6 characters';
     return null;
   }
 
@@ -46,39 +46,28 @@ function LoginForm() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } },
+    });
 
-    if (signInError) {
-      setError(signInError.message);
+    if (signUpError) {
+      setError(signUpError.message);
       setLoading(false);
       return;
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      router.push('/');
-      return;
-    }
-
-    const res = await fetch('/api/admin/me', {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    });
-    const json = await res.json();
-
-    if (json.success && json.data?.global_role === 'SUPER_ADMIN') {
-      router.push(redirect || '/ops');
-    } else {
-      router.push(redirect || '/');
-    }
+    router.push('/login?signup=success');
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Create account</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Enter your credentials to continue
+            Get started with FrontDeskOS
           </p>
         </div>
 
@@ -88,6 +77,22 @@ function LoginForm() {
               {error}
             </div>
           )}
+
+          <div>
+            <label htmlFor="name" className="text-sm font-medium">
+              Full name
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your full name"
+              autoComplete="name"
+              disabled={loading}
+              className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+            />
+          </div>
 
           <div>
             <label htmlFor="email" className="text-sm font-medium">
@@ -114,8 +119,8 @@ function LoginForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              autoComplete="current-password"
+              placeholder="Min. 6 characters"
+              autoComplete="new-password"
               disabled={loading}
               className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
             />
@@ -126,18 +131,16 @@ function LoginForm() {
             disabled={loading}
             className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 
-        <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-          <a href="/login/forgot" className="underline underline-offset-4 hover:text-foreground">
-            Forgot password?
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Already have an account?{' '}
+          <a href="/login" className="underline underline-offset-4 hover:text-foreground">
+            Sign in
           </a>
-          <a href="/signup" className="underline underline-offset-4 hover:text-foreground">
-            Create account
-          </a>
-        </div>
+        </p>
       </div>
     </div>
   );
