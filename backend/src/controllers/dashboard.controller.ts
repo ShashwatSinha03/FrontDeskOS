@@ -7,7 +7,6 @@ import {
   knowledgeRequestRepository,
   businessRepository
 } from '../repositories';
-import { subscriptionService } from '../services/subscription.service';
 import { CustomerLifecycleState, EscalationStatus, KnowledgeRequestStatus } from '../types';
 
 const uuidParam = z.string().uuid('Invalid UUID parameter');
@@ -95,9 +94,6 @@ export class DashboardController {
       const bookedCount = leadStateBreakdown['Booked'] + leadStateBreakdown['Customer'];
       const conversionRate = totalLeads > 0 ? Math.round((bookedCount / totalLeads) * 100) : 0;
 
-      const subscription = await subscriptionService.getSubscriptionCapabilities(businessId);
-      const subStatus = await subscriptionService.getSubscriptionStatus(businessId);
-
       res.status(200).json({
         success: true,
         data: {
@@ -107,11 +103,6 @@ export class DashboardController {
           pendingKnowledgeRequests,
           appointmentsToday,
           conversionRate,
-          subscription: {
-            status: subscription.status,
-            planName: subStatus?.plan_name || 'Starter',
-            currentPeriodEnd: subStatus?.current_period_end || null,
-          },
         }
       });
     } catch (error: any) {

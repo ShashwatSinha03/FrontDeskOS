@@ -1,10 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireApiKey } from '../middleware/auth';
 import { resolveSession } from '../middleware/session';
-import { authenticate } from '../middleware/authenticate';
-import { loadProfile } from '../middleware/load-profile';
-import { requireSuperAdmin } from '../middleware/require-super-admin';
-import { requireSubscription } from '../middleware/require-subscription';
 import { chatController } from '../controllers/chat.controller';
 import { conversationController } from '../controllers/conversation.controller';
 import { dashboardController } from '../controllers/dashboard.controller';
@@ -16,7 +12,6 @@ import { cronController } from '../controllers/cron.controller';
 import { publicController } from '../controllers/public.controller';
 import { ownerController } from '../controllers/owner.controller';
 import { onboardingRouter } from './onboarding.routes';
-import { founderRouter } from './founder.routes';
 
 // ==========================================
 // Public Router — no authentication required
@@ -39,7 +34,6 @@ publicRouter.post('/appointments/book', (req: Request, res: Response) => appoint
 const adminRouter = Router();
 
 adminRouter.use(requireApiKey);
-adminRouter.use(requireSubscription);
 
 adminRouter.get('/dashboard/summary', (req: Request, res: Response) => dashboardController.getSummary(req, res));
 adminRouter.get('/leads', (req: Request, res: Response) => dashboardController.getLeads(req, res));
@@ -80,4 +74,4 @@ adminRouter.put('/recovery/config', (req: Request, res: Response) => recoveryCon
 // Onboarding wizard routes
 adminRouter.use(onboardingRouter);
 
-export { publicRouter, adminRouter, founderRouter };
+export { publicRouter, adminRouter };

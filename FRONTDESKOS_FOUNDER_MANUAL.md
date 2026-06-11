@@ -633,8 +633,6 @@ The admin panel lives at `/[businessSlug]/admin`. It is protected — only autho
 
 Assume you just closed a gym. Here is the exact workflow.
 
-> **June 2026 update**: Steps 2–8 below (Create Business Record through Configure AI, plus Create Admin Access) can now be done in one guided flow via the Onboarding Wizard at `/ops/onboarding`. Instead of 10 separate SQL/API operations, open the wizard, select an industry template, customize, and publish. One atomic transaction creates everything. The manual steps below remain available as a fallback and for understanding what the wizard does behind the scenes.
-
 ## Step 1: Information I Collect
 
 Before touching the system, get these from the business owner:
@@ -1047,71 +1045,13 @@ curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/admin \
 
 The API key is `838c8283-3c02-419a-b2b6-b847b6faad84`.
 
-## Method C: Using the Onboarding Wizard (V1 — June 2026)
-
-This is the recommended method. The wizard replaces the entire manual gauntlet with one guided flow.
-
-**URL**: `https://frontdeskos.vercel.app/ops/onboarding`
-
-**Setup** (one-time):
-1. Ensure Vercel and Render are both deployed with the latest code
-2. Verify the backend API key in Vercel env matches your admin key
-3. No other setup needed — the wizard fetches templates from the live backend
-
-**Flow** (7 steps):
-
-| Step | What You Do | What Happens |
-|------|------------|--------------|
-| 1. Select Industry | Click an industry card (Gym, Salon, Spa, Dental, Professional Services) | Frontend fetches template from backend — pre-filled services, FAQs, hours, greeting |
-| 2. Business Profile | Enter name, slug, tagline, phone, email, address, timezone | Validated in real-time |
-| 3. Services | Add/edit/remove services from the template defaults. Each needs name, description, duration, price | At least 1 service required to proceed |
-| 4. Hours | Set open/closed per day. Copy Mon-Fri button for quick entry | All 7 days required (closed days marked) |
-| 5. FAQs | Edit template FAQs or add new ones. Question + answer per entry | Minimum recommended: 5 |
-| 6. AI Config | Set greeting message, slot duration, escalation email | Greeting ≥ 5 chars, valid escalation email required |
-| 7. Review | See everything in one place. Edit any section inline. Validation summary shows errors | Can't publish with validation errors |
-
-**Publishing**:
-1. Click "Publish Tenant" on the review step
-2. Animated progress bar shows: Validating → Checking slug → Creating business → Creating services → Setting hours → Finalizing
-3. Success screen shows 3 URLs: Website (tenant page), Admin dashboard, Booking page
-4. Each URL has a Copy button. Open each in a new tab to verify
-5. LocalStorage draft is automatically cleared on success
-
-**Owner creation** (after publish):
-1. The success page shows a "Create Owner Account" form
-2. Enter owner name + email
-3. Backend calls Supabase Admin SDK (`auth.admin.createUser`) which sends an invite email
-4. Owner failure returns a warning but the tenant stays live
-
-**Key differences from SQL/API methods**:
-
-| Aspect | SQL / API | Wizard |
-|--------|-----------|--------|
-| Time | ~2 hours | 15-20 minutes |
-| Steps | 10+ separate operations | 1 guided flow |
-| Draft save | None | localStorage auto-save after every step |
-| Templates | None — start from scratch | 5 industry templates |
-| Risk | Partial writes, orphan data | Atomic transaction — all or nothing |
-| Idempotency | Manual check | Built-in per sessionId |
-| Owner creation | Manual SQL insert | Supabase Admin SDK invite |
-| Verification | Visit 7+ pages manually | Success page with URLs + checklist |
-| Skill required | SQL / curl knowledge | Click-through UI |
-
-**Gotchas**:
-- The wizard is ops-side. You still run it. Customer-facing self-service is the next gap.
-- If the backend is down or the API key is wrong, the wizard shows an error banner on step 1. Fix the backend first.
-- LocalStorage draft is per-browser. If you switch machines, the draft doesn't follow.
-- The slug must be unique. Attempting to publish with a taken slug returns an error — pick another.
-- Templates are fetched from the backend on industry selection. If a template changes, existing drafts loaded from localStorage still show the old data.
-
 ---
 
 ### Founder Checklist
 
-- [ ] I can create a complete tenant using Method A (SQL) in under 30 minutes
-- [ ] I can create a complete tenant using Method B (API calls) in under 15 minutes
-- [ ] I can create a complete tenant using Method C (Wizard) in under 20 minutes
-- [ ] Method C is now the recommended path for daily operations
+- [ ] I can create a complete tenant using SQL in under 30 minutes
+- [ ] I can create a complete tenant using API calls in under 15 minutes
+- [ ] I have both methods documented and available
 - [ ] I know the Minimum Information Required and get it before starting
 - [ ] I have a verification checklist to confirm the tenant is fully operational
 
@@ -1707,13 +1647,13 @@ Brutally honest assessment.
 
 | Process | Current State | Why It's a Problem |
 |---------|--------------|-------------------|
-| **Tenant creation** | Semi-automated via Onboarding Wizard | Wizard handles multi-table creation in one atomic flow. Still ops-triggered, not customer-facing. |
+| **Tenant creation** | Manual SQL or API calls | Every new client requires manual work. No self-service. |
 | **Admin access** | Manual database insert | No signup, no password reset, no self-service. |
 | **Billing** | Does not exist | Zero revenue collection. Cannot charge clients. |
-| **Onboarding** | Semi-automated via Onboarding Wizard | Wizard with industry templates, draft save, auto-publish. Owner invite automated via Supabase Admin SDK. Handover still manual. |
+| **Onboarding** | Entirely manual | You must do everything. No automated setup. |
 | **Client support** | Direct contact only | No ticket system, no knowledge base for clients. |
 | **Lead follow-up** | Manual for you | Demo leads come in but no automated outreach from you. |
-| **Monitoring** | Semi-automated via Founder OS | Founder OS provides cross-business health overview, activity feed, and metrics. Still no proactive alerts for backend issues. |
+| **Monitoring** | Manual checking | No automated alerts for backend issues. |
 
 ## Missing Features
 
@@ -1721,9 +1661,9 @@ Brutally honest assessment.
 |---------|--------|
 | **Authentication system** | Owners cannot sign in/out independently. No security. |
 | **Multi-role admin** | Cannot give staff limited access. |
-| **Multi-business dashboard** | Founder OS V1 provides aggregated views (overview, businesses, leads, appts, escalations, activity). Still missing: multi-business customer view, cross-business analytics. |
+| **Multi-business dashboard** | You cannot see all clients from one view. |
 | **Automated billing** | Cannot charge clients. Zero revenue. |
-| **Self-service onboarding** | Ops-side wizard exists (V1). Customer-facing self-service portal still missing. |
+| **Self-service onboarding** | You must do every onboarding personally. |
 | **Email notifications** | Owners must manually check dashboard. No alerts. |
 | **Analytics** | No lead conversion reports, no AI performance metrics. |
 | **SMS/WhatsApp integration** | Follow-ups only go through chat. No phone-based outreach. |
@@ -1734,106 +1674,25 @@ Brutally honest assessment.
 ## What Would Break at Scale
 
 **At 5 businesses**:
-- Founder OS reduces morning check to 2 minutes. Overview page shows all KPIs at a glance.
-- One-click Site/Admin links on every business row.
-- Manual tenant creation replaced by Onboarding Wizard.
+- Morning checklist takes 25 minutes. Doable but annoying.
+- Manual tenant creation is still manageable (one every few weeks).
 
 **At 20 businesses**:
-- Founder OS keeps morning check under 5 minutes. Health badges surface issues instantly.
-- Cross-business views for leads, appointments, escalations, subscriptions, activity.
-- Any backend issue still affects all 20 clients simultaneously.
-- Tenant creation is automated via the wizard. Customer-facing self-service still missing.
+- Morning checklist takes 1.5 hours. Not sustainable.
+- No multi-business dashboard — you need to visit 20 separate admin pages.
+- Any backend issue affects all 20 clients simultaneously.
+- Manual tenant creation becomes a significant time sink.
 - No automated billing means no revenue to hire help.
 
 **At 50 businesses**:
-- Founder OS handles cross-business views well (pagination, search, filters built for 100+).
-- But no proactive alerts means you still check manually.
+- System collapses without automation.
+- Cannot manage without multi-business view.
 - Backend on a single server (Render free tier) will not handle the load.
 - No queue/task system means follow-ups and escalations will be unreliable.
 - No proper monitoring means you won't know something is broken until a client complains.
 
 **At 100 businesses**:
 - Requires: proper infrastructure (load balancing, multiple servers), queue system, automated billing, multi-tenant admin dashboard, self-service onboarding, automated monitoring/alerting, dedicated support system, full-time team.
-
-## Gap Fixed: Tenant Creation via Onboarding Wizard (V1 — June 2026)
-
-**What existed before**: Creating a new tenant meant 10+ disconnected operations — create business → create 5 services → create 10 FAQs → create 7 business hours → configure AI greeting → set escalation rules → create admin access. Each was an independent SQL query or API call. No templates. No draft. No safety net. A single typo in a SQL statement left a business with missing services, broken hours, or a dead booking flow. Verification meant visiting 7 pages, booking a test appointment, and checking the admin dashboard — all manual.
-
-The two paths available:
-
-- **Method A (SQL)**: Direct database inserts. Fast but dangerous. No validation. No cross-table rollback.
-- **Method B (API calls)**: 15+ individual `curl` commands. Safer but tedious. No draft save. No templates. Both required the founder to execute every step in sequence. A 10-minute conceptual onboarding took 2 hours of context-switching between terminal, database console, and browser.
-
-**What the wizard does**: Replaces the entire manual gauntlet with one guided flow.
-
-- **Industry templates** — 5 pre-built templates (Gym, Salon, Spa, Dental, Professional Services) with suggested services, FAQs, hours, and greeting. Three clicks instead of starting from a blank page.
-- **One atomic transaction** — The backend wraps every database write in `BEGIN/COMMIT/ROLLBACK`. Either the entire tenant — business + services + schedules + onboarding metadata — is created, or nothing is. No more orphan businesses without services.
-- **Draft auto-save** — localStorage saves progress after every step. Walk away mid-wizard and come back — it picks up exactly where you left off. No more re-entering 10 FAQs because your laptop died.
-- **Idempotent by design** — Each session generates a unique UUID (`sessionId`). Publishing the same session twice returns the existing tenant. No duplicate businesses, no data corruption, no "did I already create this?"
-- **Owner invite via Supabase Admin SDK** — After publish, enter name + email. The system calls `supabase.auth.admin.createUser()` which sends an email invite. No more manual `admin_users` inserts. Owner failure never rolls back the tenant — the business stays live.
-- **Success page with live URLs** — Post-publish screen shows 3 verified URLs (website, admin, booking) with Copy buttons and a 6-item checklist. Every URL exists before you leave the page.
-
-**Before vs after in practice**:
-
-| Before (Manual) | After (Wizard) |
-|----------------|----------------|
-| 10+ separate SQL/API operations | 1 guided flow with 7 steps |
-| 2 hours per onboarding | 15-20 minutes |
-| No templates — start from scratch | 5 industry templates with smart defaults |
-| No draft — start over if interrupted | localStorage auto-save + resume modal |
-| No idempotency risk — duplicate tenants | Idempotent by `sessionId` |
-| Manual `admin_users` insert | Click + email → Supabase Admin SDK invite |
-| Manual bookmarking of 3+ URLs | Success page with Copy buttons + checklist |
-| SQL/API knowledge required | Point-and-click UI |
-
-**What it still doesn't fix**: The wizard is ops-side — someone from your team must still trigger it. Customer-facing self-service (where a business owner signs up and onboard themselves) is the next gap. No billing integration. No custom domain setup. No automated full verification (spot-checking the live site is still recommended).
-
-The tenant creation bottleneck is cracked. Onboarding Readiness goes from 15/100 → 55/100.
-
-## Gap Fixed: Founder OS V1 — Cross-Business Command Center (June 2026)
-
-**What existed before**: The founder had no single view of operations. To check on 5 businesses, you opened 5 separate admin dashboards — each with its own URL, its own login, its own loading state. To find a business with issues, you visited every dashboard individually. Morning checks took 25 minutes for 5 businesses. At 20 businesses, it was 1.5 hours — mathematically unsustainable.
-
-There was no way to:
-- See all businesses on one page
-- Know which businesses had health issues without visiting each one
-- Track cross-business metrics (total leads, appointments today, etc.)
-- View all escalations across all clients from one screen
-- Monitor platform-wide activity (who created what, when)
-- Launch onboarding without navigating away from operations
-- Open a tenant website or admin dashboard in one click from a single list
-
-**What Founder OS V1 does**: Replaces the mental model of "visit N separate dashboards" with a single command center.
-
-- **Overview page** — 6 metric cards (total businesses, active, leads today, appointments today, pending escalations, monthly revenue) + health summary + quick actions grid (Launch Onboarding, View Businesses, View Escalations, View Leads, View Appointments)
-- **Businesses page** — Paginated table of all businesses with health badges (healthy/attention/critical), plan, summary KPIs, search, and one-click Site/Admin links. Sorting and filtering built in.
-- **Business detail page** — Info card + Operations Links card (Website, Booking, Admin Dashboard, Services — each with Open + Copy) + metrics + recent leads/appointments/escalations. Every URL accessible in one click.
-- **Leads page** — Cross-business leads table with search by name/email/phone. Paginated.
-- **Appointments page** — Cross-business appointments table with search by customer/service. Paginated.
-- **Escalations page** — Cross-business escalations table with search by issue/customer. Paginated.
-- **Subscriptions page** — Cross-business subscription list with create dialog. Plan names (Starter/Growth/Pro/Custom), amounts, billing cycles.
-- **Activity page** — Platform-wide event feed showing business creations, appointments booked, escalations created, leads captured, subscriptions created, owner invites.
-- **FounderSidebar** — Persistent navigation with all pages + "Onboard Business" CTA button.
-
-**Before vs after**:
-
-| Before | After (Founder OS) |
-|--------|-------------------|
-| Open 5 separate admin dashboards to check on 5 businesses | One overview page shows all KPIs + health summary |
-| 25-minute morning check for 5 businesses | 2-minute glance at overview page |
-| No way to know which businesses have issues | Health badges (green/amber/red) on every business row |
-| Cannot see cross-business escalations | Escalations page lists all pending issues everywhere |
-| No activity tracking | Activity feed shows every platform event in chronological order |
-| Each tenant URL requires manual navigation | One-click Site + Admin links on every business row |
-| No centralized subscription management | Subscriptions page with create/edit |
-| Founder had to switch between 5+ browser tabs | Single sidebar navigates the entire OS |
-| 20 businesses = impossible to manage | Paginated, searchable, filterable at every level |
-
-**What it still doesn't fix**: No proactive alerts (you still check, the system doesn't tell you). No automated health checks that trigger notifications. No multi-business customer view. No cross-business analytics or reporting. The infrastructure still runs on a single server. But the operational bottleneck is cracked — the founder can now see everything from one place.
-
-The operations bottleneck is cracked. Operational Readiness goes from 10/100 → 40/100.
-
----
 
 ## Single Biggest Bottleneck
 
@@ -1843,11 +1702,11 @@ You have a functional product that can handle conversations, capture leads, and 
 
 No billing = no revenue = no hiring = everything falls on you.
 
-Onboarding wizard exists but is still ops-triggered = you are the trigger for every new client. Customer-facing self-service closes this gap.
+No self-service onboarding = you are the bottleneck for every new client.
 
-Multi-business view exists in V1 but no customer-facing self-service portal = the founder is still the trigger for every new client.
+No multi-business view = you cannot manage more than a handful of clients.
 
-The product is ready for 20 businesses. The operating system is catching up.
+The product is ready for 20 businesses. The operating system is not.
 
 ---
 
@@ -1865,13 +1724,13 @@ The product is ready for 20 businesses. The operating system is catching up.
 
 **Scoring: 0–100 for each category**
 
-## Product Readiness: 72/100
+## Product Readiness: 70/100
 
-**What works**: AI receptionist handles information, lead capture, and booking. Tenant website is professional. Admin dashboard shows relevant data. Chat widget works across all pages. Founder OS provides cross-business views for the operator.
+**What works**: AI receptionist handles information, lead capture, and booking. Tenant website is professional. Admin dashboard shows relevant data. Chat widget works across all pages.
 
-**What's missing**: Analytics, reporting, email notifications, custom domains, mobile access, proper authentication.
+**What's missing**: Analytics, reporting, email notifications, multi-business view for you, custom domains, mobile access, proper authentication.
 
-**Verdict**: The product is good enough to sell today. Customers get value. Founder OS added operator power features. But customer-facing power features are missing.
+**Verdict**: The product is good enough to sell today. Customers get value. But power features are missing.
 
 ## Sales Readiness: 20/100
 
@@ -1881,35 +1740,35 @@ The product is ready for 20 businesses. The operating system is catching up.
 
 **Verdict**: Cannot sell in any real sense. You can demonstrate but not transact.
 
-## Onboarding Readiness: 55/100
+## Onboarding Readiness: 15/100
 
-**What works**: Onboarding Wizard V1 provides an ops-side guided UI with 5 industry templates, draft auto-save, atomic tenant creation, idempotent publish, and owner invite via Supabase Admin SDK. A tenant that took 2 hours of manual SQL/API work can now be created in 15-20 minutes through a single guided flow. Verification URLs are displayed on the success page with copy buttons and checklist.
+**What works**: The workflow is documented (in this manual). You can onboard a business in ~2 hours.
 
-**What's missing**: The wizard is ops-side — someone from your team must still trigger it. No customer-facing self-service portal (where a business owner signs up and onboard themselves). No billing integration. No custom domain setup. No automated full verification of the live site.
+**What's missing**: No self-service onboarding. No admin UI for tenant creation. Every step requires SQL or API calls. No templates to speed up setup. No automated verification.
 
-**Verdict**: Tenant creation is no longer the bottleneck. Customer-facing self-service onboarding is the next gap to close.
+**Verdict**: Onboarding is a manual craft, not a process. Does not scale.
 
-## Operational Readiness: 40/100
+## Operational Readiness: 10/100
 
-**What works**: Founder OS V1 provides a cross-business command center — overview page with 6 KPIs, health badges (healthy/attention/critical), paginated business list with one-click Site/Admin links, cross-business leads/appointments/escalations/subscriptions views, platform-wide activity feed, and quick actions including onboarding launch. Morning check dropped from 25+ minutes to under 2 minutes.
+**What works**: You can check system health manually. You can troubleshoot with this manual.
 
-**What's missing**: No proactive alerts (you still check, the system doesn't tell you). No automated health checks that trigger notifications. No multi-business customer view. No support/ticketing system. No SLA you can commit to.
+**What's missing**: No monitoring. No alerts. No multi-business dashboard. No support system. No automated health checks. No backup verification process. No SLA you can commit to.
 
-**Verdict**: Operating FrontDeskOS is now manageable from one dashboard. But without proactive alerts, you still discover issues by checking, not by being told.
+**Verdict**: Operating FrontDeskOS is a part-time job that becomes a full-time job at 5 clients.
 
-## Scalability Readiness: 20/100
+## Scalability Readiness: 5/100
 
-**What works**: Founder OS backend endpoints are built with pagination, search, filtering, and parameterized queries designed for 100+ businesses. The operational layer can scale to dozens of clients without architectural changes.
+**What works**: The technical architecture (Next.js + Express + Supabase) can scale with investment.
 
 **What's missing**: Single-server backend. No queue system. No caching. No CDN strategy. No automated scaling. No database connection pooling tuned for many tenants. No separation of concerns (AI processing could block API responses).
 
-**Verdict**: The Founder OS operational layer handles 100+ businesses from a UI/query perspective. But the underlying infrastructure (single server, no queue, no caching) will still break under real production load.
+**Verdict**: Works for a demo. Works for a few clients. Breaks at any real scale.
 
 ---
 
-## Overall Readiness: 41/100
+## Overall Readiness: 24/100
 
-The product exists and works. Onboarding is no longer the bottleneck (wizard). Operations is no longer a fire drill (Founder OS). The founder can see every business, every lead, every appointment, every escalation, every subscription, every platform event from a single command center. Sales and infrastructure remain the two biggest gaps — billing is still zero, and the backend runs on a single server.
+The product exists and works. The business to sell, onboard, bill, and support it does not.
 
 ---
 
@@ -1917,7 +1776,7 @@ The product exists and works. Onboarding is no longer the bottleneck (wizard). O
 
 - [ ] I understand each readiness score and why it's that number
 - [ ] I know what needs to improve to raise each score
-- [ ] I accept the overall 41/100 assessment (up from 33/100 — onboarding + ops bottlenecks cracked)
+- [ ] I accept the overall 24/100 assessment
 - [ ] I can prioritize which score to improve first based on business goals
 
 ---
@@ -2527,7 +2386,7 @@ The billing flow is 100% manual. Every single step requires your action.
 **Operational bottlenecks**:
 - Morning check takes 1.5 hours — unsustainable
 - Manual billing for 20 clients becomes a half-day task per month
-- Tenant creation is wizard-assisted but not fully self-service for customers
+- Manual tenant creation for new clients is painful
 - Client support requests start coming in regularly
 
 **Technical bottlenecks**:
@@ -2565,7 +2424,7 @@ The billing flow is 100% manual. Every single step requires your action.
 - You move to sales and strategy
 
 **Automation opportunities**:
-- Customer-facing self-service onboarding portal (ops-side wizard exists)
+- Automated onboarding flow
 - Self-service dashboard for clients
 - Automated health monitoring and alerts
 - Client communication templates
@@ -2595,7 +2454,7 @@ The billing flow is 100% manual. Every single step requires your action.
 - Everything should be automated by this point
 - Self-serve client portal
 - Automated billing with dunning
-- Customer-facing self-service onboarding (ops-side wizard exists)
+- Automated onboarding flows
 - AI-powered support for common client questions
 
 ---
@@ -2605,16 +2464,15 @@ The billing flow is 100% manual. Every single step requires your action.
 | Rank | What | Why | Effort | Impact |
 |------|------|-----|--------|--------|
 | 1 | **Billing system** | Zero revenue is existential risk. Cannot hire, cannot scale, cannot invest without revenue. | Medium | Critical |
-| 2 | ~~**Multi-business admin dashboard**~~ | ✅ **Built (June 2026)**. Founder OS V1 covers cross-business overview, leads, appointments, escalations, subscriptions, activity, health. | Done | High |
-| 3 | ~~**Self-service tenant creation UI**~~ | ✅ **Built (June 2026)**. Onboarding Wizard V1 covers ops-side creation. Customer-facing self-service still missing. | Done | High |
-| 4 | **Customer-facing self-service** | Let business owners sign up and onboard themselves without founder involvement. | Medium | High |
-| 5 | **Authentication system** | Owners need proper login. No security = no trust. | Medium | High |
-| 6 | **Monitoring + alerts** | You discover issues when client complains. Need proactive alerts. | Low | High |
-| 7 | **Email notifications for owners** | Owners won't check dashboard. Need email alerts for leads/escalations. | Low | High |
-| 8 | **Sales CRM basics** | Track prospects through pipeline. Currently tracking in your head/notes. | Low | Medium |
-| 9 | **Analytics/reporting** | Show owners their lead conversion, AI performance, booking trends. | Medium | Medium |
-| 10 | **Queue system for AI** | Prevent slow responses under load. | Medium | Medium |
-| 11 | **Custom domains** | Let businesses use their own domain. | Medium | Medium |
+| 2 | **Multi-business admin dashboard** | You cannot manage 20 separate dashboards. Need unified view. | Medium | High |
+| 3 | **Self-service tenant creation UI** | You are the bottleneck for every new client. Need admin UI. | Medium | High |
+| 4 | **Authentication system** | Owners need proper login. No security = no trust. | Medium | High |
+| 5 | **Monitoring + alerts** | You discover issues when client complains. Need proactive alerts. | Low | High |
+| 6 | **Email notifications for owners** | Owners won't check dashboard. Need email alerts for leads/escalations. | Low | High |
+| 7 | **Sales CRM basics** | Track prospects through pipeline. Currently tracking in your head/notes. | Low | Medium |
+| 8 | **Analytics/reporting** | Show owners their lead conversion, AI performance, booking trends. | Medium | Medium |
+| 9 | **Queue system for AI** | Prevent slow responses under load. | Medium | Medium |
+| 10 | **Custom domains** | Let businesses use their own domain. | Medium | Medium |
 
 ---
 
@@ -2793,15 +2651,15 @@ Can you demo FrontDeskOS to any of the four target industries? Can you handle ob
 
 ## Current Readiness Score
 
-**Overall: 41/100**
+**Overall: 24/100**
 
 | Dimension | Score | What It Means |
 |-----------|-------|---------------|
-| Product Readiness | 72/100 | Good enough to sell. Founder OS added cross-business views. Missing: analytics, auth, custom domains. |
+| Product Readiness | 70/100 | Good enough to sell. Missing power features. |
 | Sales Readiness | 20/100 | Can demo but cannot transact. |
-| Onboarding Readiness | 55/100 | Wizard V1 automated tenant creation. Next: customer-facing self-service. |
-| Operational Readiness | 40/100 | Founder OS V1 provides cross-business command center. Morning check: 2 min. Still no proactive alerts. |
-| Scalability Readiness | 20/100 | Founder OS queries handle 100+ businesses. Infrastructure still single-server. |
+| Onboarding Readiness | 15/100 | Manual craft, not a process. |
+| Operational Readiness | 10/100 | No monitoring, no alerts, no multi-business view. |
+| Scalability Readiness | 5/100 | Single server. No queue. No redundancy. |
 
 ## Biggest Risk
 
@@ -2850,24 +2708,24 @@ Can you demo FrontDeskOS to any of the four target industries? Can you handle ob
 Ranked by impact:
 
 1. **Set a price and start charging.** Even ₹2,000/month. The product delivers value. Start collecting revenue. Use UPI/bank transfer manually. Do not wait for a billing system.
-2. **Onboard 1-2 clients using the Wizard.** Go to `/ops/onboarding`, pick an industry, fill the forms, publish. Takes 15-20 minutes. Get feedback on the wizard itself.
+2. **Onboard 1-2 clients manually.** Prove the process works. Document everything (you already have this manual). Get feedback.
 3. **Build the billing system.** This is your #1 technical priority. Nothing else matters if you can't collect money.
-4. ~~**Build a multi-business dashboard.**~~ ✅ **Done (June 2026).** Founder OS V1 at `/ops`. Covers overview, businesses, leads, appointments, escalations, subscriptions, activity, health. Next: proactive alerts, cross-business analytics.
+4. **Build a multi-business dashboard.** You cannot scale beyond 5 clients without this.
 5. **Build authentication for owner admin access.** Self-service login for owners. Remove the middleware dependency.
 6. **Set up monitoring and alerts.** You should know when the backend is down before your clients do.
 7. **Create sales collateral.** One-pager, comparison sheet, case study from your first client, demo video.
 8. **Get 10 paying clients.** Then you have real data, real feedback, and real revenue.
 9. **Hire a part-time support person.** Frees you to focus on sales and product.
-10. ~~**Build automated onboarding UI.**~~ ✅ **Done (June 2026).** Next: customer-facing self-service portal so owners can onboard themselves.
+10. **Build automated onboarding UI.** Stop creating tenants manually via SQL/API.
 
 ## If I Had Only 30 Days
 
-Focus on one thing: **get 3 paying clients at ₹2,500-3,000/month.** Do not build anything. Use the Onboarding Wizard for tenant creation. The goal is revenue validation.
+Focus on one thing: **get 3 paying clients at ₹2,500-3,000/month.** Do not build anything. Use manual processes. The goal is revenue validation.
 
 Actions:
 - Day 1-7: Contact 20 gyms/salons in your network
 - Day 8-14: Demo to interested prospects
-- Day 15-21: Close 3 clients, onboard them via the Wizard at `/ops/onboarding`
+- Day 15-21: Close 3 clients, onboard them manually
 - Day 22-30: Collect first payment, get feedback, do weekly review
 
 If you cannot get 3 paying clients in 30 days, the problem is not the product — it's the sales process. Fix that first.
@@ -2889,7 +2747,7 @@ Use it for:
 
 ## If I Had Ten Clients
 
-- Use the Founder OS at `/ops`. It handles cross-business views, health, activity. This is already built.
+- Build or buy the multi-business dashboard. This is non-negotiable.
 - Implement basic monitoring (uptime check every 5 minutes).
 - Create a simple support process (email-based, respond within 4 hours).
 - Set up automated billing or at minimum, batch invoice generation.
@@ -2899,12 +2757,12 @@ Use it for:
 
 The sequence:
 
-1. **Month 1**: Get 3 clients at ₹3,000. Revenue: ₹9k. Use the Onboarding Wizard for tenant creation.
+1. **Month 1**: Get 3 clients at ₹3,000. Revenue: ₹9k. Manual everything.
 2. **Month 2**: Build billing system. Get 3 more clients. Revenue: ₹18k.
-3. **Month 3**: ~~Build multi-business dashboard~~ ✅ **Done (June 2026).** Founder OS V1 at `/ops`. Get 4 more clients. Revenue: ₹30k.
-4. **Month 4**: Build authentication + customer-facing self-service portal. Get 5 more clients. Revenue: ₹45k.
+3. **Month 3**: Build multi-business dashboard. Get 4 more clients. Revenue: ₹30k.
+4. **Month 4**: Build authentication + owner onboarding flow. Get 5 more clients. Revenue: ₹45k.
 5. **Month 5**: Hire part-time support. Get 5 more clients. Revenue: ₹60k.
-6. **Month 6**: Build advanced onboarding features (custom domains, billing integration). Get 8 more clients. Revenue: ₹84k.
+6. **Month 6**: Build self-service tenant creation. Get 8 more clients. Revenue: ₹84k.
 7. **Month 7**: Get 5 more clients. Revenue: ₹99k → ₹1L MRR.
 
 **Total clients needed**: ~33.

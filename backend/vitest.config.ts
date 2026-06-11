@@ -9,7 +9,7 @@ export default defineConfig({
     env: {
       NODE_ENV: 'test',
       DATABASE_URL: 'postgres://localhost:5432/frontdeskos_test',
-      ADMIN_API_KEY: 'fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d',
+      ADMIN_API_KEY: 'test-api-key',
       LLM_PROVIDER: 'openai',
       OPENAI_API_KEY: 'test-key',
       SUPABASE_URL: 'https://test.supabase.co',

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
-const ADMIN_API_KEY = 'fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d';
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || '';
 
 async function proxy(req: NextRequest, method: string) {
   const path = req.nextUrl.pathname.replace('/api/admin/', '');
@@ -9,10 +9,6 @@ async function proxy(req: NextRequest, method: string) {
   const url = `${BACKEND_URL}/${path}${search}`;
 
   const headers: Record<string, string> = { 'x-api-key': ADMIN_API_KEY };
-
-  // Forward Authorization header (Bearer token) for session-based auth
-  const authHeader = req.headers.get('authorization');
-  if (authHeader) headers['Authorization'] = authHeader;
 
   let body: BodyInit | undefined;
   if (method !== 'GET' && method !== 'HEAD') {
