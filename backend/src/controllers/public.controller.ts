@@ -17,7 +17,7 @@ export class PublicController {
       const servicesQuery = `
         SELECT id, name, description, price_min, price_max, duration_minutes
         FROM services
-        WHERE business_id = $1
+        WHERE business_id = $1 AND is_active = true
         ORDER BY name ASC
       `;
       const servicesRes = await pool.query(servicesQuery, [business.id]);
@@ -61,7 +61,7 @@ export class PublicController {
       const servicesQuery = `
         SELECT id, name, description, price_min, price_max, duration_minutes
         FROM services
-        WHERE business_id = $1
+        WHERE business_id = $1 AND is_active = true
         ORDER BY name ASC
       `;
       const servicesRes = await pool.query(servicesQuery, [business.id]);

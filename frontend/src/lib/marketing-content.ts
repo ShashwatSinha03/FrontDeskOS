@@ -103,69 +103,69 @@ export interface MarketingContent {
 
 export const defaultContent: MarketingContent = {
   hero: {
-    headline: 'Never Miss Another Customer.',
+    headline: 'How Many Customers Did You Miss Today?',
     subheadline:
-      'FrontDeskOS acts like a 24/7 AI receptionist that answers questions, captures leads, books appointments, follows up automatically, and escalates urgent issues to your team.',
+      'FrontDeskOS handles enquiries, bookings, follow-ups, and customer questions 24/7 so opportunities don not disappear between business hours.',
     primaryCta: { label: 'Book a Demo', href: '#cta' },
-    secondaryCta: { label: 'See Live Demo', href: '/brightsmile-dental' },
+    secondaryCta: { label: 'See It Live', href: '/brightsmile-dental' },
   },
 
   problem: {
-    headline: 'Most businesses lose customers because:',
+    headline: 'Customers do not disappear by accident.',
     problems: [
-      { text: 'Calls go unanswered' },
-      { text: 'Messages arrive after hours' },
-      { text: 'Staff forget follow-ups' },
+      { text: 'Inconsistent follow-ups' },
+      { text: 'Manual processes' },
+      { text: 'Inconsistent follow-ups' },
       { text: 'Leads slip through the cracks' },
     ],
-    result: 'Lost revenue.',
+    result: 'Opportunities become losses.',
   },
 
   solution: {
-    headline: 'FrontDeskOS handles everything:',
+    headline: 'The work nobody has time for. Done automatically.',
     items: [
-      { label: 'Lead Capture', description: 'Every inquiry becomes a tracked lead with full contact details and conversation history.' },
-      { label: 'Appointment Booking', description: 'Customers book directly through chat. Calendar syncs automatically.' },
-      { label: 'FAQ Responses', description: 'Answers common questions instantly using your business knowledge base.' },
-      { label: 'Customer Follow-Ups', description: 'Automated re-engagement for inactive leads and post-appointment check-ins.' },
-      { label: 'Escalation Management', description: 'Flags urgent issues — legal threats, complaints, emergencies — for human attention.' },
-      { label: 'Customer Tracking', description: 'Full lifecycle view from first inquiry to booked customer.' },
-      { label: 'Dashboard Reporting', description: 'See lead volume, conversion rates, escalations, and team performance at a glance.' },
-      { label: 'Pilot Program Available', description: 'FrontDeskOS is currently accepting limited pilot partners. Get priority support and shape the product roadmap.' },
+      { label: 'Lead Capture', description: 'No more forgotten messages, lost calls, or missing contact details.' },
+      { label: 'Appointment Booking', description: 'Customers schedule instantly without waiting for a callback.' },
+      { label: 'FAQ Responses', description: 'Pricing, services, availability, directions—handled instantly.' },
+      { label: 'Customer Follow-Ups', description: 'Every lead gets consistent follow-ups until they are ready to buy.' },
+      { label: 'Escalation Management', description: 'Critical issues are escalated immediately.' },
+      { label: 'Customer Tracking', description: 'From first enquiry to a booking customer.' },
+      { label: 'Dashboard Reporting', description: 'See every lead and customer in one place.' },
+      { label: 'Pilot Program Available', description: 'Currently accepting limited pilot partners. Get priority support and shape the product roadmap.' },
     ],
   },
 
   howItWorks: {
-    headline: 'How It Works',
+    headline: 'From enquiry to customer. Without manual follow-ups.',
     steps: [
-      { number: 1, title: 'Customer visits your website', description: 'The chat widget appears and greets them instantly.' },
-      { number: 2, title: 'AI receptionist answers questions', description: 'Answers FAQs, discusses services, and handles objections naturally.' },
-      { number: 3, title: 'AI captures lead information', description: 'Name, email, phone, and intent are recorded automatically.' },
-      { number: 4, title: 'Appointment gets booked', description: 'Customer picks a time slot. Calendar is updated. Confirmation sent.' },
-      { number: 5, title: 'Business sees everything in dashboard', description: 'Full lead profile, conversation history, and lifecycle tracking.' },
+      { number: 1, title: 'They get an answer immediately.', description: 'No waiting for business hours. No waiting for callbacks.' },
+      { number: 2, title: 'Their questions get handled.', description: 'Services, pricing, availability, FAQs—all covered automatically.' },
+      { number: 3, title: 'Their interest gets captured.', description: 'Contact details, intent, and conversation history are recorded.' },
+      { number: 4, title: 'They take the next step', description: 'Appointments, consultations, or bookings happen instantly.' },
+      { number: 5, title: 'Nothing falls through the cracks.', description: 'You see everything in one place' },
     ],
   },
 
   showcase: {
-    headline: 'Everything you need to run your front desk.',
+    headline: 'Built for the conversations that drive revenue.',
     items: [
-      { label: 'Chat Widget', description: 'Embeddable widget that handles inquiries 24/7.' },
-      { label: 'Customer Dashboard', description: 'Full lead profiles with lifecycle tracking.' },
-      { label: 'Appointments', description: 'All bookings in one place with status management.' },
-      { label: 'Escalations', description: 'Urgent issues flagged for immediate attention.' },
-      { label: 'Follow-Ups', description: 'Automated re-engagement campaigns.' },
+      { label: 'Conversations', description: 'Manage enquiries from the first message onward.' },
+      { label: 'Customers', description: 'Track relationships, not spreadsheets.' },
+      { label: 'Bookings', description: 'Keep schedules organized automatically.' },
+      { label: 'Escalations', description: 'Handle critical situations before they become problems.' },
+      { label: 'Follow-Ups', description: 'Stay top-of-mind automatically.' },
     ],
   },
 
   industries: {
     headline: 'Built for service businesses.',
     industries: [
-      { name: 'Dental Clinics', description: 'Handle new patient inquiries, insurance questions, and booking.' },
-      { name: 'Salons', description: 'Capture walk-in traffic and convert to appointments.' },
-      { name: 'Gyms', description: 'Answer membership questions and schedule tours.' },
-      { name: 'Spas', description: 'Handle service inquiries and booking preferences.' },
-      { name: 'Wellness Clinics', description: 'Manage patient intake and follow-up care.' },
-      { name: 'Service Businesses', description: 'Any business that needs 24/7 front desk coverage.' },
+      { name: 'Dental Clinics', description: 'Patients want answers before they book.' },
+      { name: 'Salons', description: 'Customers expect instant scheduling.' },
+      { name: 'Gyms', description: 'Prospects compare multiple options quickly.' },
+      { name: 'Spas', description: 'Experience starts before the appointment.' },
+      { name: 'Wellness Clinics', description: 'Consistent follow-up matters.' },
+      { name: 'Service Businesses', description: 'Every enquiry is a potential customer.' },
     ],
   },
 
@@ -182,17 +182,17 @@ export const defaultContent: MarketingContent = {
   },
 
   founder: {
-    headline: "Built by someone who's been there.",
+    headline: "Good businesses lose customers every day.",
     name: 'Shashwat Sinha',
     title: 'Founder & CEO',
     story:
-      "I built FrontDeskOS because I watched local businesses lose customers every single day — not because their service was bad, but because nobody answered the phone after hours. A missed call is a lost customer. A slow response is a lost lead. FrontDeskOS fixes that. It's the front desk that never sleeps, never forgets, and never puts a customer on hold.",
+      "The issue was never a lack of demand. Customers were already reaching out. The problem was what happened next. Missed calls. Delayed responses. Forgotten follow ups. Good businesses were losing customers they never even knew they had. FrontDeskOS exists to close that gap. So every conversation gets answered, every lead gets tracked, and every opportunity has a chance to become revenue.",
   },
 
   cta: {
     headline: 'Stop Losing Customers After Hours.',
     subheadline:
-      'FrontDeskOS acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.\n\nWhile your staff focuses on serving customers, FrontDeskOS makes sure no inquiry gets missed.',
+    'The phone does not stop ringing when the workday ends. Messages keep coming. Questions keep coming. Opportunities keep coming. FrontDeskOS makes sure they do not go unanswered.',
     primaryCta: {
       label: 'Book a Demo',
       href: 'https://calendly.com/sinhashashwat21/30min',

@@ -167,6 +167,7 @@ export interface Service {
   priceMin: number;
   priceMax: number;
   durationMinutes: number;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

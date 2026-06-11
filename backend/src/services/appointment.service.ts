@@ -162,6 +162,7 @@ export class AppointmentService {
       priceMin: Number(r.price_min),
       priceMax: Number(r.price_max),
       durationMinutes: r.duration_minutes,
+      isActive: r.is_active,
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     };

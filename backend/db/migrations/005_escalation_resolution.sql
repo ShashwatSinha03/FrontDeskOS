@@ -1,0 +1,3 @@
+ALTER TABLE escalations
+ADD COLUMN IF NOT EXISTS resolved_by UUID,
+ADD COLUMN IF NOT EXISTS resolution_note TEXT;

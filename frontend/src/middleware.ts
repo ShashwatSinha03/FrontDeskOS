@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
 
-export function middleware(request: NextRequest) {
+const PROTECTED_OPS = '/ops';
+const PROTECTED_ADMIN = /^\/[a-z0-9]+(?:[-][a-z0-9]+)*\/admin(?:\/|$)/;
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip internal Next.js paths
@@ -16,6 +20,19 @@ export function middleware(request: NextRequest) {
   // Root path — always serve marketing page
   if (pathname === '/') {
     return NextResponse.next();
+  }
+
+  // Auth check for protected routes
+  if (pathname.startsWith(PROTECTED_OPS) || PROTECTED_ADMIN.test(pathname)) {
+    const { user, supabaseResponse } = await updateSession(request);
+
+    if (!user) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirectTo', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    return supabaseResponse;
   }
 
   // Skip if already on a slug path (e.g. /some-slug/...)

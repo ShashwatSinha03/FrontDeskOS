@@ -2,6 +2,11 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import config from './config';
 import { publicRouter, adminRouter } from './routes/api.routes';
+import { meRouter } from './routes/me.routes';
+import { founderRouter } from './routes/founder.routes';
+import { teamRouter } from './routes/team.routes';
+import { settingsRouter } from './routes/settings.routes';
+import { operationalRouter } from './routes/operational.routes';
 import { createRateLimiter } from './middleware/rate-limit';
 
 const app = express();
@@ -33,6 +38,11 @@ app.use('/api', adminLimiter);
 app.use(express.json({ limit: '10kb' }));
 
 app.use('/api', publicRouter);
+app.use('/api', meRouter);
+app.use('/api', founderRouter);
+app.use('/api', teamRouter);
+app.use('/api', settingsRouter);
+app.use('/api', operationalRouter);
 app.use('/api', adminRouter);
 
 app.get('/health', (req: Request, res: Response) => {

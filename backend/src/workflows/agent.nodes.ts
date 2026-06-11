@@ -94,9 +94,9 @@ function safeParseJson<T>(text: string): T | null {
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchServices(businessId: string) {
   const query = `
-    SELECT id, business_id, name, description, price_min, price_max, duration_minutes, created_at, updated_at
+    SELECT id, business_id, name, description, price_min, price_max, duration_minutes, is_active, created_at, updated_at
     FROM services
-    WHERE business_id = $1
+    WHERE business_id = $1 AND is_active = true
     ORDER BY name ASC
   `;
   const res = await pool.query(query, [businessId]);
@@ -108,6 +108,7 @@ async function fetchServices(businessId: string) {
     priceMin: parseFloat(row.price_min),
     priceMax: parseFloat(row.price_max),
     durationMinutes: row.duration_minutes,
+    isActive: row.is_active,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   }));
