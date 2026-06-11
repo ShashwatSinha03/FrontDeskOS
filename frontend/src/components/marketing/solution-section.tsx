@@ -12,10 +12,11 @@ export function SolutionSection({ headline, items }: SolutionContent) {
           </h2>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-5xl gap-px overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-800 sm:grid-cols-2">
+        <div className="mx-auto mt-16 grid max-w-5xl gap-4 sm:grid-cols-2">
           {items.map((item, i) => (
             <AnimatedContent
               key={i}
+              className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition hover:border-zinc-700 hover:bg-zinc-900/80"
               distance={110}
               direction="vertical"
               reverse={false}
@@ -27,13 +28,11 @@ export function SolutionSection({ headline, items }: SolutionContent) {
               threshold={0.1}
               delay={0.5 + i * 0.15}
             >
-              <div className="bg-zinc-900/90 p-6 transition hover:bg-zinc-900">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/50">
-                  <Radio className="h-4 w-4 text-blue-400" />
-                </div>
-                <h3 className="mt-4 text-sm font-semibold text-white">{item.label}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{item.description}</p>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/50">
+                <Radio className="h-4 w-4 text-blue-400" />
               </div>
+              <h3 className="mt-4 text-sm font-semibold text-white">{item.label}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{item.description}</p>
             </AnimatedContent>
           ))}
         </div>
