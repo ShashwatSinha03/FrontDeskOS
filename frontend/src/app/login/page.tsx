@@ -68,10 +68,17 @@ function LoginForm() {
     });
     const json = await res.json();
 
-    if (json.success && json.data?.global_role === 'SUPER_ADMIN') {
+    if (!json.success) {
+      setError(json.error || 'Failed to verify admin access');
+      setLoading(false);
+      return;
+    }
+
+    if (json.data?.global_role === 'SUPER_ADMIN') {
       router.push(redirect || '/ops');
     } else {
-      router.push(redirect || '/');
+      setError(`Access denied. Your role (${json.data?.global_role || 'none'}) does not have admin privileges.`);
+      setLoading(false);
     }
   }
 
