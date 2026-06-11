@@ -11,6 +11,7 @@ import { recoveryController } from '../controllers/recovery.controller';
 import { cronController } from '../controllers/cron.controller';
 import { publicController } from '../controllers/public.controller';
 import { ownerController } from '../controllers/owner.controller';
+import { onboardingRouter } from './onboarding.routes';
 
 // ==========================================
 // Public Router — no authentication required
@@ -69,5 +70,8 @@ adminRouter.post('/cron/follow-ups', (req: Request, res: Response) => cronContro
 
 adminRouter.get('/recovery/config', (req: Request, res: Response) => recoveryController.getConfig(req, res));
 adminRouter.put('/recovery/config', (req: Request, res: Response) => recoveryController.updateConfig(req, res));
+
+// Onboarding wizard routes
+adminRouter.use(onboardingRouter);
 
 export { publicRouter, adminRouter };
