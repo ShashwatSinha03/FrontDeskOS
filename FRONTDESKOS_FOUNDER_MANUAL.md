@@ -444,7 +444,7 @@ Each tenant (client business) gets a dedicated subdomain-page at `/[businessSlug
 
 # SECTION 5 — Every Admin Page
 
-The admin panel lives at `/[businessSlug]/admin`. It is protected — only authorized users can access it. Currently there is no self-service login. You must create admin access in the database.
+The admin panel lives at `/[businessSlug]/admin`. Currently it is **not protected** — anyone with the URL can access it. Authentication was removed during cleanup and must be rebuilt.
 
 ## Route: `/[businessSlug]/admin`
 
@@ -839,59 +839,38 @@ Use this for every new business:
 
 ## How admin access works today
 
-Currently, admin access is **not self-service**. There is no signup page, no "forgot password," no role management. Admin access is created manually in the database.
+Currently, admin access is **completely open**. There is no authentication, no login page, no password, no middleware protection. Anyone who knows the URL `/[businessSlug]/admin` can view the dashboard.
 
-## How do I create an owner account?
+This is a temporary state. Authentication was reverted during cleanup and will be rebuilt.
 
-1. Insert a record in the `admin_users` table:
-   - `business_id`: The ID of the business
-   - `email`: Owner's email address
-   - `role`: Currently no role system — all admin users have the same access
-2. The owner can now access `/[businessSlug]/admin` when authenticated
+## How do I give an owner access?
 
-## How does login work?
+Just send them the URL: `https://frontdeskos.vercel.app/[businessSlug]/admin`
 
-Today, the admin panel uses middleware-level authentication. Access is controlled by a combination of:
-- The admin secret key (configured via environment variable)
-- The admin record in the database matching the business
-
-This means **login is not a typical email/password flow**. Access is granted by the system recognizing the user as an admin for that business.
-
-## How do I create a staff account?
-
-**Currently not supported.** There is no multi-user or role-based system. Every admin user has the same level of access to the same dashboard. If you need to give someone access, you create an admin record for them — but they will see everything the owner sees.
-
-## How do I reset access?
-
-If an owner loses access:
-1. Check if the `admin_users` record exists and is correct
-2. If the record is missing, recreate it
-3. If the authentication middleware is the issue, verify the environment variables are correct
-4. Currently no self-service password reset — you must do this manually
+There is no account creation, no login step, no password. The dashboard is publicly accessible.
 
 ## How do I remove access?
 
-1. Delete or disable the `admin_users` record for that person
-2. They will no longer be able to access the admin panel
+**Cannot currently.** Since there is no authentication at all, there is no way to restrict access. Anyone with the URL can view the dashboard. The only workaround is to not share the URL publicly.
 
 ## Current limitations (be honest)
 
-- **No proper authentication system.** The middleware-based approach works but is not user-friendly. Owners cannot sign up or log in independently.
-- **No role management.** Cannot give read-only access to a staff member or limited access to specific pages.
-- **No password system.** No forgot password flow. No password reset. No email-based authentication.
-- **No multi-business access.** One admin user can only access one business dashboard. Cannot have a super-admin view across all clients.
-- **Manual setup required.** Every new admin user requires a database insert. Not scalable for self-service onboarding.
+- **Absolutely no security.** Anybody with the URL can see the dashboard. Do not share admin URLs broadly until authentication is rebuilt.
+- **No owner distinction.** Every visitor to the admin URL sees the same dashboard. No way to identify who is viewing it.
+- **No role management.** Cannot give read-only access or distinguish between owner and staff.
+- **No multi-business access for you.** You must visit each business's admin URL separately.
+- **No signup, login, or password system.** None of it exists yet.
 
-This is a significant gap. If you onboard 20 businesses, you will need to create 20 admin records manually. If any owner loses access, you will need to fix it manually.
+This is a critical gap. Authentication must be rebuilt before onboarding real clients.
 
 ---
 
 ### Founder Checklist
 
-- [ ] I understand how admin access works today and its limitations
-- [ ] I know how to create, remove, and reset admin access
-- [ ] I know that multi-user and role-based access do not exist yet
-- [ ] I have documented that owners cannot self-register
+- [ ] I understand admin URLs are publicly accessible
+- [ ] I know not to share admin URLs publicly
+- [ ] I know authentication will need to be rebuilt
+- [ ] I understand this is the #1 security risk right now
 
 ---
 
@@ -980,12 +959,9 @@ INSERT INTO business_hours (business_id, day_of_week, open_time, close_time, is_
 
 Set the AI greeting and behavior parameters for the business. This is typically done through the database or environment configuration that controls the LangGraph flow.
 
-### Step 6: Create admin access
+### Step 6: Verify (no admin access to create — dashboard is open)
 
-```sql
-INSERT INTO admin_users (business_id, email, created_at) VALUES
-  ('BUSINESS_ID', 'priya@glamoursalon.in', NOW());
-```
+Admin pages are currently publicly accessible at `/[slug]/admin`. No account creation needed. Authentication will be rebuilt later.
 
 ### Step 7: Verify
 
@@ -997,6 +973,20 @@ INSERT INTO admin_users (business_id, email, created_at) VALUES
 - Start a chat and ask a FAQ question
 - Book a test appointment
 - Verify appointment appears in admin
+
+## Method C: Using the Onboarding Wizard (UI)
+
+The wizard at `https://frontdeskos.vercel.app/ops/onboarding` provides a step-by-step UI for creating a new business. It handles business creation, services, FAQs, hours, AI greeting, and publishing — all from one flow.
+
+1. Visit `/ops/onboarding`
+2. Enter business info (name, slug, contact details)
+3. Add services (name, description, duration, price)
+4. Add FAQs (question, answer)
+5. Set business hours (one record per day)
+6. Configure AI greeting message
+7. Review and publish
+
+The wizard creates all records automatically and validates each step before publishing.
 
 ## Method B: Using API Endpoints
 
@@ -1036,14 +1026,11 @@ curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/hours \
   -H "x-api-key: YOUR_API_KEY" \
   -d '{"day_of_week": 1, "open_time": "09:00", "close_time": "20:00"}'
 
-# 5. Create admin access
-curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/admin \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: YOUR_API_KEY" \
-  -d '{"email": "priya@glamoursalon.in"}'
+# 5. (Admin access skipped — dashboard is publicly accessible)
+# Authentication will be rebuilt later.
 ```
 
-The API key is `838c8283-3c02-419a-b2b6-b847b6faad84`.
+The API key is configured in your backend `.env` as `ADMIN_API_KEY`. It must match the frontend's `ADMIN_API_KEY` in `.env.local`. If they don't match, the API returns "Unauthorized".
 
 ---
 
@@ -1843,10 +1830,10 @@ Assume you close a gym tomorrow. "Peak Performance Gym." Here is every action yo
 **You do** (using Method B — API calls from Section 8):
 
 ```bash
-# Create the business
+# Create the business (ADMIN_API_KEY must match backend's .env value)
 curl -X POST https://frontdeskos.onrender.com/api/businesses \
   -H "Content-Type: application/json" \
-  -H "x-api-key: 838c8283-3c02-419a-b2b6-b847b6faad84" \
+  -H "x-api-key: fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d" \
   -d '{"name": "Peak Performance Gym", "slug": "peak-performance-gym", "tagline": "Train Like an Athlete", "description": "Premium fitness center in Bangalore...", "phone": "+91 98765 43210", "email": "info@peakperformance.in", "address": "123, MG Road, Bangalore"}'
 ```
 
@@ -1860,7 +1847,7 @@ curl -X POST https://frontdeskos.onrender.com/api/businesses \
 # Personal Training
 curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/services \
   -H "Content-Type: application/json" \
-  -H "x-api-key: 838c8283-3c02-419a-b2b6-b847b6faad84" \
+  -H "x-api-key: fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d" \
   -d '{"name": "Personal Training", "description": "One-on-one training with certified coach", "duration": 60, "price": 1500}'
 
 # Group Classes
@@ -1885,7 +1872,7 @@ curl -X POST ... -d '{"name": "Free Trial Session", "description": "Try before y
 ```bash
 curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/faqs \
   -H "Content-Type: application/json" \
-  -H "x-api-key: 838c8283-3c02-419a-b2b6-b847b6faad84" \
+  -H "x-api-key: fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d" \
   -d '{"question": "What are your opening hours?", "answer": "Mon-Fri 5AM-10PM, Sat 6AM-8PM, Sun 8AM-6PM"}'
 
 # Repeat for all 10 FAQs
@@ -1902,7 +1889,7 @@ curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/faqs \
 for day in 1 2 3 4 5; do
   curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/hours \
     -H "Content-Type: application/json" \
-    -H "x-api-key: 838c8283-3c02-419a-b2b6-b847b6faad84" \
+    -H "x-api-key: fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d" \
     -d "{\"day_of_week\": $day, \"open_time\": \"05:00\", \"close_time\": \"22:00\", \"is_closed\": false}"
 done
 
@@ -1925,16 +1912,9 @@ Set: "Hi! Welcome to Peak Performance Gym. I can help you with memberships, clas
 
 ## Step 10: Admin Handover
 
-**You do**:
+**You do**: No admin creation needed. The dashboard is publicly accessible at the admin URL.
 
-```bash
-curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/admin \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: 838c8283-3c02-419a-b2b6-b847b6faad84" \
-  -d '{"email": "rajesh@peakperformance.in"}'
-```
-
-**You verify**: Open `https://frontdeskos.vercel.app/peak-performance-gym/admin` as Rajesh. Dashboard loads.
+**You verify**: Open `https://frontdeskos.vercel.app/peak-performance-gym/admin`. Dashboard loads.
 
 ## Step 11: First Test Lead
 
