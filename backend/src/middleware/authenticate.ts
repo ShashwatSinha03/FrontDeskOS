@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabaseAdmin } from '../lib/supabase';
-import config from '../config';
+
+// Hardcoded — must match frontend/src/app/api/admin/[...path]/route.ts
+const ADMIN_API_KEY = 'fdos_adm_8a3f9c2e1b7d4f6a8c0e2d4b6a8c0e2d';
 
 export async function authenticate(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -25,7 +27,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
       }
     }
 
-    if (apiKey && apiKey === config.ADMIN_API_KEY) {
+    if (apiKey && apiKey === ADMIN_API_KEY) {
       req.authContext = { type: 'service', service: 'admin-key' };
       next();
       return;
