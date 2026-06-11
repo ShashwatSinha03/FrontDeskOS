@@ -3,7 +3,6 @@
 import { useParams } from 'next/navigation';
 import { useBusiness } from '@/hooks/use-business';
 import { BusinessInfo } from '@/components/contact/business-info';
-import { ContactForm } from '@/components/contact/contact-form';
 import { Skeleton } from '@/components/design/skeleton';
 
 export default function ContactPage() {
@@ -18,13 +17,10 @@ export default function ContactPage() {
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-5 w-72" />
         </div>
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="space-y-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24 rounded-xl" />
-            ))}
-          </div>
-          <Skeleton className="h-96 rounded-xl" />
+        <div className="mx-auto max-w-xl space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
         </div>
       </div>
     );
@@ -38,9 +34,8 @@ export default function ContactPage() {
           {business ? `Get in touch with ${business.name}` : "We'd love to hear from you"}
         </p>
       </div>
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="mx-auto max-w-xl">
         {business && <BusinessInfo business={business} />}
-        <ContactForm slug={slug} businessId={business?.id || ''} />
       </div>
     </div>
   );
