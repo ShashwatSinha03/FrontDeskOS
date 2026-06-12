@@ -22,9 +22,7 @@ export class OwnerController {
   async getCustomerDetail(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const { businessId } = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      }).parse(req.query);
+      const businessId = req.membership!.businessId;
 
       const customer = await customerRepository.findById(id);
       if (!customer || customer.businessId !== businessId) {
@@ -84,11 +82,11 @@ export class OwnerController {
   async updateLifecycle(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
         lifecycleState: z.enum(allLifecycleStates as [string, ...string[]]),
       });
-      const { businessId, lifecycleState } = schema.parse(req.body);
+      const { lifecycleState } = schema.parse(req.body);
 
       const customer = await customerRepository.findById(id);
       if (!customer || customer.businessId !== businessId) {
@@ -110,9 +108,7 @@ export class OwnerController {
   async getCustomerConversations(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const { businessId } = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      }).parse(req.query);
+      const businessId = req.membership!.businessId;
 
       const customer = await customerRepository.findById(id);
       if (!customer || customer.businessId !== businessId) {
@@ -142,13 +138,13 @@ export class OwnerController {
 
   async createLead(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid(),
         name: z.string().min(1).max(200),
         email: z.string().email().optional().nullable(),
         phone: z.string().optional().nullable(),
       });
-      const { businessId, name, email, phone } = schema.parse(req.body);
+      const { name, email, phone } = schema.parse(req.body);
 
       const customer = await customerRepository.create(businessId, name, email || null, phone || null);
 
@@ -165,13 +161,13 @@ export class OwnerController {
   async updateCustomerProfile(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid(),
         name: z.string().min(1).max(200).optional(),
         email: z.string().email().optional().nullable(),
         phone: z.string().optional().nullable(),
       });
-      const { businessId, ...updates } = schema.parse(req.body);
+      const updates = schema.parse(req.body);
 
       const customer = await customerRepository.findById(id);
       if (!customer || customer.businessId !== businessId) {

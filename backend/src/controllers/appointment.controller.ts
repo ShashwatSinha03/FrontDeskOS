@@ -10,7 +10,6 @@ export class AppointmentController {
   async list(req: Request, res: Response): Promise<void> {
     try {
       const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
         status: z.enum(['pending', 'confirmed', 'cancelled', 'rescheduled']).optional(),
         startDate: z.string().datetime({ message: 'startDate must be a valid ISO datetime' }).optional(),
         endDate: z.string().datetime({ message: 'endDate must be a valid ISO datetime' }).optional(),
@@ -18,12 +17,13 @@ export class AppointmentController {
         limit: z.coerce.number().int().min(1).max(100).default(10),
       });
 
+      const businessId = req.membership!.businessId;
       const parsed = schema.parse(req.query);
       const start = parsed.startDate ? new Date(parsed.startDate) : undefined;
       const end = parsed.endDate ? new Date(parsed.endDate) : undefined;
 
       const { appointments, totalCount } = await appointmentRepository.findByBusiness(
-        parsed.businessId,
+        businessId,
         { status: parsed.status, startDate: start, endDate: end },
         { page: parsed.page, limit: parsed.limit }
       );
@@ -64,6 +64,7 @@ export class AppointmentController {
       });
 
       const parsed = schema.parse(req.body);
+      const businessId = req.membership?.businessId ?? parsed.businessId;
 
       let customerId = parsed.customerId;
       if (!customerId && parsed.sessionId) {
@@ -76,7 +77,7 @@ export class AppointmentController {
             return;
           }
           const customer = await customerRepository.create(
-            parsed.businessId,
+            businessId,
             parsed.name ?? null,
             parsed.email ?? null,
             parsed.phone ?? null
@@ -85,7 +86,7 @@ export class AppointmentController {
           if (session) {
             await sessionRepository.updateCustomer(session.sessionId, customer.id);
           }
-          await conversationRepository.create(customerId, parsed.businessId, 'web_chat');
+          await conversationRepository.create(customerId, businessId, 'web_chat');
         }
       }
       if (!customerId) {
@@ -95,7 +96,7 @@ export class AppointmentController {
 
       const appointment = await appointmentService.scheduleAppointment({
         customerId,
-        businessId: parsed.businessId,
+        businessId,
         serviceId: parsed.serviceId,
         appointmentTime: new Date(parsed.appointmentTime),
         notes: parsed.notes,
@@ -104,7 +105,7 @@ export class AppointmentController {
       const bookCustomer = await customerRepository.findById(customerId);
       const bookName = bookCustomer?.name || parsed.name || 'A customer';
       notificationService.create({
-        businessId: parsed.businessId,
+        businessId,
         type: 'appointment_booked',
         title: 'Appointment Booked',
         message: `${bookName} booked an appointment on ${new Date(parsed.appointmentTime).toLocaleString()}.`,
@@ -162,12 +163,12 @@ export class AppointmentController {
   async cancel(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
         reason: z.string().optional(),
       });
       const parsed = schema.parse(req.body);
-      await appointmentService.cancelAppointment(id, parsed.businessId, parsed.reason);
+      await appointmentService.cancelAppointment(id, businessId, parsed.reason);
       res.status(200).json({
         success: true,
         message: 'Appointment cancelled successfully'
@@ -187,15 +188,15 @@ export class AppointmentController {
   async reschedule(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
         newTime: z.string().datetime({ message: 'newTime must be a valid ISO datetime' }),
         notes: z.string().optional(),
       });
       const parsed = schema.parse(req.body);
       const appointment = await appointmentService.rescheduleAppointment(
         id,
-        parsed.businessId,
+        businessId,
         new Date(parsed.newTime),
         parsed.notes
       );
@@ -212,10 +213,7 @@ export class AppointmentController {
   async confirm(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      });
-      const { businessId } = schema.parse(req.body);
+      const businessId = req.membership!.businessId;
       await appointmentService.confirmAppointment(id, businessId);
       res.status(200).json({ success: true, message: 'Appointment confirmed' });
     } catch (error: any) {
@@ -230,10 +228,7 @@ export class AppointmentController {
   async complete(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      });
-      const { businessId } = schema.parse(req.body);
+      const businessId = req.membership!.businessId;
       await appointmentService.completeAppointment(id, businessId);
       res.status(200).json({ success: true, message: 'Appointment completed' });
     } catch (error: any) {

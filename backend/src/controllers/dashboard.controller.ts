@@ -11,9 +11,8 @@ import { CustomerLifecycleState, EscalationStatus, KnowledgeRequestStatus } from
 
 const uuidParam = z.string().uuid('Invalid UUID parameter');
 
-// Pagination and search schema helper
+// Pagination and search schema helper (businessId comes from auth membership)
 const queryFilterSchema = z.object({
-  businessId: z.string().uuid('businessId must be a valid UUID'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
 });
@@ -24,9 +23,7 @@ export class DashboardController {
    */
   async getSummary(req: Request, res: Response): Promise<void> {
     try {
-      const { businessId } = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      }).parse(req.query);
+      const businessId = req.membership!.businessId;
 
       // 1. Fetch lead counts grouped by lifecycle state
       const leadStateQuery = `
@@ -120,15 +117,16 @@ export class DashboardController {
    */
   async getLeads(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const parsedQuery = queryFilterSchema.extend({
-        state: z.string().optional(), // validated later against enum
+        state: z.string().optional(),
         search: z.string().optional(),
       }).parse(req.query);
 
       const lifecycleState = parsedQuery.state as CustomerLifecycleState | undefined;
 
       const { customers, totalCount } = await customerRepository.findAllByBusiness(
-        parsedQuery.businessId,
+        businessId,
         { lifecycleState, search: parsedQuery.search },
         { page: parsedQuery.page, limit: parsedQuery.limit }
       );
@@ -159,12 +157,13 @@ export class DashboardController {
    */
   async getEscalations(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const parsedQuery = queryFilterSchema.extend({
         status: z.enum(['pending', 'resolved']).default('pending'),
       }).parse(req.query);
 
       const { escalations, totalCount } = await escalationRepository.findByBusiness(
-        parsedQuery.businessId,
+        businessId,
         { status: parsedQuery.status as EscalationStatus },
         { page: parsedQuery.page, limit: parsedQuery.limit }
       );
@@ -196,10 +195,7 @@ export class DashboardController {
   async resolveEscalation(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      });
-      const { businessId } = schema.parse(req.body);
+      const businessId = req.membership!.businessId;
       await escalationRepository.resolve(id, businessId);
       res.status(200).json({ success: true, message: 'Escalation marked as resolved.' });
     } catch (error: any) {
@@ -216,12 +212,13 @@ export class DashboardController {
    */
   async getKnowledgeRequests(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const parsedQuery = queryFilterSchema.extend({
         status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
       }).parse(req.query);
 
       const { requests, totalCount } = await knowledgeRequestRepository.findByBusiness(
-        parsedQuery.businessId,
+        businessId,
         { status: parsedQuery.status as KnowledgeRequestStatus },
         { page: parsedQuery.page, limit: parsedQuery.limit }
       );
@@ -253,12 +250,12 @@ export class DashboardController {
   async approveKnowledgeRequest(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
         answer: z.string().min(1, 'Approved answer is required'),
       });
 
-      const { businessId, answer } = schema.parse(req.body);
+      const { answer } = schema.parse(req.body);
 
       // 1. Mark request as approved
       const request = await knowledgeRequestRepository.updateStatus(id, 'approved', businessId, answer);
@@ -306,10 +303,7 @@ export class DashboardController {
   async rejectKnowledgeRequest(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      });
-      const { businessId } = schema.parse(req.body);
+      const businessId = req.membership!.businessId;
       const request = await knowledgeRequestRepository.updateStatus(id, 'rejected', businessId);
       res.status(200).json({ success: true, message: 'Knowledge request rejected.', data: request });
     } catch (error: any) {

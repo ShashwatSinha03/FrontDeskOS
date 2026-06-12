@@ -7,12 +7,12 @@ const uuidParam = z.string().uuid('Invalid UUID parameter');
 export class AvailabilityController {
   async listSchedules(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid(),
         serviceId: z.string().uuid().optional(),
       });
       const parsed = schema.parse(req.query);
-      const schedules = await availabilityRepository.findSchedules(parsed.businessId, parsed.serviceId);
+      const schedules = await availabilityRepository.findSchedules(businessId, parsed.serviceId);
       res.status(200).json({ success: true, data: schedules });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -25,8 +25,8 @@ export class AvailabilityController {
 
   async createSchedule(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid(),
         serviceId: z.string().uuid().nullable().optional(),
         dayOfWeek: z.number().int().min(0).max(6),
         startTime: z.string().regex(/^\d{2}:\d{2}$/),
@@ -36,7 +36,7 @@ export class AvailabilityController {
       });
       const parsed = schema.parse(req.body);
       const schedule = await availabilityRepository.createSchedule({
-        businessId: parsed.businessId,
+        businessId,
         serviceId: parsed.serviceId,
         dayOfWeek: parsed.dayOfWeek,
         startTime: parsed.startTime,
@@ -57,10 +57,7 @@ export class AvailabilityController {
   async deleteSchedule(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const schema = z.object({
-        businessId: z.string().uuid(),
-      });
-      const { businessId } = schema.parse(req.query);
+      const businessId = req.membership!.businessId;
       await availabilityRepository.deleteSchedule(id, businessId);
       res.status(200).json({ success: true, message: 'Schedule deleted' });
     } catch (error: any) {
@@ -74,13 +71,13 @@ export class AvailabilityController {
 
   async listOverrides(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid(),
         date: z.string().optional(),
       });
       const parsed = schema.parse(req.query);
       const date = parsed.date ? new Date(parsed.date) : undefined;
-      const overrides = await availabilityRepository.findOverrides(parsed.businessId, date);
+      const overrides = await availabilityRepository.findOverrides(businessId, date);
       res.status(200).json({ success: true, data: overrides });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -93,8 +90,8 @@ export class AvailabilityController {
 
   async createOverride(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid(),
         serviceId: z.string().uuid().nullable().optional(),
         date: z.string(),
         startTime: z.string().nullable().optional(),
@@ -104,7 +101,7 @@ export class AvailabilityController {
       });
       const parsed = schema.parse(req.body);
       const override = await availabilityRepository.createOverride({
-        businessId: parsed.businessId,
+        businessId,
         serviceId: parsed.serviceId,
         date: new Date(parsed.date),
         startTime: parsed.startTime,
@@ -125,10 +122,7 @@ export class AvailabilityController {
   async deleteOverride(req: Request, res: Response): Promise<void> {
     try {
       const id = uuidParam.parse(req.params.id);
-      const schema = z.object({
-        businessId: z.string().uuid(),
-      });
-      const { businessId } = schema.parse(req.query);
+      const businessId = req.membership!.businessId;
       await availabilityRepository.deleteOverride(id, businessId);
       res.status(200).json({ success: true, message: 'Override deleted' });
     } catch (error: any) {

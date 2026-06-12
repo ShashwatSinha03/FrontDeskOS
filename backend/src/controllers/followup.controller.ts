@@ -9,8 +9,8 @@ export class FollowUpController {
    */
   async list(req: Request, res: Response): Promise<void> {
     try {
+      const businessId = req.membership!.businessId;
       const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
         status: z.enum(['pending', 'sent', 'cancelled']).optional(),
         type: z.enum(['re_engagement', 'day_1', 'day_3']).optional(),
         page: z.coerce.number().int().min(1).default(1),
@@ -19,7 +19,7 @@ export class FollowUpController {
 
       const parsed = schema.parse(req.query);
       const { followUps, totalCount } = await followUpRepository.findByBusiness(
-        parsed.businessId,
+        businessId,
         { 
           status: parsed.status as FollowUpStatus, 
           type: parsed.type as FollowUpType 
@@ -57,10 +57,7 @@ export class FollowUpController {
   async cancel(req: Request, res: Response): Promise<void> {
     try {
       const id = z.string().uuid('Invalid follow-up ID').parse(req.params.id);
-      const schema = z.object({
-        businessId: z.string().uuid('businessId must be a valid UUID'),
-      });
-      const { businessId } = schema.parse(req.body);
+      const businessId = req.membership!.businessId;
 
       await followUpRepository.cancelById(id, businessId);
       res.status(200).json({ 

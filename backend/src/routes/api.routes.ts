@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireApiKey } from '../middleware/auth';
+import { authenticate, loadMembership, requireStaff } from '../middleware';
 import { resolveSession } from '../middleware/session';
 import { chatLimiter } from '../middleware/rate-limit';
 import { chatController } from '../controllers/chat.controller';
@@ -30,50 +31,56 @@ publicRouter.post('/appointments/book', (req: Request, res: Response) => appoint
 
 // ==========================================
 // Admin Router — requires x-api-key
+// Some routes additionally require user auth + staff membership
 // ==========================================
 const adminRouter = Router();
 
 adminRouter.use(requireApiKey);
 
-adminRouter.get('/conversations/:id/messages', (req: Request, res: Response) => conversationController.getMessages(req, res));
+const adminAuth = [authenticate, loadMembership, requireStaff()];
 
-adminRouter.get('/dashboard/summary', (req: Request, res: Response) => dashboardController.getSummary(req, res));
-adminRouter.get('/leads', (req: Request, res: Response) => dashboardController.getLeads(req, res));
-adminRouter.get('/leads/:id', (req: Request, res: Response) => ownerController.getCustomerDetail(req, res));
-adminRouter.put('/leads/:id/lifecycle', (req: Request, res: Response) => ownerController.updateLifecycle(req, res));
-adminRouter.get('/leads/:id/conversations', (req: Request, res: Response) => ownerController.getCustomerConversations(req, res));
-adminRouter.post('/leads', (req: Request, res: Response) => ownerController.createLead(req, res));
-adminRouter.put('/leads/:id/profile', (req: Request, res: Response) => ownerController.updateCustomerProfile(req, res));
-adminRouter.get('/escalations', (req: Request, res: Response) => dashboardController.getEscalations(req, res));
-adminRouter.post('/escalations/:id/resolve', (req: Request, res: Response) => dashboardController.resolveEscalation(req, res));
+// Auth-protected admin work routes (require user session + staff membership)
+adminRouter.get('/conversations/:id/messages', ...adminAuth, (req: Request, res: Response) => conversationController.getMessages(req, res));
 
-adminRouter.get('/knowledge-base/requests', (req: Request, res: Response) => dashboardController.getKnowledgeRequests(req, res));
-adminRouter.post('/knowledge-base/requests/:id/approve', (req: Request, res: Response) => dashboardController.approveKnowledgeRequest(req, res));
-adminRouter.post('/knowledge-base/requests/:id/reject', (req: Request, res: Response) => dashboardController.rejectKnowledgeRequest(req, res));
+adminRouter.get('/dashboard/summary', ...adminAuth, (req: Request, res: Response) => dashboardController.getSummary(req, res));
+adminRouter.get('/leads', ...adminAuth, (req: Request, res: Response) => dashboardController.getLeads(req, res));
+adminRouter.get('/leads/:id', ...adminAuth, (req: Request, res: Response) => ownerController.getCustomerDetail(req, res));
+adminRouter.put('/leads/:id/lifecycle', ...adminAuth, (req: Request, res: Response) => ownerController.updateLifecycle(req, res));
+adminRouter.get('/leads/:id/conversations', ...adminAuth, (req: Request, res: Response) => ownerController.getCustomerConversations(req, res));
+adminRouter.post('/leads', ...adminAuth, (req: Request, res: Response) => ownerController.createLead(req, res));
+adminRouter.put('/leads/:id/profile', ...adminAuth, (req: Request, res: Response) => ownerController.updateCustomerProfile(req, res));
+adminRouter.get('/escalations', ...adminAuth, (req: Request, res: Response) => dashboardController.getEscalations(req, res));
+adminRouter.post('/escalations/:id/resolve', ...adminAuth, (req: Request, res: Response) => dashboardController.resolveEscalation(req, res));
 
-adminRouter.get('/appointments', (req: Request, res: Response) => appointmentController.list(req, res));
-adminRouter.post('/appointments/book', (req: Request, res: Response) => appointmentController.book(req, res));
+adminRouter.get('/knowledge-base/requests', ...adminAuth, (req: Request, res: Response) => dashboardController.getKnowledgeRequests(req, res));
+adminRouter.post('/knowledge-base/requests/:id/approve', ...adminAuth, (req: Request, res: Response) => dashboardController.approveKnowledgeRequest(req, res));
+adminRouter.post('/knowledge-base/requests/:id/reject', ...adminAuth, (req: Request, res: Response) => dashboardController.rejectKnowledgeRequest(req, res));
 
-adminRouter.post('/appointments/:id/cancel', (req: Request, res: Response) => appointmentController.cancel(req, res));
-adminRouter.post('/appointments/:id/reschedule', (req: Request, res: Response) => appointmentController.reschedule(req, res));
-adminRouter.post('/appointments/:id/confirm', (req: Request, res: Response) => appointmentController.confirm(req, res));
-adminRouter.post('/appointments/:id/complete', (req: Request, res: Response) => appointmentController.complete(req, res));
+adminRouter.get('/appointments', ...adminAuth, (req: Request, res: Response) => appointmentController.list(req, res));
+adminRouter.post('/appointments/book', ...adminAuth, (req: Request, res: Response) => appointmentController.book(req, res));
 
-adminRouter.get('/availability/schedules', (req: Request, res: Response) => availabilityController.listSchedules(req, res));
-adminRouter.post('/availability/schedules', (req: Request, res: Response) => availabilityController.createSchedule(req, res));
-adminRouter.delete('/availability/schedules/:id', (req: Request, res: Response) => availabilityController.deleteSchedule(req, res));
-adminRouter.get('/availability/overrides', (req: Request, res: Response) => availabilityController.listOverrides(req, res));
-adminRouter.post('/availability/overrides', (req: Request, res: Response) => availabilityController.createOverride(req, res));
-adminRouter.delete('/availability/overrides/:id', (req: Request, res: Response) => availabilityController.deleteOverride(req, res));
+adminRouter.post('/appointments/:id/cancel', ...adminAuth, (req: Request, res: Response) => appointmentController.cancel(req, res));
+adminRouter.post('/appointments/:id/reschedule', ...adminAuth, (req: Request, res: Response) => appointmentController.reschedule(req, res));
+adminRouter.post('/appointments/:id/confirm', ...adminAuth, (req: Request, res: Response) => appointmentController.confirm(req, res));
+adminRouter.post('/appointments/:id/complete', ...adminAuth, (req: Request, res: Response) => appointmentController.complete(req, res));
 
-adminRouter.get('/follow-ups', (req: Request, res: Response) => followUpController.list(req, res));
-adminRouter.post('/follow-ups/:id/cancel', (req: Request, res: Response) => followUpController.cancel(req, res));
+adminRouter.get('/availability/schedules', ...adminAuth, (req: Request, res: Response) => availabilityController.listSchedules(req, res));
+adminRouter.post('/availability/schedules', ...adminAuth, (req: Request, res: Response) => availabilityController.createSchedule(req, res));
+adminRouter.delete('/availability/schedules/:id', ...adminAuth, (req: Request, res: Response) => availabilityController.deleteSchedule(req, res));
+adminRouter.get('/availability/overrides', ...adminAuth, (req: Request, res: Response) => availabilityController.listOverrides(req, res));
+adminRouter.post('/availability/overrides', ...adminAuth, (req: Request, res: Response) => availabilityController.createOverride(req, res));
+adminRouter.delete('/availability/overrides/:id', ...adminAuth, (req: Request, res: Response) => availabilityController.deleteOverride(req, res));
+
+adminRouter.get('/follow-ups', ...adminAuth, (req: Request, res: Response) => followUpController.list(req, res));
+adminRouter.post('/follow-ups/:id/cancel', ...adminAuth, (req: Request, res: Response) => followUpController.cancel(req, res));
+
+adminRouter.get('/recovery/config', ...adminAuth, (req: Request, res: Response) => recoveryController.getConfig(req, res));
+adminRouter.put('/recovery/config', ...adminAuth, (req: Request, res: Response) => recoveryController.updateConfig(req, res));
+
+// System-only routes (API key only, no user session required — e.g., cron jobs)
 adminRouter.post('/cron/follow-ups', (req: Request, res: Response) => cronController.triggerFollowUps(req, res));
 
-adminRouter.get('/recovery/config', (req: Request, res: Response) => recoveryController.getConfig(req, res));
-adminRouter.put('/recovery/config', (req: Request, res: Response) => recoveryController.updateConfig(req, res));
-
-// Onboarding wizard routes
+// Onboarding wizard routes (have their own authenticate + requireSuperAdmin)
 adminRouter.use(onboardingRouter);
 
 export { publicRouter, adminRouter };
