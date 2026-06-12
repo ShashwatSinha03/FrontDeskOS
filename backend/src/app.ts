@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import config from './config';
 import { publicRouter, adminRouter } from './routes/api.routes';
 import { meRouter } from './routes/me.routes';
@@ -9,9 +10,11 @@ import { settingsRouter } from './routes/settings.routes';
 import { operationalRouter } from './routes/operational.routes';
 import { notificationRouter } from './routes/notification.routes';
 import { analyticsRouter } from './routes/analytics.routes';
-import { createRateLimiter } from './middleware/rate-limit';
+import { createRateLimiter, chatLimiter } from './middleware/rate-limit';
 
 const app = express();
+
+app.use(helmet());
 
 if (config.NODE_ENV === 'production') {
   const allowedOrigins = [
@@ -32,7 +35,7 @@ if (config.NODE_ENV === 'production') {
 
 const publicLimiter = createRateLimiter(200);
 const adminLimiter = createRateLimiter(100, 15 * 60 * 1000, (req) =>
-  req.path.startsWith('/public') || req.path.startsWith('/chat')
+  req.path.startsWith('/public')
 );
 app.use('/api', publicLimiter);
 app.use('/api', adminLimiter);

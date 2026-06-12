@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireApiKey } from '../middleware/auth';
 import { resolveSession } from '../middleware/session';
+import { chatLimiter } from '../middleware/rate-limit';
 import { chatController } from '../controllers/chat.controller';
 import { conversationController } from '../controllers/conversation.controller';
 import { dashboardController } from '../controllers/dashboard.controller';
@@ -18,8 +19,7 @@ import { onboardingRouter } from './onboarding.routes';
 // ==========================================
 const publicRouter = Router();
 
-publicRouter.post('/chat', resolveSession, (req: Request, res: Response) => chatController.handleMessage(req, res));
-publicRouter.get('/conversations/:id/messages', (req: Request, res: Response) => conversationController.getMessages(req, res));
+publicRouter.post('/chat', chatLimiter, resolveSession, (req: Request, res: Response) => chatController.handleMessage(req, res));
 
 publicRouter.get('/public/businesses/:slug', (req: Request, res: Response) => publicController.getBusiness(req, res));
 publicRouter.get('/public/businesses/:slug/services', (req: Request, res: Response) => publicController.getServices(req, res));
@@ -34,6 +34,8 @@ publicRouter.post('/appointments/book', (req: Request, res: Response) => appoint
 const adminRouter = Router();
 
 adminRouter.use(requireApiKey);
+
+adminRouter.get('/conversations/:id/messages', (req: Request, res: Response) => conversationController.getMessages(req, res));
 
 adminRouter.get('/dashboard/summary', (req: Request, res: Response) => dashboardController.getSummary(req, res));
 adminRouter.get('/leads', (req: Request, res: Response) => dashboardController.getLeads(req, res));

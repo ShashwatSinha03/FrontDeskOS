@@ -21,3 +21,10 @@ export function createRateLimiter(
     },
   });
 }
+
+/**
+ * Dedicated rate limiter for the public chat endpoint.
+ * Stricter limits to prevent abuse of the LLM-powered chat.
+ * 30 requests per 15 minutes per IP.
+ */
+export const chatLimiter = createRateLimiter(30, 15 * 60 * 1000);

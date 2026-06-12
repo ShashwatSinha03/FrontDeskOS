@@ -41,6 +41,7 @@ import {
   buildUnknownPrompt,
   buildLeadCapturePrompt,
   INTENT_TO_NODE,
+  detectPromptInjection,
 } from './agent.prompts';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -116,10 +117,50 @@ async function fetchServices(businessId: string) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// LLM OUTPUT VALIDATION HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Validates that a serviceId from LLM output actually exists in the business's
+ * active services list. Prevents booking of non-existent or deactivated services.
+ */
+function validateServiceId(serviceId: string | undefined, services: AgentState['services']): boolean {
+  if (!serviceId) return true;
+  return services.some(s => s.id === serviceId);
+}
+
+/**
+ * Validates that an appointment belongs to the given customer.
+ * Prevents unauthorized access to other customers' appointments.
+ */
+async function validateAppointmentOwnership(appointmentId: string, customerId: string): Promise<boolean> {
+  try {
+    const appointments = await appointmentRepository.findByCustomer(customerId);
+    return appointments.some(a => a.id === appointmentId);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validates that a date-time string is a valid future date.
+ */
+function isValidFutureDateTime(dateStr: string, timeStr: string): boolean {
+  const dt = new Date(`${dateStr}T${timeStr}:00`);
+  return !isNaN(dt.getTime()) && dt > new Date();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // NODE 1: detectIntentNode
 // ─────────────────────────────────────────────────────────────────────────────
 export async function detectIntentNode(state: AgentState): Promise<Partial<AgentState>> {
   const t0 = Date.now();
+
+  // ── Prompt injection detection ────────────────────────────
+  const injection = detectPromptInjection(state.userMessage);
+  if (injection.isInjection) {
+    console.warn(`🚨 Prompt injection detected: score=${injection.score} reason="${injection.reason}" message="${state.userMessage.slice(0, 100)}"`);
+  }
 
   // ── Workflow continuation guard ──────────────────────────────
   // Skips LLM intent classification when the assistant was already
@@ -154,15 +195,17 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
 
       if (isContinuation) {
         console.log(`🔁 Workflow continuation: "${lastIntent}" via "${msg}"`);
-        return {
-          intent: lastIntent as ConversationIntent,
-          intentConfidence: 1.0,
-          metadata: {
-            workflowContinuation: true,
-            continuedFrom: lastIntent,
-            intentDetectionMs: Date.now() - t0,
-          },
-        };
+      return {
+        intent: lastIntent as ConversationIntent,
+        intentConfidence: 1.0,
+        metadata: {
+          workflowContinuation: true,
+          continuedFrom: lastIntent,
+          intentDetectionMs: Date.now() - t0,
+          injectionScore: injection.score,
+          injectionReason: injection.reason,
+        },
+      };
       }
     }
   }
@@ -214,6 +257,8 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
       intentRawOutput: rawOutput,
       intentReasoning: parsed?.reasoning,
       intentDetectionMs: Date.now() - t0,
+      injectionScore: injection.score,
+      injectionReason: injection.reason,
     },
   };
 }
@@ -380,6 +425,16 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
     }
 
     if (parsed?.action === 'book' && parsed.date && parsed.time) {
+      // Validate LLM output before executing
+      if (!isValidFutureDateTime(parsed.date, parsed.time)) {
+        reply = "That date or time doesn't look valid. Could you please provide a different date and time?";
+        return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, validationFailed: true } };
+      }
+      if (!validateServiceId(parsed.serviceId, state.services)) {
+        console.warn(`🚨 BookingNode: LLM returned invalid serviceId "${parsed.serviceId}" — not in active services`);
+        reply = "I'm sorry, that service doesn't appear to be available. Would you like to choose another?";
+        return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, validationFailed: true } };
+      }
       const appointmentTime = new Date(`${parsed.date}T${parsed.time}:00`);
       if (!isNaN(appointmentTime.getTime()) && appointmentTime > new Date()) {
         try {
@@ -453,6 +508,10 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
     if (parsed?.reply) reply = parsed.reply;
 
     if (parsed?.action === 'reschedule' && parsed.newDate && parsed.newTime) {
+      if (!isValidFutureDateTime(parsed.newDate, parsed.newTime)) {
+        reply = "That date or time doesn't look valid. Could you please provide a different date and time?";
+        return { reply, metadata: { handlerNode: 'rescheduleNode', handlerMs: Date.now() - t0, validationFailed: true } };
+      }
       const newTime = new Date(`${parsed.newDate}T${parsed.newTime}:00`);
       if (!isNaN(newTime.getTime()) && newTime > new Date()) {
         try {
@@ -500,6 +559,7 @@ export async function cancellationNode(state: AgentState): Promise<Partial<Agent
     const appointments = await appointmentRepository.findByCustomer(state.customer.id);
     const active = appointments.find(a => a.status === 'pending' || a.status === 'confirmed');
     if (active) {
+      // Validate the appointment belongs to this customer (already filtered by findByCustomer)
       appointmentId = active.id;
       await appointmentRepository.updateStatus(active.id, 'cancelled', active.businessId);
     }

@@ -16,6 +16,9 @@ const configSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string({
     required_error: 'SUPABASE_SERVICE_ROLE_KEY is required for admin bypass access',
   }),
+  SUPABASE_ANON_KEY: z.string({
+    required_error: 'SUPABASE_ANON_KEY is required for client-side auth',
+  }),
 
   // AI Provider Abstraction Configurations
   LLM_PROVIDER: z.enum(['groq', 'openai', 'anthropic']).default('groq'),
