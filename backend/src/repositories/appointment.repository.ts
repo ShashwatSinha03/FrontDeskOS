@@ -30,9 +30,9 @@ export class AppointmentRepository {
   /**
    * Find a single appointment by ID.
    */
-  async findById(id: string): Promise<Appointment | null> {
-    const query = `SELECT * FROM appointments WHERE id = $1`;
-    const res = await pool.query(query, [id]);
+  async findById(id: string, businessId: string): Promise<Appointment | null> {
+    const query = `SELECT * FROM appointments WHERE id = $1 AND business_id = $2`;
+    const res = await pool.query(query, [id, businessId]);
     if (res.rows.length === 0) return null;
     return this.mapToEntity(res.rows[0]);
   }
@@ -42,10 +42,11 @@ export class AppointmentRepository {
    */
   async reschedule(
     appointmentId: string,
+    businessId: string,
     newTime: Date,
     notes?: string
   ): Promise<Appointment> {
-    const old = await this.findById(appointmentId);
+    const old = await this.findById(appointmentId, businessId);
     if (!old) throw new Error('Appointment not found');
 
     await pool.query(
@@ -176,15 +177,15 @@ export class AppointmentRepository {
     return { appointments, totalCount };
   }
 
-  async findByCustomerWithDetails(customerId: string): Promise<any[]> {
+  async findByCustomerWithDetails(customerId: string, businessId: string): Promise<any[]> {
     const query = `
       SELECT a.*, s.name as service_name
       FROM appointments a
       LEFT JOIN services s ON s.id = a.service_id
-      WHERE a.customer_id = $1
+      WHERE a.customer_id = $1 AND a.business_id = $2
       ORDER BY a.appointment_time DESC
     `;
-    const res = await pool.query(query, [customerId]);
+    const res = await pool.query(query, [customerId, businessId]);
     return res.rows.map(row => ({
       ...this.mapToEntity(row),
       serviceName: row.service_name,
@@ -194,14 +195,14 @@ export class AppointmentRepository {
   /**
    * Retrieve appointments for a specific customer profile.
    */
-  async findByCustomer(customerId: string): Promise<Appointment[]> {
+  async findByCustomer(customerId: string, businessId: string): Promise<Appointment[]> {
     const query = `
       SELECT id, customer_id, business_id, service_id, appointment_time, status, notes, cancellation_reason, rescheduled_from_id, created_at, updated_at
       FROM appointments
-      WHERE customer_id = $1
+      WHERE customer_id = $1 AND business_id = $2
       ORDER BY appointment_time DESC
     `;
-    const res = await pool.query(query, [customerId]);
+    const res = await pool.query(query, [customerId, businessId]);
     return res.rows.map(row => this.mapToEntity(row));
   }
 

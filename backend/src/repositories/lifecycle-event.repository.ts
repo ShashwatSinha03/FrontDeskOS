@@ -13,14 +13,14 @@ export interface LifecycleEvent {
 }
 
 export class LifecycleEventRepository {
-  async findByCustomer(customerId: string): Promise<LifecycleEvent[]> {
+  async findByCustomer(customerId: string, businessId: string): Promise<LifecycleEvent[]> {
     const query = `
       SELECT id, business_id, customer_id, previous_state, new_state, trigger_event, notes, changed_by, created_at
       FROM customer_lifecycle_events
-      WHERE customer_id = $1
+      WHERE customer_id = $1 AND business_id = $2
       ORDER BY created_at DESC
     `;
-    const res = await pool.query(query, [customerId]);
+    const res = await pool.query(query, [customerId, businessId]);
     return res.rows.map(row => ({
       id: row.id,
       customerId: row.customer_id,

@@ -103,15 +103,15 @@ export class EscalationRepository {
     return result.escalations;
   }
 
-  async findByCustomer(customerId: string): Promise<any[]> {
+  async findByCustomer(customerId: string, businessId: string): Promise<any[]> {
     const query = `
       SELECT e.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone
       FROM escalations e
       LEFT JOIN customers c ON c.id = e.customer_id
-      WHERE e.customer_id = $1
+      WHERE e.customer_id = $1 AND e.business_id = $2
       ORDER BY e.created_at DESC
     `;
-    const res = await pool.query(query, [customerId]);
+    const res = await pool.query(query, [customerId, businessId]);
     return res.rows.map(row => ({
       ...this.mapToEntity(row),
       customerName: row.customer_name,
