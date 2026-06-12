@@ -13,6 +13,12 @@ export function requireBusinessAccess() {
       return;
     }
 
+    const businessStatusResult = await pool.query('SELECT status FROM businesses WHERE id = $1', [req.membership.businessId]);
+    if (businessStatusResult.rows.length > 0 && businessStatusResult.rows[0].status === 'disabled') {
+      res.status(403).json({ success: false, error: 'BUSINESS_DISABLED' });
+      return;
+    }
+
     const slug = req.params.businessSlug || req.query.slug as string;
 
     if (!slug) {
