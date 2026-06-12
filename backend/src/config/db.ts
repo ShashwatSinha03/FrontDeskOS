@@ -8,10 +8,6 @@ const pool = new Pool({
   idleTimeoutMillis: 30000,
 });
 
-pool.on('connect', (client) => {
-  client.query('SET statement_timeout = 30000');
-});
-
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
 });
