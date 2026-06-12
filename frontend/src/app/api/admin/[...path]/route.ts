@@ -1,4 +1,6 @@
+import { createServerClient } from '@supabase/ssr';
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY || '';
@@ -9,6 +11,28 @@ async function proxy(req: NextRequest, method: string) {
   const url = `${BACKEND_URL}/${path}${search}`;
 
   const headers: Record<string, string> = { 'x-api-key': ADMIN_API_KEY };
+
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
 
   let body: BodyInit | undefined;
   if (method !== 'GET' && method !== 'HEAD') {

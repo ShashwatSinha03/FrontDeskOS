@@ -18,9 +18,10 @@ export class FounderController {
         pool.query(`SELECT COUNT(*)::int AS count FROM staff_profiles WHERE role = 'staff'`),
         pool.query(`
           SELECT b.id, b.name, b.slug, b.created_at, b.status,
-            sp.full_name AS owner_name, sp.email AS owner_email
+            sp.full_name AS owner_name, p.email AS owner_email
           FROM businesses b
           LEFT JOIN staff_profiles sp ON sp.business_id = b.id AND sp.role = 'owner'
+          LEFT JOIN profiles p ON p.id = sp.user_id
           ORDER BY b.created_at DESC
           LIMIT 10
         `),
@@ -46,14 +47,15 @@ export class FounderController {
       const search = req.query.search as string;
       let query = `
         SELECT b.id, b.name, b.slug, b.created_at, b.status,
-          sp.full_name AS owner_name, sp.email AS owner_email
+          sp.full_name AS owner_name, p.email AS owner_email
         FROM businesses b
         LEFT JOIN staff_profiles sp ON sp.business_id = b.id AND sp.role = 'owner'
+        LEFT JOIN profiles p ON p.id = sp.user_id
       `;
       const params: unknown[] = [];
 
       if (search) {
-        query += ` WHERE b.name ILIKE $1 OR b.slug ILIKE $1 OR sp.email ILIKE $1`;
+        query += ` WHERE b.name ILIKE $1 OR b.slug ILIKE $1 OR p.email ILIKE $1`;
         params.push(`%${search}%`);
       }
 
@@ -75,9 +77,10 @@ export class FounderController {
       const bizResult = await pool.query(`
         SELECT b.id, b.name, b.slug, b.business_type, b.phone, b.email,
           b.address, b.description, b.timezone, b.status, b.created_at, b.updated_at,
-          sp.full_name AS owner_name, sp.email AS owner_email, sp.user_id AS owner_user_id
+          sp.full_name AS owner_name, p.email AS owner_email, sp.user_id AS owner_user_id
         FROM businesses b
         LEFT JOIN staff_profiles sp ON sp.business_id = b.id AND sp.role = 'owner'
+        LEFT JOIN profiles p ON p.id = sp.user_id
         WHERE b.id = $1
       `, [id]);
 

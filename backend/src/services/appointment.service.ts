@@ -96,7 +96,7 @@ export class AppointmentService {
     if (appointment.businessId !== businessId) throw new Error('Appointment does not belong to this business');
     if (appointment.status === 'cancelled') throw new Error('Cannot complete a cancelled appointment');
 
-    await appointmentRepository.updateStatus(appointmentId, 'confirmed', businessId);
+    await appointmentRepository.updateStatus(appointmentId, 'completed', businessId);
     await customerRepository.updateLifecycleState(appointment.customerId, 'Customer', 'system:appointment_completed');
 
     const service = appointment.serviceId ? await this.getService(appointment.serviceId) : null;

@@ -22,4 +22,4 @@ export function requireRole(...allowedRoles: string[]) {
 }
 
 export const requireOwner = () => requireRole('owner');
-export const requireStaff = () => requireRole('staff');
+export const requireStaff = () => requireRole('owner', 'staff');

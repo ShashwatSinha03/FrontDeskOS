@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { authenticate, loadMembership } from '../middleware';
+import { authenticate, loadMembership, requireStaff } from '../middleware';
 import { operationalController } from '../controllers/operational.controller';
 
 const router = Router();
 router.use(authenticate);
 router.use(loadMembership);
+router.use(requireStaff());
 
 router.get('/operate/dashboard', (req, res) => operationalController.getDashboard(req, res));
 router.get('/operate/leads', (req, res) => operationalController.getLeads(req, res));

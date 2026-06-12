@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { authenticate, loadMembership } from '../middleware';
+import { authenticate, loadMembership, requireStaff } from '../middleware';
 import { analyticsController } from '../controllers/analytics.controller';
 
 const router = Router();
 router.use(authenticate);
 router.use(loadMembership);
+router.use(requireStaff());
 
 router.get('/analytics/overview', (req, res) => analyticsController.overview(req, res));
 router.get('/analytics/services', (req, res) => analyticsController.services(req, res));

@@ -19,7 +19,7 @@ export type ChannelType = 'web_chat' | 'whatsapp' | 'voice';
 
 export type MessageSender = 'customer' | 'agent' | 'human_owner' | 'system';
 
-export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'rescheduled';
+export type AppointmentStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'rescheduled';
 
 export type EscalationStatus = 'pending' | 'resolved';
 
