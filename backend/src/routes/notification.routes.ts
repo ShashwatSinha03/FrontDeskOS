@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { authenticate, loadMembership, requireStaff } from '../middleware';
+import { authenticate, loadMembership, requireStaff, requireBusinessAccess } from '../middleware';
 import { notificationController } from '../controllers/notification.controller';
 
 const router = Router();
 router.use(authenticate);
 router.use(loadMembership);
 router.use(requireStaff());
+router.use(requireBusinessAccess());
 
 router.get('/notifications', (req, res) => notificationController.list(req, res));
 router.patch('/notifications/:id/read', (req, res) => notificationController.markRead(req, res));

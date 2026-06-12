@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { authenticate, loadMembership, requireOwner } from '../middleware';
+import { authenticate, loadMembership, requireOwner, requireBusinessAccess } from '../middleware';
 import { settingsController } from '../controllers/settings.controller';
 
 const readRouter = Router();
 readRouter.use(authenticate);
 readRouter.use(loadMembership);
+readRouter.use(requireBusinessAccess());
 
 readRouter.get('/settings/business', (req, res) => settingsController.getBusiness(req, res));
 readRouter.get('/settings/services', (req, res) => settingsController.getServices(req, res));
@@ -16,6 +17,7 @@ const writeRouter = Router();
 writeRouter.use(authenticate);
 writeRouter.use(loadMembership);
 writeRouter.use(requireOwner());
+writeRouter.use(requireBusinessAccess());
 
 writeRouter.patch('/settings/business', (req, res) => settingsController.updateBusiness(req, res));
 writeRouter.post('/settings/services', (req, res) => settingsController.createService(req, res));

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireApiKey } from '../middleware/auth';
-import { authenticate, loadMembership, requireStaff } from '../middleware';
+import { authenticate, loadMembership, requireStaff, requireBusinessAccess } from '../middleware';
 import { resolveSession } from '../middleware/session';
 import { chatLimiter } from '../middleware/rate-limit';
 import { chatController } from '../controllers/chat.controller';
@@ -37,7 +37,7 @@ const adminRouter = Router();
 
 adminRouter.use(requireApiKey);
 
-const adminAuth = [authenticate, loadMembership, requireStaff()];
+const adminAuth = [authenticate, loadMembership, requireStaff(), requireBusinessAccess()];
 
 // Auth-protected admin work routes (require user session + staff membership)
 adminRouter.get('/conversations/:id/messages', ...adminAuth, (req: Request, res: Response) => conversationController.getMessages(req, res));
