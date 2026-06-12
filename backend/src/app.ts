@@ -41,7 +41,7 @@ app.use(express.json({ limit: '10kb' }));
 
 app.use('/api', publicRouter);
 app.use('/api', meRouter);
-app.use('/api', founderRouter);
+app.use('/api/ops', founderRouter);
 app.use('/api', teamRouter);
 app.use('/api', settingsRouter);
 app.use('/api', operationalRouter);
