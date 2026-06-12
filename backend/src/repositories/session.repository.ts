@@ -2,13 +2,13 @@ import pool from '../config/db';
 import { CustomerSession } from '../types';
 
 export class SessionRepository {
-  async findBySessionId(sessionId: string): Promise<CustomerSession | null> {
+  async findBySessionId(sessionId: string, businessId: string): Promise<CustomerSession | null> {
     const query = `
       SELECT id, session_id, customer_id, business_id, last_active_at, created_at
       FROM customer_sessions
-      WHERE session_id = $1
+      WHERE session_id = $1 AND business_id = $2
     `;
-    const res = await pool.query(query, [sessionId]);
+    const res = await pool.query(query, [sessionId, businessId]);
     if (res.rows.length === 0) return null;
     return this.mapToEntity(res.rows[0]);
   }
@@ -23,13 +23,13 @@ export class SessionRepository {
     return this.mapToEntity(res.rows[0]);
   }
 
-  async updateCustomer(sessionId: string, customerId: string): Promise<void> {
+  async updateCustomer(sessionId: string, businessId: string, customerId: string): Promise<void> {
     const query = `
       UPDATE customer_sessions
-      SET customer_id = $2, last_active_at = NOW()
-      WHERE session_id = $1
+      SET customer_id = $3, last_active_at = NOW()
+      WHERE session_id = $1 AND business_id = $2
     `;
-    await pool.query(query, [sessionId, customerId]);
+    await pool.query(query, [sessionId, businessId, customerId]);
   }
 
   private mapToEntity(row: any): CustomerSession {

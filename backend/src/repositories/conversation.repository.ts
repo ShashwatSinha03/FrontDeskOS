@@ -5,13 +5,13 @@ export class ConversationRepository {
   /**
    * Find an active conversation for a customer.
    */
-  async findActiveByCustomer(customerId: string): Promise<Conversation | null> {
+  async findActiveByCustomer(customerId: string, businessId: string): Promise<Conversation | null> {
     const query = `
       SELECT id, customer_id, business_id, status, channel_type, created_at, updated_at
       FROM conversations
-      WHERE customer_id = $1 AND status = 'active'
+      WHERE customer_id = $1 AND business_id = $2 AND status = 'active'
     `;
-    const res = await pool.query(query, [customerId]);
+    const res = await pool.query(query, [customerId, businessId]);
     if (res.rows.length === 0) return null;
     return this.mapToConversationEntity(res.rows[0]);
   }
@@ -32,27 +32,27 @@ export class ConversationRepository {
   /**
    * Find all conversations for a customer.
    */
-  async findByCustomer(customerId: string): Promise<Conversation[]> {
+  async findByCustomer(customerId: string, businessId: string): Promise<Conversation[]> {
     const query = `
       SELECT id, customer_id, business_id, status, channel_type, created_at, updated_at
       FROM conversations
-      WHERE customer_id = $1
+      WHERE customer_id = $1 AND business_id = $2
       ORDER BY created_at DESC
     `;
-    const res = await pool.query(query, [customerId]);
+    const res = await pool.query(query, [customerId, businessId]);
     return res.rows.map(r => this.mapToConversationEntity(r));
   }
 
   /**
    * Close a conversation session.
    */
-  async close(id: string): Promise<void> {
+  async close(id: string, businessId: string): Promise<void> {
     const query = `
       UPDATE conversations
       SET status = 'closed', updated_at = NOW()
-      WHERE id = $1
+      WHERE id = $1 AND business_id = $2
     `;
-    await pool.query(query, [id]);
+    await pool.query(query, [id, businessId]);
   }
 
   /**
@@ -85,22 +85,22 @@ export class ConversationRepository {
   /**
    * Retrieve transcript history for a conversation with pagination.
    */
-  async getMessages(conversationId: string, options?: { limit?: number; offset?: number }): Promise<{ messages: Message[]; totalCount: number }> {
-    const countQuery = `SELECT COUNT(*) as count FROM messages WHERE conversation_id = $1`;
-    const countRes = await pool.query(countQuery, [conversationId]);
+  async getMessages(conversationId: string, businessId: string, options?: { limit?: number; offset?: number }): Promise<{ messages: Message[]; totalCount: number }> {
+    const countQuery = `SELECT COUNT(*) as count FROM messages m JOIN conversations c ON c.id = m.conversation_id WHERE m.conversation_id = $1 AND c.business_id = $2`;
+    const countRes = await pool.query(countQuery, [conversationId, businessId]);
     const totalCount = parseInt(countRes.rows[0].count, 10);
 
     const msgLimit = options?.limit || 50;
     const msgOffset = options?.offset || 0;
 
     const query = `
-      SELECT id, conversation_id, sender, content, metadata, created_at
-      FROM messages
-      WHERE conversation_id = $1
-      ORDER BY created_at ASC
-      LIMIT $2 OFFSET $3
+      SELECT m.id, m.conversation_id, m.sender, m.content, m.metadata, m.created_at
+      FROM messages m JOIN conversations c ON c.id = m.conversation_id
+      WHERE m.conversation_id = $1 AND c.business_id = $2
+      ORDER BY m.created_at ASC
+      LIMIT $3 OFFSET $4
     `;
-    const res = await pool.query(query, [conversationId, msgLimit, msgOffset]);
+    const res = await pool.query(query, [conversationId, businessId, msgLimit, msgOffset]);
     const messages = res.rows.map((row) => ({
       id: row.id,
       conversationId: row.conversation_id,
@@ -115,16 +115,16 @@ export class ConversationRepository {
   /**
    * Retrieve messages for a customer profile across all their past channels and chats.
    */
-  async getMessagesByCustomer(customerId: string, limit: number = 50): Promise<Message[]> {
+  async getMessagesByCustomer(customerId: string, businessId: string, limit: number = 50): Promise<Message[]> {
     const query = `
       SELECT m.id, m.conversation_id, m.sender, m.content, m.metadata, m.created_at
       FROM messages m
       JOIN conversations c ON m.conversation_id = c.id
-      WHERE c.customer_id = $1
+      WHERE c.customer_id = $1 AND c.business_id = $2
       ORDER BY m.created_at ASC
-      LIMIT $2
+      LIMIT $3
     `;
-    const res = await pool.query(query, [customerId, limit]);
+    const res = await pool.query(query, [customerId, businessId, limit]);
     return res.rows.map((row) => ({
       id: row.id,
       conversationId: row.conversation_id,
