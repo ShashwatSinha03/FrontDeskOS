@@ -6,6 +6,7 @@ export interface Membership {
   businessId: string;
   role: 'owner' | 'staff';
   status: 'active' | 'invited' | 'suspended';
+  businessStatus?: 'active' | 'disabled';
 }
 
 export async function loadMembership(req: Request, _res: Response, next: NextFunction): Promise<void> {
@@ -17,9 +18,10 @@ export async function loadMembership(req: Request, _res: Response, next: NextFun
 
   try {
     const query = `
-      SELECT user_id, business_id, role, status
-      FROM staff_profiles
-      WHERE user_id = $1
+      SELECT sp.user_id, sp.business_id, sp.role, sp.status, b.status AS business_status
+      FROM staff_profiles sp
+      JOIN businesses b ON b.id = sp.business_id
+      WHERE sp.user_id = $1
       LIMIT 1
     `;
     const result = await pool.query(query, [req.user.id]);
@@ -31,6 +33,7 @@ export async function loadMembership(req: Request, _res: Response, next: NextFun
         businessId: row.business_id,
         role: row.role,
         status: row.status,
+        businessStatus: row.business_status,
       };
     } else {
       req.membership = null;

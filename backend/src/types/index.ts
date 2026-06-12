@@ -143,6 +143,7 @@ export interface Business {
   description?: string;
   logoUrl?: string;
   timezone: string;
+  status: 'active' | 'disabled';
   faqs: FAQ[];
   escalationRules: EscalationRules;
   appointmentSettings: AppointmentSettings;

@@ -7,7 +7,7 @@ export class BusinessRepository {
    */
   async findById(id: string): Promise<Business | null> {
     const query = `
-      SELECT id, name, slug, business_type, archetype, phone, email, address, description, logo_url, timezone, faqs, escalation_rules, appointment_settings, created_at, updated_at
+      SELECT id, name, slug, business_type, archetype, phone, email, address, description, logo_url, timezone, status, faqs, escalation_rules, appointment_settings, created_at, updated_at
       FROM businesses
       WHERE id = $1
     `;
@@ -59,7 +59,7 @@ export class BusinessRepository {
    */
   async findBySlug(slug: string): Promise<Business | null> {
     const query = `
-      SELECT id, name, slug, business_type, archetype, phone, email, address, description, logo_url, timezone, faqs, escalation_rules, appointment_settings, created_at, updated_at
+      SELECT id, name, slug, business_type, archetype, phone, email, address, description, logo_url, timezone, status, faqs, escalation_rules, appointment_settings, created_at, updated_at
       FROM businesses
       WHERE slug = $1
     `;
@@ -84,6 +84,7 @@ export class BusinessRepository {
       description: row.description || undefined,
       logoUrl: row.logo_url || undefined,
       timezone: row.timezone || 'UTC',
+      status: row.status || 'active',
       faqs: row.faqs as FAQ[],
       escalationRules: row.escalation_rules as EscalationRules,
       appointmentSettings: row.appointment_settings as AppointmentSettings,

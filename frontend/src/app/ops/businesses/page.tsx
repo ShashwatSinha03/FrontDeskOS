@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { Copy, ExternalLink, Eye } from 'lucide-react';
+import { Copy, ExternalLink, Eye, Pencil, Shield } from 'lucide-react';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
 
 export default function OpsBusinessesPage() {
@@ -90,6 +90,20 @@ export default function OpsBusinessesPage() {
                       >
                         <Eye className="h-3 w-3" />
                         View
+                      </Link>
+                      <Link
+                        href={`/ops/businesses/${biz.id}/edit`}
+                        className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-muted"
+                      >
+                        <Pencil className="h-3 w-3" />
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/${biz.slug}/admin`}
+                        className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-muted"
+                      >
+                        <Shield className="h-3 w-3" />
+                        Admin
                       </Link>
                       <Link
                         href={`/${biz.slug}`}

@@ -114,6 +114,13 @@ export interface Business {
   slug: string;
   businessType: string;
   archetype: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  description?: string;
+  logoUrl?: string;
+  timezone: string;
+  status: 'active' | 'disabled';
   faqs: FAQ[];
   escalationRules: EscalationRules;
   appointmentSettings: AppointmentSettings;
