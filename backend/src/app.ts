@@ -4,6 +4,8 @@ import config from './config';
 import { publicRouter, adminRouter } from './routes/api.routes';
 import { meRouter } from './routes/me.routes';
 import { founderRouter } from './routes/founder.routes';
+import onboardingRouter from './routes/onboarding.routes';
+import { requireApiKey } from './middleware/auth';
 import { teamRouter } from './routes/team.routes';
 import { settingsRouter } from './routes/settings.routes';
 import { operationalRouter } from './routes/operational.routes';
@@ -44,6 +46,12 @@ app.use('/api', meRouter);
 app.use('/api/ops', founderRouter);
 app.use('/api', teamRouter);
 app.use('/api', settingsRouter);
+app.use('/api', (req, res, next) => {
+  if (req.path.startsWith('/onboarding')) {
+    return requireApiKey(req, res, next);
+  }
+  next();
+}, onboardingRouter);
 app.use('/api', operationalRouter);
 app.use('/api', notificationRouter);
 app.use('/api', analyticsRouter);
