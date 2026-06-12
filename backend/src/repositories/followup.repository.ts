@@ -34,25 +34,25 @@ export class FollowUpRepository {
     return this.mapToEntity(res.rows[0]);
   }
 
-  async markSent(id: string): Promise<void> {
+  async markSent(id: string, businessId: string): Promise<void> {
     const query = `
       UPDATE follow_ups
       SET status = 'sent', sent_at = NOW(), updated_at = NOW()
-      WHERE id = $1
+      WHERE id = $1 AND business_id = $2
     `;
-    await pool.query(query, [id]);
+    await pool.query(query, [id, businessId]);
   }
 
-  async cancelPending(customerId: string, type?: FollowUpType): Promise<void> {
+  async cancelPending(customerId: string, businessId: string, type?: FollowUpType): Promise<void> {
     let query = `
       UPDATE follow_ups
       SET status = 'cancelled', updated_at = NOW()
-      WHERE customer_id = $1 AND status = 'pending'
+      WHERE customer_id = $1 AND business_id = $2 AND status = 'pending'
     `;
-    const params: any[] = [customerId];
+    const params: any[] = [customerId, businessId];
 
     if (type) {
-      query += ` AND type = $2`;
+      query += ` AND type = $3`;
       params.push(type);
     }
 
@@ -129,24 +129,24 @@ export class FollowUpRepository {
     return { followUps, totalCount };
   }
 
-  async findByCustomerWithName(customerId: string): Promise<any[]> {
+  async findByCustomerWithName(customerId: string, businessId: string): Promise<any[]> {
     const query = `
       SELECT fu.*, c.name as customer_name
       FROM follow_ups fu
       LEFT JOIN customers c ON c.id = fu.customer_id
-      WHERE fu.customer_id = $1
+      WHERE fu.customer_id = $1 AND fu.business_id = $2
       ORDER BY fu.scheduled_at DESC
     `;
-    const res = await pool.query(query, [customerId]);
+    const res = await pool.query(query, [customerId, businessId]);
     return res.rows.map(row => ({
       ...this.mapToEntity(row),
       customerName: row.customer_name,
     }));
   }
 
-  async findByCustomer(customerId: string): Promise<FollowUp[]> {
-    const query = `SELECT * FROM follow_ups WHERE customer_id = $1 ORDER BY scheduled_at DESC`;
-    const res = await pool.query(query, [customerId]);
+  async findByCustomer(customerId: string, businessId: string): Promise<FollowUp[]> {
+    const query = `SELECT * FROM follow_ups WHERE customer_id = $1 AND business_id = $2 ORDER BY scheduled_at DESC`;
+    const res = await pool.query(query, [customerId, businessId]);
     return res.rows.map(r => this.mapToEntity(r));
   }
 

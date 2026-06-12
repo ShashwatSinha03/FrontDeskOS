@@ -6,14 +6,14 @@ export class CustomerRepository {
    * Find customer profile by channel (e.g. session id or phone number).
    * This is key to mapping multiple channels to a single customer.
    */
-  async findByChannelIdentity(channelType: ChannelType, channelIdentity: string): Promise<Customer | null> {
+  async findByChannelIdentity(channelType: ChannelType, channelIdentity: string, businessId: string): Promise<Customer | null> {
     const query = `
       SELECT c.id, c.business_id, c.name, c.email, c.phone, c.lifecycle_state, c.last_interaction_at, c.created_at, c.updated_at
       FROM customers c
       JOIN customer_channels cc ON cc.customer_id = c.id
-      WHERE cc.channel_type = $1 AND cc.channel_identity = $2
+      WHERE cc.channel_type = $1 AND cc.channel_identity = $2 AND c.business_id = $3
     `;
-    const res = await pool.query(query, [channelType, channelIdentity]);
+    const res = await pool.query(query, [channelType, channelIdentity, businessId]);
     if (res.rows.length === 0) return null;
     return this.mapToEntity(res.rows[0]);
   }
@@ -21,13 +21,13 @@ export class CustomerRepository {
   /**
    * Find a customer profile directly by its primary key ID.
    */
-  async findById(id: string): Promise<Customer | null> {
+  async findById(id: string, businessId: string): Promise<Customer | null> {
     const query = `
       SELECT id, business_id, name, email, phone, lifecycle_state, last_interaction_at, created_at, updated_at
       FROM customers
-      WHERE id = $1
+      WHERE id = $1 AND business_id = $2
     `;
-    const res = await pool.query(query, [id]);
+    const res = await pool.query(query, [id, businessId]);
     if (res.rows.length === 0) return null;
     return this.mapToEntity(res.rows[0]);
   }
@@ -65,10 +65,11 @@ export class CustomerRepository {
    */
   async updateLifecycleState(
     id: string,
+    businessId: string,
     state: CustomerLifecycleState,
     triggerEvent?: string | null
   ): Promise<void> {
-    const customer = await this.findById(id);
+    const customer = await this.findById(id, businessId);
     if (!customer) throw new Error('Customer not found');
     if (customer.lifecycleState === state) return;
 
@@ -95,10 +96,10 @@ export class CustomerRepository {
   /**
    * Update the contact profile details of a customer.
    */
-  async updateProfile(id: string, updates: Partial<Pick<Customer, 'name' | 'email' | 'phone'>>): Promise<void> {
+  async updateProfile(id: string, businessId: string, updates: Partial<Pick<Customer, 'name' | 'email' | 'phone'>>): Promise<void> {
     const fields: string[] = [];
     const values: any[] = [];
-    let paramIndex = 2;
+    let paramIndex = 3;
 
     Object.entries(updates).forEach(([key, val]) => {
       const dbKey = key === 'name' ? 'name' : key === 'email' ? 'email' : 'phone';
@@ -112,9 +113,9 @@ export class CustomerRepository {
     const query = `
       UPDATE customers
       SET ${fields.join(', ')}, last_interaction_at = NOW(), updated_at = NOW()
-      WHERE id = $1
+      WHERE id = $1 AND business_id = $2
     `;
-    await pool.query(query, [id, ...values]);
+    await pool.query(query, [id, businessId, ...values]);
   }
 
   /**
