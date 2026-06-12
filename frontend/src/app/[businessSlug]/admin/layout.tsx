@@ -61,6 +61,17 @@ export default async function AdminLayout({
     redirect('/unauthorized');
   }
 
+  if (membership.businessStatus === 'disabled') {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center space-y-3">
+          <h1 className="text-xl font-semibold">Business Disabled</h1>
+          <p className="text-muted-foreground">This business has been disabled. Contact your founder for more information.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       <AdminSidebar
