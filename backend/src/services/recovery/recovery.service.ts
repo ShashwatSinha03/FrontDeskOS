@@ -78,28 +78,28 @@ export class RecoveryService {
     return processed;
   }
 
-  async cancelRecovery(customerId: string): Promise<void> {
-    await followUpRepository.cancelPending(customerId);
+  async cancelRecovery(customerId: string, businessId: string): Promise<void> {
+    await followUpRepository.cancelPending(customerId, businessId);
   }
 
   private async executeStep(followUp: FollowUp): Promise<void> {
     try {
-      const customer = await customerRepository.findById(followUp.customerId);
+      const customer = await customerRepository.findById(followUp.customerId, followUp.businessId);
       if (!customer || ['Booked', 'Customer', 'Lost'].includes(customer.lifecycleState)) {
-        await followUpRepository.cancelPending(followUp.customerId);
+        await followUpRepository.cancelPending(followUp.customerId, followUp.businessId);
         return;
       }
 
       const channel = this.channels.get(followUp.channel);
       if (!channel) {
         console.error(`No channel adapter registered for '${followUp.channel}' — cancelling follow-up ${followUp.id}`);
-        await followUpRepository.cancelPending(followUp.customerId, followUp.type);
+        await followUpRepository.cancelPending(followUp.customerId, followUp.businessId, followUp.type);
         return;
       }
 
       const content = await this.generateRecoveryContent(followUp);
 
-      const conversation = await conversationRepository.findActiveByCustomer(followUp.customerId)
+      const conversation = await conversationRepository.findActiveByCustomer(followUp.customerId, followUp.businessId)
         || await conversationRepository.create(followUp.customerId, followUp.businessId, 'web_chat');
 
       await channel.send({
@@ -110,22 +110,22 @@ export class RecoveryService {
         metadata: { followUpId: followUp.id, type: followUp.type },
       });
 
-      await followUpRepository.markSent(followUp.id);
+      await followUpRepository.markSent(followUp.id, followUp.businessId);
 
       if (followUp.type === 'day_3') {
         await customerRepository.updateLifecycleState(followUp.customerId, 'Lost', 'system:no_response_to_day_3_followup');
       }
     } catch (error) {
       console.error(`Error executing recovery step ${followUp.id} — cancelling:`, error);
-      await followUpRepository.cancelPending(followUp.customerId, followUp.type);
+      await followUpRepository.cancelPending(followUp.customerId, followUp.businessId, followUp.type);
     }
   }
 
   private async generateRecoveryContent(followUp: FollowUp): Promise<string> {
-    const conversation = await conversationRepository.findActiveByCustomer(followUp.customerId);
+    const conversation = await conversationRepository.findActiveByCustomer(followUp.customerId, followUp.businessId);
     let history = '';
     if (conversation) {
-      const { messages } = await conversationRepository.getMessages(conversation.id);
+      const { messages } = await conversationRepository.getMessages(conversation.id, followUp.businessId);
       history = messages.map(m => `${m.sender}: ${m.content}`).join('\n');
     }
 

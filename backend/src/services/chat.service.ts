@@ -75,7 +75,8 @@ export class ChatService {
     // ── 1. Resolve customer profile ──────────────────────────────────────────
     let customer = await customerRepository.findByChannelIdentity(
       input.channelType,
-      input.channelIdentity
+      input.channelIdentity,
+      input.businessId
     );
 
     if (!customer) {
@@ -104,18 +105,18 @@ export class ChatService {
       if (!customer.phone && input.customerPhone) profileUpdates.phone = input.customerPhone;
 
       if (Object.keys(profileUpdates).length > 0) {
-        await customerRepository.updateProfile(customer.id, profileUpdates);
+        await customerRepository.updateProfile(customer.id, input.businessId, profileUpdates);
         customer = { ...customer, ...profileUpdates } as Customer;
       }
     }
 
     // ── 1b. Link session to customer if sessionId is provided ───────────────
     if (input.sessionId) {
-      await sessionRepository.updateCustomer(input.sessionId, customer.id);
+      await sessionRepository.updateCustomer(input.sessionId, input.businessId, customer.id);
     }
 
     // ── 2. Resolve active conversation session ───────────────────────────────
-    let conversation = await conversationRepository.findActiveByCustomer(customer.id);
+    let conversation = await conversationRepository.findActiveByCustomer(customer.id, input.businessId);
     if (!conversation) {
       conversation = await conversationRepository.create(
         customer.id,
@@ -132,13 +133,13 @@ export class ChatService {
     );
 
     // ── 4. Cancel pending recovery (customer re-engaged) ────────────────────
-    await recoveryService.cancelRecovery(customer.id);
+    await recoveryService.cancelRecovery(customer.id, input.businessId);
 
     // ── 5. Load context for agent invocation ─────────────────────────────────
     const [business, services, history] = await Promise.all([
       businessRepository.findById(input.businessId),
       this.fetchServices(input.businessId),
-      conversationRepository.getMessages(conversation.id).then(r => r.messages),
+      conversationRepository.getMessages(conversation.id, input.businessId).then(r => r.messages),
     ]);
 
     if (!business) {
@@ -212,7 +213,7 @@ export class ChatService {
 
     // ── 9. Update last_interaction_at ────────────────────────────────────────
     const updatedCustomer =
-      (await customerRepository.findById(customer.id)) || customer;
+      (await customerRepository.findById(customer.id, input.businessId)) || customer;
 
     // ── Build AgentResult for response ───────────────────────────────────────
     const agentResult: AgentResult = {

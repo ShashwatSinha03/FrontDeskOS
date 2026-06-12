@@ -13,7 +13,7 @@ export class WebChatChannel implements RecoveryChannel {
   }): Promise<{ sent: boolean; externalId?: string }> {
     let conversationId = params.conversationId;
     if (!conversationId) {
-      const conv = await conversationRepository.findActiveByCustomer(params.customerId);
+      const conv = await conversationRepository.findActiveByCustomer(params.customerId, params.businessId);
       if (!conv) {
         const newConv = await conversationRepository.create(params.customerId, params.businessId, 'web_chat');
         conversationId = newConv.id;

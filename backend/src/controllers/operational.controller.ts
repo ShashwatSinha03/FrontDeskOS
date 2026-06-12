@@ -126,7 +126,7 @@ export class OperationalController {
       const schema = z.object({ lifecycleState: z.enum(LEAD_STATES as [string, ...string[]]) });
       const { lifecycleState } = schema.parse(req.body);
 
-      const customer = await customerRepository.findById(id);
+      const customer = await customerRepository.findById(id, businessId);
       if (!customer || customer.businessId !== businessId) {
         res.status(404).json({ success: false, error: 'Lead not found' });
         return;
@@ -197,7 +197,7 @@ export class OperationalController {
       const schema = z.object({ status: z.enum(['confirmed', 'completed', 'cancelled']) });
       const { status } = schema.parse(req.body);
 
-      const appointment = await appointmentRepository.findById(id);
+      const appointment = await appointmentRepository.findById(id, businessId);
       if (!appointment || appointment.businessId !== businessId) {
         res.status(404).json({ success: false, error: 'Appointment not found' });
         return;
@@ -245,7 +245,7 @@ export class OperationalController {
       });
       const { appointmentTime, notes } = schema.parse(req.body);
 
-      const appointment = await appointmentRepository.findById(id);
+      const appointment = await appointmentRepository.findById(id, businessId);
       if (!appointment || appointment.businessId !== businessId) {
         res.status(404).json({ success: false, error: 'Appointment not found' });
         return;

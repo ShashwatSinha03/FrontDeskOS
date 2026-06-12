@@ -24,7 +24,7 @@ export class ConversationController {
         offset: z.coerce.number().int().min(0).default(0),
       });
       const parsed = schema.parse(req.query);
-      const { messages, totalCount } = await conversationRepository.getMessages(id, {
+      const { messages, totalCount } = await conversationRepository.getMessages(id, businessId, {
         limit: parsed.limit,
         offset: parsed.offset,
       });

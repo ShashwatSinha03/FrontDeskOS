@@ -13,7 +13,7 @@ export class FollowUpService {
    */
   async scheduleReEngagement(customerId: string, businessId: string): Promise<void> {
     // Cancel existing pending sequences first
-    await followUpRepository.cancelPending(customerId);
+    await followUpRepository.cancelPending(customerId, businessId);
 
     const scheduledTime = new Date();
     scheduledTime.setMinutes(scheduledTime.getMinutes() + 15); // 15 minutes inactivity trigger
@@ -54,15 +54,15 @@ export class FollowUpService {
   private async executeSingleFollowUp(followUp: FollowUp): Promise<void> {
     try {
       // 1. Check if the customer is still in a follow-up state (verify no other bookings happened)
-      const customer = await customerRepository.findById(followUp.customerId);
+      const customer = await customerRepository.findById(followUp.customerId, followUp.businessId);
       if (!customer || customer.lifecycleState === 'Booked' || customer.lifecycleState === 'Customer') {
         // Cancel if customer is already booked
-        await followUpRepository.cancelPending(followUp.customerId, followUp.type);
+        await followUpRepository.cancelPending(followUp.customerId, followUp.businessId, followUp.type);
         return;
       }
 
       // 2. Resolve active conversation session
-      let conversation = await conversationRepository.findActiveByCustomer(followUp.customerId);
+      let conversation = await conversationRepository.findActiveByCustomer(followUp.customerId, followUp.businessId);
       if (!conversation) {
         conversation = await conversationRepository.create(
           followUp.customerId,
@@ -72,7 +72,7 @@ export class FollowUpService {
       }
 
       // 3. Generate personalized re-engagement message using LLM
-      const { messages } = await conversationRepository.getMessages(conversation.id);
+      const { messages } = await conversationRepository.getMessages(conversation.id, followUp.businessId);
       const conversationHistory = messages.map(m => `${m.sender}: ${m.content}`).join('\n');
 
       const provider = LLMProviderFactory.getProvider();
@@ -103,7 +103,7 @@ Response:`;
       );
 
       // 5. Update follow-up record
-      await followUpRepository.markSent(followUp.id);
+      await followUpRepository.markSent(followUp.id, followUp.businessId);
 
       // 6. State transitions & Scheduling subsequent sequences
       if (followUp.type === 're_engagement') {

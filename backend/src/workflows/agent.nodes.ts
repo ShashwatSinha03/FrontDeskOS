@@ -133,9 +133,9 @@ function validateServiceId(serviceId: string | undefined, services: AgentState['
  * Validates that an appointment belongs to the given customer.
  * Prevents unauthorized access to other customers' appointments.
  */
-async function validateAppointmentOwnership(appointmentId: string, customerId: string): Promise<boolean> {
+async function validateAppointmentOwnership(appointmentId: string, customerId: string, businessId: string): Promise<boolean> {
   try {
-    const appointments = await appointmentRepository.findByCustomer(customerId);
+    const appointments = await appointmentRepository.findByCustomer(customerId, businessId);
     return appointments.some(a => a.id === appointmentId);
   } catch {
     return false;
@@ -413,7 +413,7 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
     // Save any customer info provided, regardless of action
     if (parsed?.customerName || parsed?.customerEmail || parsed?.customerPhone) {
       try {
-        await customerRepository.updateProfile(state.customer.id, {
+        await customerRepository.updateProfile(state.customer.id, state.business.id, {
           name: parsed.customerName || undefined,
           email: parsed.customerEmail || undefined,
           phone: parsed.customerPhone || undefined,
@@ -516,10 +516,10 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
       if (!isNaN(newTime.getTime()) && newTime > new Date()) {
         try {
           // Find the customer's most recent active appointment
-          const appointments = await appointmentRepository.findByCustomer(state.customer.id);
+          const appointments = await appointmentRepository.findByCustomer(state.customer.id, state.business.id);
           const active = appointments.find(a => a.status === 'pending' || a.status === 'confirmed');
           if (active) {
-            const newAppointment = await appointmentRepository.reschedule(active.id, newTime);
+            const newAppointment = await appointmentRepository.reschedule(active.id, active.businessId, newTime);
             appointmentId = newAppointment.id;
             console.log(`✅ RescheduleNode: Appointment rescheduled ${active.id} → ${newAppointment.id}`);
           } else {
@@ -556,7 +556,7 @@ export async function cancellationNode(state: AgentState): Promise<Partial<Agent
   // Attempt to find the customer's most recent active appointment
   let appointmentId: string | undefined;
   try {
-    const appointments = await appointmentRepository.findByCustomer(state.customer.id);
+    const appointments = await appointmentRepository.findByCustomer(state.customer.id, state.business.id);
     const active = appointments.find(a => a.status === 'pending' || a.status === 'confirmed');
     if (active) {
       // Validate the appointment belongs to this customer (already filtered by findByCustomer)
@@ -805,7 +805,7 @@ export async function leadCaptureNode(state: AgentState): Promise<Partial<AgentS
 
   if (updatedName || updatedEmail || updatedPhone) {
     try {
-      await customerRepository.updateProfile(state.customer.id, {
+      await customerRepository.updateProfile(state.customer.id, state.business.id, {
         name: updatedName,
         email: updatedEmail,
         phone: updatedPhone,

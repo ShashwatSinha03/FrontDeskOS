@@ -24,23 +24,23 @@ export class OwnerController {
       const id = uuidParam.parse(req.params.id);
       const businessId = req.membership!.businessId;
 
-      const customer = await customerRepository.findById(id);
+      const customer = await customerRepository.findById(id, businessId);
       if (!customer || customer.businessId !== businessId) {
         res.status(404).json({ success: false, error: 'Customer not found' });
         return;
       }
 
       const [appointments, conversations, escalations, followUps, lifecycleEvents] = await Promise.all([
-        appointmentRepository.findByCustomerWithDetails(id),
-        conversationRepository.findByCustomer(id),
-        escalationRepository.findByCustomer(id),
-        followUpRepository.findByCustomerWithName(id),
-        lifecycleEventRepository.findByCustomer(id),
+        appointmentRepository.findByCustomerWithDetails(id, businessId),
+        conversationRepository.findByCustomer(id, businessId),
+        escalationRepository.findByCustomer(id, businessId),
+        followUpRepository.findByCustomerWithName(id, businessId),
+        lifecycleEventRepository.findByCustomer(id, businessId),
       ]);
 
       let messages: any[] = [];
       if (conversations.length > 0) {
-        const result = await conversationRepository.getMessages(conversations[0].id, { limit: 100, offset: 0 });
+        const result = await conversationRepository.getMessages(conversations[0].id, businessId, { limit: 100, offset: 0 });
         messages = result.messages;
       }
 
@@ -88,7 +88,7 @@ export class OwnerController {
       });
       const { lifecycleState } = schema.parse(req.body);
 
-      const customer = await customerRepository.findById(id);
+      const customer = await customerRepository.findById(id, businessId);
       if (!customer || customer.businessId !== businessId) {
         res.status(404).json({ success: false, error: 'Customer not found' });
         return;
@@ -110,13 +110,13 @@ export class OwnerController {
       const id = uuidParam.parse(req.params.id);
       const businessId = req.membership!.businessId;
 
-      const customer = await customerRepository.findById(id);
+      const customer = await customerRepository.findById(id, businessId);
       if (!customer || customer.businessId !== businessId) {
         res.status(404).json({ success: false, error: 'Customer not found' });
         return;
       }
 
-      const conversations = await conversationRepository.findByCustomer(id);
+      const conversations = await conversationRepository.findByCustomer(id, businessId);
 
       res.status(200).json({
         success: true,
@@ -169,7 +169,7 @@ export class OwnerController {
       });
       const updates = schema.parse(req.body);
 
-      const customer = await customerRepository.findById(id);
+      const customer = await customerRepository.findById(id, businessId);
       if (!customer || customer.businessId !== businessId) {
         res.status(404).json({ success: false, error: 'Customer not found' });
         return;
@@ -181,10 +181,10 @@ export class OwnerController {
       if (updates.phone !== undefined) filtered.phone = updates.phone;
 
       if (Object.keys(filtered).length > 0) {
-        await customerRepository.updateProfile(id, filtered);
+        await customerRepository.updateProfile(id, businessId, filtered);
       }
 
-      const updated = await customerRepository.findById(id);
+      const updated = await customerRepository.findById(id, businessId);
       res.status(200).json({ success: true, data: updated });
     } catch (error: any) {
       if (error instanceof z.ZodError) {

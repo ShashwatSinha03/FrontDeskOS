@@ -17,7 +17,7 @@ export class AbandonmentDetector {
       const inactiveConversations = await conversationRepository.findActiveByInactivity(timeout);
 
       for (const conv of inactiveConversations) {
-        const customer = await customerRepository.findById(conv.customerId);
+        const customer = await customerRepository.findById(conv.customerId, businessId);
         if (!customer) continue;
 
         const terminalStates = ['Booked', 'Customer', 'Escalated', 'Lost'];

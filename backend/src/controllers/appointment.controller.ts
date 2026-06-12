@@ -68,7 +68,7 @@ export class AppointmentController {
 
       let customerId = parsed.customerId;
       if (!customerId && parsed.sessionId) {
-        const session = await sessionRepository.findBySessionId(parsed.sessionId);
+        const session = await sessionRepository.findBySessionId(parsed.sessionId, businessId);
         if (session?.customerId) {
           customerId = session.customerId;
         } else {
@@ -84,7 +84,7 @@ export class AppointmentController {
           );
           customerId = customer.id;
           if (session) {
-            await sessionRepository.updateCustomer(session.sessionId, customer.id);
+            await sessionRepository.updateCustomer(session.sessionId, businessId, customer.id);
           }
           await conversationRepository.create(customerId, businessId, 'web_chat');
         }
@@ -102,7 +102,7 @@ export class AppointmentController {
         notes: parsed.notes,
       });
 
-      const bookCustomer = await customerRepository.findById(customerId);
+      const bookCustomer = await customerRepository.findById(customerId, businessId);
       const bookName = bookCustomer?.name || parsed.name || 'A customer';
       notificationService.create({
         businessId,

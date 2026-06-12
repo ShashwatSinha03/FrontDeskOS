@@ -101,7 +101,7 @@ export class PublicController {
       const parsed = schema.parse(req.body);
       const channelIdentity = parsed.sessionId || `contact-${crypto.randomUUID()}`;
 
-      let customer = await customerRepository.findByChannelIdentity('web_chat', channelIdentity);
+      let customer = await customerRepository.findByChannelIdentity('web_chat', channelIdentity, business.id);
       if (!customer) {
         customer = await customerRepository.create(
           business.id,
@@ -112,7 +112,7 @@ export class PublicController {
         await customerRepository.linkChannel(customer.id, 'web_chat', channelIdentity);
       }
 
-      const conversation = await conversationRepository.findActiveByCustomer(customer.id)
+      const conversation = await conversationRepository.findActiveByCustomer(customer.id, business.id)
         || await conversationRepository.create(customer.id, business.id, 'web_chat');
 
       await conversationRepository.addMessage(conversation.id, 'customer', parsed.message, {
@@ -145,7 +145,7 @@ export class PublicController {
       const parsed = schema.parse(req.body);
 
       if (parsed.sessionId) {
-        const existing = await sessionRepository.findBySessionId(parsed.sessionId);
+        const existing = await sessionRepository.findBySessionId(parsed.sessionId, parsed.businessId);
         if (existing) {
           res.status(200).json({
             success: true,

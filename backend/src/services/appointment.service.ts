@@ -44,7 +44,7 @@ export class AppointmentService {
     newTime: Date,
     notes?: string
   ): Promise<Appointment> {
-    const old = await appointmentRepository.findById(appointmentId);
+    const old = await appointmentRepository.findById(appointmentId, businessId);
     if (!old) throw new Error('Appointment not found');
     if (old.businessId !== businessId) throw new Error('Appointment does not belong to this business');
     if (old.status === 'cancelled') throw new Error('Cannot reschedule a cancelled appointment');
@@ -58,7 +58,7 @@ export class AppointmentService {
     );
     if (!isAvailable) throw new Error('The requested new slot is unavailable.');
 
-    const newAppointment = await appointmentRepository.reschedule(appointmentId, newTime, notes);
+    const newAppointment = await appointmentRepository.reschedule(appointmentId, businessId, newTime, notes);
 
     const service = old.serviceId ? await this.getService(old.serviceId) : null;
     await calendarService.getProvider().cancelEvent(old.id);
@@ -68,7 +68,7 @@ export class AppointmentService {
   }
 
   async cancelAppointment(appointmentId: string, businessId: string, reason?: string): Promise<void> {
-    const appointment = await appointmentRepository.findById(appointmentId);
+    const appointment = await appointmentRepository.findById(appointmentId, businessId);
     if (!appointment) throw new Error('Appointment not found');
     if (appointment.businessId !== businessId) throw new Error('Appointment does not belong to this business');
     if (appointment.status === 'cancelled') throw new Error('Appointment is already cancelled');
@@ -80,7 +80,7 @@ export class AppointmentService {
   }
 
   async confirmAppointment(appointmentId: string, businessId: string): Promise<void> {
-    const appointment = await appointmentRepository.findById(appointmentId);
+    const appointment = await appointmentRepository.findById(appointmentId, businessId);
     if (!appointment) throw new Error('Appointment not found');
     if (appointment.businessId !== businessId) throw new Error('Appointment does not belong to this business');
 
@@ -91,7 +91,7 @@ export class AppointmentService {
   }
 
   async completeAppointment(appointmentId: string, businessId: string): Promise<void> {
-    const appointment = await appointmentRepository.findById(appointmentId);
+    const appointment = await appointmentRepository.findById(appointmentId, businessId);
     if (!appointment) throw new Error('Appointment not found');
     if (appointment.businessId !== businessId) throw new Error('Appointment does not belong to this business');
     if (appointment.status === 'cancelled') throw new Error('Cannot complete a cancelled appointment');
