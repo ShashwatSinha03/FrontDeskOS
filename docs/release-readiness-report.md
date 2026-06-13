@@ -1,4 +1,4 @@
-# FrontDeskOS — Release Readiness Report
+# Nevura — Release Readiness Report
 
 **Generated:** 2026-06-09
 **Commit:** (pending)

@@ -1,7 +1,7 @@
 /**
  * agent.nodes.ts
  *
- * Individual LangGraph node implementations for the FrontDeskOS Conversation Agent.
+ * Individual LangGraph node implementations for the Nevura Conversation Agent.
  * Each node is a pure async function: (state: AgentState) => Partial<AgentState>.
  * Nodes read from state, produce side-effects (DB writes), and return state updates.
  *

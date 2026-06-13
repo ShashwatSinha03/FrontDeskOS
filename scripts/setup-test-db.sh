@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== FrontDeskOS Test Database Setup ==="
+echo "=== Nevura Test Database Setup ==="
 
 DB_NAME="${DB_NAME:-frontdeskos_test}"
 DB_USER="${DB_USER:-postgres}"

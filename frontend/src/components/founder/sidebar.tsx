@@ -24,7 +24,7 @@ export function FounderSidebar() {
     <aside className="w-56 border-r bg-card shrink-0 hidden md:flex flex-col">
       <div className="flex h-14 items-center border-b px-5">
         <Link href="/ops" className="text-sm font-semibold tracking-tight">
-          FrontDeskOS
+          Nevura
         </Link>
       </div>
       <nav className="flex flex-col gap-0.5 p-3 flex-1">

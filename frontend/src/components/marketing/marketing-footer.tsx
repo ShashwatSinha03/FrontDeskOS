@@ -31,7 +31,7 @@ export function MarketingFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <Link href="/" className="text-lg font-semibold tracking-tight text-white">
-              FrontDeskOS
+              Nevura
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-zinc-500 max-w-xs">
               The 24/7 AI receptionist that answers questions, captures leads, books appointments, and follows up automatically.
@@ -107,7 +107,7 @@ export function MarketingFooter() {
 
         <div className="mt-16 pt-8 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-zinc-600">
-            &copy; {currentYear} FrontDeskOS. All rights reserved.
+            &copy; {currentYear} Nevura. All rights reserved.
           </p>
           <p className="text-xs text-zinc-600">
             Built for businesses that never want to miss another customer.

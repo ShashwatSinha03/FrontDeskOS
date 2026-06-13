@@ -10,7 +10,7 @@ process.on('uncaughtException', (err) => {
 });
 
 const server = app.listen(config.PORT, () => {
-  console.log(`🚀 FrontDeskOS Backend listening on port ${config.PORT}`);
+  console.log(`🚀 Nevura Backend listening on port ${config.PORT}`);
   console.log(`👉 Environment: ${config.NODE_ENV}`);
   console.log(`👉 LLM Provider: ${config.LLM_PROVIDER}`);
 });

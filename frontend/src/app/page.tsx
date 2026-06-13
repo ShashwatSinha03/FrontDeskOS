@@ -14,9 +14,9 @@ import { FinalCta } from '@/components/marketing/final-cta';
 import { MarketingFooter } from '@/components/marketing/marketing-footer';
 
 export const metadata: Metadata = {
-  title: 'FrontDeskOS — 24/7 AI Receptionist for Service Businesses',
+  title: 'Nevura — 24/7 AI Receptionist for Service Businesses',
   description:
-    'FrontDeskOS acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.',
+    'Nevura acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.',
 };
 
 export default function MarketingPage() {

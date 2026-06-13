@@ -1,16 +1,16 @@
 # FRONTDESKOS Founder Operating Manual
 
-> **Purpose**: Run FrontDeskOS as founder, salesperson, onboarding specialist, support engineer, and business owner — without reading the codebase.
+> **Purpose**: Run Nevura as founder, salesperson, onboarding specialist, support engineer, and business owner — without reading the codebase.
 >
 > **If you disappear for 6 months and come back, this document tells you everything.**
 
 ---
 
-# SECTION 1 — What FrontDeskOS Actually Is
+# SECTION 1 — What Nevura Actually Is
 
 ## What the product does
 
-FrontDeskOS is an AI receptionist for service businesses. It replaces the front desk — the person who answers calls, books appointments, answers FAQs, captures leads, and sends follow-ups.
+Nevura is an AI receptionist for service businesses. It replaces the front desk — the person who answers calls, books appointments, answers FAQs, captures leads, and sends follow-ups.
 
 A customer visits the business website. Instead of calling or filling a contact form, they talk to an AI chatbot. The chatbot:
 
@@ -68,7 +68,7 @@ The owner can view, filter, and act on everything from the dashboard.
 
 ## Common Mistakes
 
-- Confusing FrontDeskOS with a website builder. It is a receptionist that comes with a website. The website exists to give the AI a place to live.
+- Confusing Nevura with a website builder. It is a receptionist that comes with a website. The website exists to give the AI a place to live.
 - Thinking the AI works without setup. It needs FAQs, services, and hours configured. The AI is only as good as the knowledge you give it.
 - Expecting the AI to handle everything. The AI handles ~80% of conversations. The remaining 20% require human escalation. This is by design.
 
@@ -76,7 +76,7 @@ The owner can view, filter, and act on everything from the dashboard.
 
 ### Founder Checklist
 
-- [ ] I can explain what FrontDeskOS does in one sentence
+- [ ] I can explain what Nevura does in one sentence
 - [ ] I can name the four target industries
 - [ ] I understand the difference between what customer sees and what owner sees
 - [ ] I know what conversations the AI handles vs escalates
@@ -105,7 +105,7 @@ Customer returns → AI remembers context
 
 ## Full lifecycle from acquisition to retention
 
-### Stage 1: Visitor discovers FrontDeskOS
+### Stage 1: Visitor discovers Nevura
 
 - Finds marketing site through ads, SEO, referral, or direct visit
 - Sees hero section explaining the value proposition
@@ -121,7 +121,7 @@ Customer returns → AI remembers context
 ### Stage 3: Discovery call
 
 - You understand their business: services, hours, FAQs, pain points
-- You explain how FrontDeskOS solves their problem
+- You explain how Nevura solves their problem
 - You agree on pricing (currently manual, no automated billing)
 - They become a client
 
@@ -172,7 +172,7 @@ Customer returns → AI remembers context
 
 **Purpose**: Convert visitors into demo bookings. This is the front door of the business.
 
-**Who uses it**: Prospects evaluating FrontDeskOS.
+**Who uses it**: Prospects evaluating Nevura.
 
 **Inputs**: Visitor arrives via ad, search, referral, or direct.
 
@@ -783,7 +783,7 @@ This is the first database record. Every other record depends on it.
 
 **What I do**: Send the owner their access information and schedule a 15-minute training call.
 
-**What I see**: The owner now has everything they need to run their business with FrontDeskOS.
+**What I see**: The owner now has everything they need to run their business with Nevura.
 
 **What happens next**: The owner starts monitoring leads and appointments. They handle escalations. They update FAQs. They use the dashboard daily.
 
@@ -845,7 +845,7 @@ This is a temporary state. Authentication was reverted during cleanup and will b
 
 ## How do I give an owner access?
 
-Just send them the URL: `https://frontdeskos.vercel.app/[businessSlug]/admin`
+Just send them the URL: `https://nevuraos.vercel.app/[businessSlug]/admin`
 
 There is no account creation, no login step, no password. The dashboard is publicly accessible.
 
@@ -965,18 +965,18 @@ Admin pages are currently publicly accessible at `/[slug]/admin`. No account cre
 
 ### Step 7: Verify
 
-- Visit `https://frontdeskos.vercel.app/glamour-salon`
-- Visit `https://frontdeskos.vercel.app/glamour-salon/services`
-- Visit `https://frontdeskos.vercel.app/glamour-salon/booking`
-- Visit `https://frontdeskos.vercel.app/glamour-salon/faq`
-- Visit `https://frontdeskos.vercel.app/glamour-salon/admin`
+- Visit `https://nevuraos.vercel.app/glamour-salon`
+- Visit `https://nevuraos.vercel.app/glamour-salon/services`
+- Visit `https://nevuraos.vercel.app/glamour-salon/booking`
+- Visit `https://nevuraos.vercel.app/glamour-salon/faq`
+- Visit `https://nevuraos.vercel.app/glamour-salon/admin`
 - Start a chat and ask a FAQ question
 - Book a test appointment
 - Verify appointment appears in admin
 
 ## Method C: Using the Onboarding Wizard (UI)
 
-The wizard at `https://frontdeskos.vercel.app/ops/onboarding` provides a step-by-step UI for creating a new business. It handles business creation, services, FAQs, hours, AI greeting, and publishing — all from one flow.
+The wizard at `https://nevuraos.vercel.app/ops/onboarding` provides a step-by-step UI for creating a new business. It handles business creation, services, FAQs, hours, AI greeting, and publishing — all from one flow.
 
 1. Visit `/ops/onboarding`
 2. Enter business info (name, slug, contact details)
@@ -1288,14 +1288,14 @@ Operational view. What changes in the system when events occur.
 
 # SECTION 11 — Daily Operations
 
-If you run FrontDeskOS every day, here is what to check.
+If you run Nevura every day, here is what to check.
 
 ## Morning Checklist
 
 Every business day, do this:
 
 - [ ] Check the backend is running (visit `https://frontdeskos.onrender.com/api/health`)
-- [ ] Check the frontend is running (visit `https://frontdeskos.vercel.app/`)
+- [ ] Check the frontend is running (visit `https://nevuraos.vercel.app/`)
 - [ ] For each active client:
   - [ ] Check their Escalations page — any pending escalations from overnight?
   - [ ] Check their Appointments page — confirm today's schedule is correct
@@ -1432,7 +1432,7 @@ Once per month:
 ## Scenario 5: "Business owner cannot access admin panel"
 
 **First Thing To Check**: Is the URL correct?
-- Verify the admin URL: `https://frontdeskos.vercel.app/[correct-slug]/admin`
+- Verify the admin URL: `https://nevuraos.vercel.app/[correct-slug]/admin`
 - Common mistake: wrong slug or wrong URL structure
 
 **Second Thing To Check**: Does the admin access record exist?
@@ -1510,16 +1510,16 @@ Once per month:
 ## Demo to a Gym
 
 **Pages to open**:
-1. `https://frontdeskos.vercel.app/` (marketing site — start here)
+1. `https://nevuraos.vercel.app/` (marketing site — start here)
 2. A gym tenant page (e.g., a demo page if one exists)
 3. The admin dashboard
 
 **Script**:
 
-"FrontDeskOS is an AI receptionist for gyms. Let me show you how it works."
+"Nevura is an AI receptionist for gyms. Let me show you how it works."
 
 1. **Start on the marketing site hero section.**
-   - "This is what your potential customers see when they find FrontDeskOS."
+   - "This is what your potential customers see when they find Nevura."
    - "The message is simple: AI receptionist for your gym. Never miss a lead."
 
 2. **Scroll through How It Works.**
@@ -1549,7 +1549,7 @@ Once per month:
 
 7. **Close with the value proposition.**
    - "For gym owners: you're losing leads every day because no one answers the phone at 9 PM."
-   - "FrontDeskOS answers them. Books them. Follows up. All automatically."
+   - "Nevura answers them. Books them. Follows up. All automatically."
    - "You just check your dashboard in the morning and see who's coming in today."
 
 **What to emphasize**:
@@ -1741,7 +1741,7 @@ The product is ready for 20 businesses. The operating system is not.
 
 **What's missing**: No monitoring. No alerts. No multi-business dashboard. No support system. No automated health checks. No backup verification process. No SLA you can commit to.
 
-**Verdict**: Operating FrontDeskOS is a part-time job that becomes a full-time job at 5 clients.
+**Verdict**: Operating Nevura is a part-time job that becomes a full-time job at 5 clients.
 
 ## Scalability Readiness: 5/100
 
@@ -1789,7 +1789,7 @@ Assume you close a gym tomorrow. "Peak Performance Gym." Here is every action yo
 - "Probably 5-10 people a week. We're busy during sessions and can't answer."
 
 **You say**:
-- "That's exactly what FrontDeskOS solves. Imagine every one of those 5-10 people gets an instant response and books online."
+- "That's exactly what Nevura solves. Imagine every one of those 5-10 people gets an instant response and books online."
 
 ## Step 2: Requirement Gathering
 
@@ -1863,7 +1863,7 @@ curl -X POST ... -d '{"name": "Nutrition Counseling", "description": "Personaliz
 curl -X POST ... -d '{"name": "Free Trial Session", "description": "Try before you commit", "duration": 30, "price": 0}'
 ```
 
-**Verify**: Visit `https://frontdeskos.vercel.app/peak-performance-gym/services`
+**Verify**: Visit `https://nevuraos.vercel.app/peak-performance-gym/services`
 
 ## Step 7: FAQ Creation
 
@@ -1878,7 +1878,7 @@ curl -X POST https://frontdeskos.onrender.com/api/businesses/ID/faqs \
 # Repeat for all 10 FAQs
 ```
 
-**Verify**: Visit `https://frontdeskos.vercel.app/peak-performance-gym/faq`
+**Verify**: Visit `https://nevuraos.vercel.app/peak-performance-gym/faq`
 
 ## Step 8: Hours Setup
 
@@ -1914,14 +1914,14 @@ Set: "Hi! Welcome to Peak Performance Gym. I can help you with memberships, clas
 
 **You do**: No admin creation needed. The dashboard is publicly accessible at the admin URL.
 
-**You verify**: Open `https://frontdeskos.vercel.app/peak-performance-gym/admin`. Dashboard loads.
+**You verify**: Open `https://nevuraos.vercel.app/peak-performance-gym/admin`. Dashboard loads.
 
 ## Step 11: First Test Lead
 
 **You do** (manually, as a customer would):
 
 1. Open an incognito browser
-2. Visit `https://frontdeskos.vercel.app/peak-performance-gym`
+2. Visit `https://nevuraos.vercel.app/peak-performance-gym`
 3. Open the chat widget
 4. Type: "Hi, I'm interested in personal training"
 5. AI responds with info
@@ -1966,14 +1966,14 @@ After onboarding, send this to the business owner:
 
 ---
 
-**Subject**: Your FrontDeskOS is Live! 🎉
+**Subject**: Your Nevura is Live! 🎉
 
 Hi [Owner Name],
 
 Your AI receptionist is now active. Here's everything you need:
 
-**Your Website**: https://frontdeskos.vercel.app/[slug]
-**Your Dashboard**: https://frontdeskos.vercel.app/[slug]/admin
+**Your Website**: https://nevuraos.vercel.app/[slug]
+**Your Dashboard**: https://nevuraos.vercel.app/[slug]/admin
 
 **What to do next:**
 
@@ -2093,7 +2093,7 @@ Share your screen. Walk them through this exactly.
 
 ## SOP 1: Onboard a New Business
 
-**Purpose**: Add a new client to FrontDeskOS.
+**Purpose**: Add a new client to Nevura.
 
 **Steps**:
 1. Collect Minimum Information Required (see Section 8)
@@ -2215,7 +2215,7 @@ Share your screen. Walk them through this exactly.
 
 ## SOP 8: Offboard a Client
 
-**Purpose**: Remove a client from FrontDeskOS.
+**Purpose**: Remove a client from Nevura.
 
 **Steps**:
 1. Confirm with the client that they want to discontinue
@@ -2241,7 +2241,7 @@ Share your screen. Walk them through this exactly.
 
 # SECTION 19 — Revenue Operations
 
-## How FrontDeskOS Makes Money
+## How Nevura Makes Money
 
 **Currently**: Zero. There is no billing system. You are not charging anyone.
 
@@ -2282,7 +2282,7 @@ Total operational cost: ~₹3,000-5,000/month for small scale. Scales with AI us
 ## How a Client Moves from Lead to Paying Customer
 
 ```
-Prospect discovers FrontDeskOS
+Prospect discovers Nevura
   ↓
 Books demo (form on website)
   ↓
@@ -2490,7 +2490,7 @@ Answer these 20 questions without looking at the manual.
 15. How do follow-ups work and what can go wrong?
 16. What is the current billing process?
 17. What is the biggest bottleneck at 20 businesses?
-18. What is the single biggest gap in FrontDeskOS today?
+18. What is the single biggest gap in Nevura today?
 19. How do you offboard a client?
 20. Name three things that are manual that should be automated.
 
@@ -2577,7 +2577,7 @@ Score yourself 0-100 on each dimension.
 
 ### Product Understanding (0-100)
 
-Can you explain what FrontDeskOS does in one sentence? Can you describe what the customer sees, what the owner sees, and what the AI handles?
+Can you explain what Nevura does in one sentence? Can you describe what the customer sees, what the owner sees, and what the AI handles?
 
 **Score**: ___/100
 
@@ -2601,7 +2601,7 @@ Can you diagnose and fix the top 7 common issues? Do you know what to check firs
 
 ### Sales Understanding (0-100)
 
-Can you demo FrontDeskOS to any of the four target industries? Can you handle objections and close?
+Can you demo Nevura to any of the four target industries? Can you handle objections and close?
 
 **Score**: ___/100
 
@@ -2611,7 +2611,7 @@ Can you demo FrontDeskOS to any of the four target industries? Can you handle ob
 
 | Score | Meaning |
 |-------|---------|
-| 450-500 | You can run FrontDeskOS independently. Time to scale. |
+| 450-500 | You can run Nevura independently. Time to scale. |
 | 350-449 | You know the product but need practice. Reread weak sections. |
 | 250-349 | You have gaps. Focus on low-scoring areas. |
 | Below 250 | Reread this manual. Too many gaps to operate safely. |
@@ -2643,7 +2643,7 @@ Can you demo FrontDeskOS to any of the four target industries? Can you handle ob
 
 ## Biggest Risk
 
-**Zero revenue.** The product works, the business system doesn't. Without billing, every hour you spend is an investment with no return. If you stop working on FrontDeskOS for a month, nothing changes except you've spent another month with zero income from it.
+**Zero revenue.** The product works, the business system doesn't. Without billing, every hour you spend is an investment with no return. If you stop working on Nevura for a month, nothing changes except you've spent another month with zero income from it.
 
 ## Biggest Opportunity
 

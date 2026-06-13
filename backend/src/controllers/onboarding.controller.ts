@@ -188,7 +188,7 @@ export class OnboardingController {
             ownerId: null,
             email: parsed.email,
             name: parsed.name,
-            dashboardUrl: `https://frontdeskos.vercel.app/${slug}/admin`,
+            dashboardUrl: `https://nevuraos.vercel.app/${slug}/admin`,
             message: 'Tenant is active. Owner account creation encountered an issue. The owner can sign up manually.',
           },
         });
@@ -211,7 +211,7 @@ export class OnboardingController {
           email: parsed.email,
           name: parsed.name,
           password,
-          dashboardUrl: `https://frontdeskos.vercel.app/${slug}/admin`,
+          dashboardUrl: `https://nevuraos.vercel.app/${slug}/admin`,
           message: 'Owner account created. Share the password below with the owner.',
         },
       });

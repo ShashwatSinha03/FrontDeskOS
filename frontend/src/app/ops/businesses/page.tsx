@@ -17,7 +17,7 @@ export default function OpsBusinessesPage() {
   const businesses = data?.success ? data.data : [];
 
   const copyUrl = (slug: string) => {
-    navigator.clipboard.writeText(`https://frontdeskos.vercel.app/${slug}`);
+    navigator.clipboard.writeText(`https://nevuraos.vercel.app/${slug}`);
   };
 
   return (

@@ -1,4 +1,4 @@
-# FrontDeskOS — Tenant Isolation & Security Audit
+# Nevura — Tenant Isolation & Security Audit
 
 > **Status:** Audit Complete — No code changes, no migrations, no implementation
 >
@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-This audit inspected every route, controller, repository, and service in the FrontDeskOS backend for tenant isolation vulnerabilities, SQL injection, and prompt injection.
+This audit inspected every route, controller, repository, and service in the Nevura backend for tenant isolation vulnerabilities, SQL injection, and prompt injection.
 
 ### Key Findings
 

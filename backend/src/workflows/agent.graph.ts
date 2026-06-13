@@ -1,7 +1,7 @@
 /**
  * agent.graph.ts
  *
- * Assembles the FrontDeskOS Conversation Agent as a LangGraph StateGraph.
+ * Assembles the Nevura Conversation Agent as a LangGraph StateGraph.
  *
  * Graph topology:
  *

@@ -1,4 +1,4 @@
-# FrontDeskOS — Security Foundation Architecture Audit
+# Nevura — Security Foundation Architecture Audit
 
 > **Status:** Pre-Implementation Architecture Plan
 >

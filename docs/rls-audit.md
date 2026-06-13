@@ -1,4 +1,4 @@
-# FrontDeskOS — RLS Architecture Audit
+# Nevura — RLS Architecture Audit
 
 > **Status:** NOT APPROVED FOR IMPLEMENTATION — Critical architectural blocker found
 >

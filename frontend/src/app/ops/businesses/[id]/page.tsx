@@ -21,7 +21,7 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
   const biz = data?.success ? data.data : null;
 
   const copyUrl = (slug: string) => {
-    navigator.clipboard.writeText(`https://frontdeskos.vercel.app/${slug}`);
+    navigator.clipboard.writeText(`https://nevuraos.vercel.app/${slug}`);
   };
 
   const toggleStatus = async () => {

@@ -1,4 +1,4 @@
--- FrontDeskOS - Complete Supabase PostgreSQL Schema Definition
+-- Nevura - Complete Supabase PostgreSQL Schema Definition
 -- Supports: Multi-tenancy, Multi-channel mapping, Automated Lifecycle Logging, WhatsApp/Voice metadata, and Row-Level Security (RLS)
 
 -- ==========================================

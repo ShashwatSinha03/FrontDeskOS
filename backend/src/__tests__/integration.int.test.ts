@@ -1,5 +1,5 @@
 /**
- * FrontDeskOS — End-to-End Integration Tests
+ * Nevura — End-to-End Integration Tests
  *
  * Covers 8 customer journeys:
  *   A: Website -> Chat -> Pricing -> Recovery -> Booking

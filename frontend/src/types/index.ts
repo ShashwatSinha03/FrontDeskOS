@@ -1,4 +1,4 @@
-// FrontDeskOS Frontend - Shared Domain Types & Interfaces
+// Nevura Frontend - Shared Domain Types & Interfaces
 
 export type CustomerLifecycleState =
   | 'New Inquiry'

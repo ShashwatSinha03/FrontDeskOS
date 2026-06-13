@@ -1,4 +1,4 @@
-// FrontDeskOS TypeScript Types & Interfaces
+// Nevura TypeScript Types & Interfaces
 
 // ==========================================
 // Enums

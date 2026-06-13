@@ -1,4 +1,4 @@
-# FrontDeskOS — Deployment Guide
+# Nevura — Deployment Guide
 
 **Last updated:** 2026-06-09
 **Target:** Production launch
@@ -10,9 +10,9 @@
 ```
 ┌─────────────────────────────────────────────────┐
 │                   DNS                            │
-│  frontdeskos.app → Vercel (Frontend)           │
-│  brightsmile.frontdeskos.app → Vercel          │
-│  api.frontdeskos.app → Render (Backend)        │
+│  nevuraos.app → Vercel (Frontend)           │
+│  brightsmile.nevuraos.app → Vercel          │
+│  api.nevuraos.app → Render (Backend)        │
 └──────────────────────┬──────────────────────────┘
                        │
           ┌────────────┴────────────┐
@@ -34,8 +34,8 @@
 
 
 Multi-tenant routing (via Vercel + Next.js middleware):
-  brightsmile.frontdeskos.app  →  /brightsmile-dental/*
-  (next tenant).frontdeskos.app → /{slug}/*
+  brightsmile.nevuraos.app  →  /brightsmile-dental/*
+  (next tenant).nevuraos.app → /{slug}/*
 ```
 
 ---
@@ -91,7 +91,7 @@ Multi-tenant routing (via Vercel + Next.js middleware):
 
 | Field | Value |
 |---|---|
-| Name | `frontdeskos-api` |
+| Name | `nevuraos-api` |
 | Region | `Oregon` |
 | Branch | `main` |
 | Runtime | `Node` |
@@ -114,13 +114,13 @@ LLM_PROVIDER=groq
 GROQ_API_KEY=[your-groq-api-key]
 GROQ_MODEL=llama-3.3-70b-versatile
 ADMIN_API_KEY=[run: openssl rand -hex 32]
-FRONTEND_URL=https://frontdeskos.app
+FRONTEND_URL=https://nevuraos.app
 ```
 
 ### Step 2.3 — Deploy & Verify
 
 1. Click **Create Web Service** — Render builds and deploys automatically
-2. Once live, visit: `https://frontdeskos-api.onrender.com/health`
+2. Once live, visit: `https://nevuraos-api.onrender.com/health`
 3. Expected:
 ```json
 {"status":"healthy","timestamp":"...","environment":"production","provider":"groq"}
@@ -128,13 +128,13 @@ FRONTEND_URL=https://frontdeskos.app
 
 ### Step 2.4 — Custom Domain
 
-1. Render Dashboard → `frontdeskos-api` → **Settings** → **Custom Domain**
-2. Add: `api.frontdeskos.app`
+1. Render Dashboard → `nevuraos-api` → **Settings** → **Custom Domain**
+2. Add: `api.nevuraos.app`
 3. At your DNS provider:
 
 | Type | Name | Target |
 |---|---|---|
-| CNAME | `api` | `frontdeskos-api.onrender.com` |
+| CNAME | `api` | `nevuraos-api.onrender.com` |
 
 4. Wait for SSL (auto-provisioned, ~1 minute)
 
@@ -151,8 +151,8 @@ FRONTEND_URL=https://frontdeskos.app
 ### Step 3.2 — Configure Domains (Before Deploy)
 
 **Project Settings** → **Domains**:
-- Add: `frontdeskos.app` (primary)
-- Add: `brightsmile.frontdeskos.app`
+- Add: `nevuraos.app` (primary)
+- Add: `brightsmile.nevuraos.app`
 
 Vercel will provide DNS records to configure at your registrar.
 
@@ -169,7 +169,7 @@ Vercel will provide DNS records to configure at your registrar.
 **Project Settings** → **Environment Variables**:
 
 ```
-NEXT_PUBLIC_API_URL=https://api.frontdeskos.app/api
+NEXT_PUBLIC_API_URL=https://api.nevuraos.app/api
 ```
 
 Add to **Production** only.
@@ -178,8 +178,8 @@ Add to **Production** only.
 
 1. Click **Deploy**
 2. Wait for build (~2 minutes)
-3. Verify: `https://frontdeskos.app` → Landing page loads
-4. Verify: `https://brightsmile.frontdeskos.app` → BrightSmile Dental loads
+3. Verify: `https://nevuraos.app` → Landing page loads
+4. Verify: `https://brightsmile.nevuraos.app` → BrightSmile Dental loads
 
 ---
 
@@ -203,7 +203,7 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      // Multi-tenant subdomain rewrites — maps brightsmile.frontdeskos.app
+      // Multi-tenant subdomain rewrites — maps brightsmile.nevuraos.app
       // to /brightsmile-dental/* (handled by middleware.ts)
     ];
   },
@@ -220,8 +220,8 @@ In `backend/src/app.ts`, update the CORS origin to accept both domains:
 if (config.NODE_ENV === 'production') {
   app.use(cors({
     origin: [
-      'https://frontdeskos.app',
-      'https://brightsmile.frontdeskos.app',
+      'https://nevuraos.app',
+      'https://brightsmile.nevuraos.app',
       // Add future tenant domains here
     ],
     credentials: true,
@@ -264,13 +264,13 @@ const server = app.listen(config.PORT, () => {
 | `GROQ_API_KEY` | Conditional | console.groq.com | Required if `LLM_PROVIDER=groq` |
 | `GROQ_MODEL` | No | Static | Default: `llama3-70b-8192` |
 | `ADMIN_API_KEY` | Yes | Generate: `openssl rand -hex 32` | Used for admin API auth |
-| `FRONTEND_URL` | Yes | Your domain | `https://frontdeskos.app` |
+| `FRONTEND_URL` | Yes | Your domain | `https://nevuraos.app` |
 
 ### Frontend (Vercel)
 
 | Variable | Required | Notes |
 |---|---|---|
-| `NEXT_PUBLIC_API_URL` | Yes | `https://api.frontdeskos.app/api` |
+| `NEXT_PUBLIC_API_URL` | Yes | `https://api.nevuraos.app/api` |
 
 ### Optional Variables
 
@@ -288,8 +288,8 @@ const server = app.listen(config.PORT, () => {
 ### Step-by-step startup order:
 
 ```
-1. DNS resolves frontdeskos.app → Vercel
-2. DNS resolves api.frontdeskos.app → Render
+1. DNS resolves nevuraos.app → Vercel
+2. DNS resolves api.nevuraos.app → Render
 3. Render starts Express:
    a. Loads .env (dotenv)
    b. Validates all env vars via Zod schema
@@ -299,13 +299,13 @@ const server = app.listen(config.PORT, () => {
    f. Listens on PORT
    g. /health returns 200
 4. Vercel serves Next.js:
-   a. Client requests frontdeskos.app
+   a. Client requests nevuraos.app
    b. Next.js server-renders layout
-   c. Layout calls getBusiness(slug) → fetch(api.frontdeskos.app/api/public/businesses/{slug})
+   c. Layout calls getBusiness(slug) → fetch(api.nevuraos.app/api/public/businesses/{slug})
    d. API returns business data
    e. Page renders with Hero, Services, CTA
    f. Client-side ChatWidget loads
-   g. ensureSession() calls api.frontdeskos.app/api/public/sessions/create
+   g. ensureSession() calls api.nevuraos.app/api/public/sessions/create
    h. Chat is ready
 ```
 
@@ -328,9 +328,9 @@ Before announcing launch, run through every item:
 
 ### 7.1 — Infrastructure
 
-- [ ] `https://api.frontdeskos.app/health` returns 200 with `"status":"healthy"`
-- [ ] `https://frontdeskos.app` loads without errors
-- [ ] `https://brightsmile.frontdeskos.app` loads the BrightSmile Dental page
+- [ ] `https://api.nevuraos.app/health` returns 200 with `"status":"healthy"`
+- [ ] `https://nevuraos.app` loads without errors
+- [ ] `https://brightsmile.nevuraos.app` loads the BrightSmile Dental page
 - [ ] SSL certificate valid on all 3 domains
 - [ ] No console errors (404, CORS, mixed content)
 
@@ -343,7 +343,7 @@ Before announcing launch, run through every item:
 
 ### 7.3 — Booking Flow
 
-- [ ] Navigate to `https://brightsmile.frontdeskos.app/book`
+- [ ] Navigate to `https://brightsmile.nevuraos.app/book`
 - [ ] Step 1: Select a service
 - [ ] Step 2: Pick a date
 - [ ] Step 3: Pick a time
@@ -353,7 +353,7 @@ Before announcing launch, run through every item:
 
 ### 7.4 — Admin Dashboard
 
-- [ ] `https://brightsmile.frontdeskos.app/admin` loads
+- [ ] `https://brightsmile.nevuraos.app/admin` loads
 - [ ] Dashboard summary shows correct lead counts
 - [ ] Leads page lists customers
 - [ ] Appointments page shows bookings
@@ -385,8 +385,8 @@ Before announcing launch, run through every item:
 
 ### Pre-Launch (24 hours before)
 
-- [ ] **DNS propagation verified**: `dig frontdeskos.app` returns Vercel IPs
-- [ ] **DNS propagation verified**: `dig api.frontdeskos.app` returns Render IP
+- [ ] **DNS propagation verified**: `dig nevuraos.app` returns Vercel IPs
+- [ ] **DNS propagation verified**: `dig api.nevuraos.app` returns Render IP
 - [ ] **SSL certificates**: All 3 domains show valid HTTPS in browser
 - [ ] **Database**: Schema applied, seed data loaded, backup configured
 - [ ] **LLM API key**: Tested with a real chat message
@@ -425,7 +425,7 @@ Before announcing launch, run through every item:
 
 ```bash
 # Backend: Render deploys previous version
-# Dashboard → frontdeskos-api → Deploys → Activate last known good deploy
+# Dashboard → nevuraos-api → Deploys → Activate last known good deploy
 
 # Frontend: Vercel immediately
 # Dashboard → frontdeskos → Deployments → [...] → Promote to Production
@@ -452,15 +452,15 @@ cd backend && DATABASE_URL="postgresql://..." npm run migrate:up
 openssl rand -hex 32
 
 # Test health endpoint
-curl https://api.frontdeskos.app/health
+curl https://api.nevuraos.app/health
 
 # Test chat
-curl -X POST https://api.frontdeskos.app/api/chat \
+curl -X POST https://api.nevuraos.app/api/chat \
   -H "Content-Type: application/json" \
   -d '{"businessId":"b7a2f4c1-d93e-48d6-95bc-79f94eb97220","channelType":"web_chat","channelIdentity":"test-session","content":"Hello"}'
 
 # Test booking
-curl -X POST https://api.frontdeskos.app/api/appointments/book \
+curl -X POST https://api.nevuraos.app/api/appointments/book \
   -H "Content-Type: application/json" \
   -d '{"businessId":"b7a2f4c1-d93e-48d6-95bc-79f94eb97220","sessionId":"test-session","serviceId":"svc-b7a2-0001-4000-8000-000000000002","appointmentTime":"2026-06-16T10:00:00.000Z"}'
 ```
