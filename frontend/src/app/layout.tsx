@@ -1,6 +1,21 @@
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/lib/auth';
+import { Bungee_Outline, Bungee_Hairline } from 'next/font/google';
 import './globals.css';
+
+const bungeeOutline = Bungee_Outline({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-bungee-outline',
+});
+
+const bungeeHairline = Bungee_Hairline({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-bungee-hairline',
+});
 
 export const metadata: Metadata = {
   title: 'Nuvora — AI Receptionist for Service Businesses',
@@ -35,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${bungeeOutline.variable} ${bungeeHairline.variable}`}>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <AuthProvider>
           {children}
