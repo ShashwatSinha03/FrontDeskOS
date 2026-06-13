@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import config from './index';
+import { logger } from '../lib/logger';
 
 const pool = new Pool({
   connectionString: config.DATABASE_URL,
@@ -9,7 +10,7 @@ const pool = new Pool({
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+  logger.error('Unexpected error on idle client', { error: err instanceof Error ? err.message : String(err) });
 });
 
 export default pool;

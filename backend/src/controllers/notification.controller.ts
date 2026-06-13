@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { notificationRepository } from '../repositories';
+import { logger } from '../lib/logger';
 
 export class NotificationController {
   async list(req: Request, res: Response): Promise<void> {
@@ -23,7 +24,7 @@ export class NotificationController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Notifications] List error:', error);
+      logger.error('Failed to load notifications', { route: 'Notifications', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load notifications' });
     }
   }
@@ -35,7 +36,7 @@ export class NotificationController {
       await notificationRepository.markRead(id, businessId);
       res.json({ success: true, data: { id, isRead: true } });
     } catch (error) {
-      console.error('[Notifications] Mark read error:', error);
+      logger.error('Failed to mark notification as read', { route: 'Notifications', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to mark notification as read' });
     }
   }
@@ -46,7 +47,7 @@ export class NotificationController {
       await notificationRepository.markAllRead(businessId);
       res.json({ success: true, data: { markedAllRead: true } });
     } catch (error) {
-      console.error('[Notifications] Mark all read error:', error);
+      logger.error('Failed to mark all as read', { route: 'Notifications', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to mark all as read' });
     }
   }
@@ -57,7 +58,7 @@ export class NotificationController {
       const count = await notificationRepository.countUnread(businessId);
       res.json({ success: true, data: { count } });
     } catch (error) {
-      console.error('[Notifications] Unread count error:', error);
+      logger.error('Failed to get unread count', { route: 'Notifications', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to get unread count' });
     }
   }

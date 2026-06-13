@@ -10,6 +10,7 @@ import {
   lifecycleEventRepository,
 } from '../repositories';
 import { CustomerLifecycleState } from '../types';
+import { logger } from '../lib/logger';
 
 const uuidParam = z.string().uuid('Invalid UUID parameter');
 
@@ -74,7 +75,7 @@ export class OwnerController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('❌ Error fetching customer detail:', error);
+      logger.error('❌ Error fetching customer detail', { route: 'Owner', businessId: req.membership?.businessId, customerId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: error.message });
     }
   }

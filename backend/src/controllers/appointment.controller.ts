@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { appointmentService } from '../services';
 import { notificationService } from '../services/notification.service';
 import { appointmentRepository, sessionRepository, customerRepository, conversationRepository } from '../repositories';
+import { logger } from '../lib/logger';
 
 const uuidParam = z.string().uuid('Invalid UUID parameter');
 
@@ -111,7 +112,7 @@ export class AppointmentController {
         message: `${bookName} booked an appointment on ${new Date(parsed.appointmentTime).toLocaleString()}.`,
         entityType: 'appointment',
         entityId: appointment.id,
-      }).catch((err) => console.error('[Notifications] Failed to create appointment_booked:', err));
+      }).catch((err) => logger.error('Failed to create appointment_booked notification', { route: 'Appointment', businessId, error: err instanceof Error ? err.message : String(err) }));
 
       res.status(201).json({
         success: true,

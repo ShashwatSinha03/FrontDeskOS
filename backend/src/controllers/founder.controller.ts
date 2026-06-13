@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { createClient } from '@supabase/supabase-js';
 import pool from '../config/db';
 import config from '../config';
+import { logger } from '../lib/logger';
 
 function generatePassword(length = 12): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -37,7 +38,7 @@ export class FounderController {
         },
       });
     } catch (error) {
-      console.error('[Founder] Overview error:', error);
+      logger.error('Failed to load overview', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load overview' });
     }
   }
@@ -65,7 +66,7 @@ export class FounderController {
 
       res.json({ success: true, data: result.rows });
     } catch (error) {
-      console.error('[Founder] Businesses error:', error);
+      logger.error('Failed to load businesses', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load businesses' });
     }
   }
@@ -107,7 +108,7 @@ export class FounderController {
         },
       });
     } catch (error) {
-      console.error('[Founder] Get business error:', error);
+      logger.error('Failed to load business', { route: 'Founder', businessId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load business' });
     }
   }
@@ -135,7 +136,7 @@ export class FounderController {
 
       res.json({ success: true, data: result.rows[0] });
     } catch (error) {
-      console.error('[Founder] Update business error:', error);
+      logger.error('Failed to update business', { route: 'Founder', businessId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update business' });
     }
   }
@@ -176,7 +177,7 @@ export class FounderController {
         });
 
         if (authError || !authUser.user) {
-          console.error('[Founder] Supabase user creation failed:', authError);
+          logger.error('Supabase user creation failed', { route: 'Founder', error: authError instanceof Error ? authError.message : String(authError) });
           res.status(500).json({ success: false, error: 'Failed to create user' });
           return;
         }
@@ -201,7 +202,7 @@ export class FounderController {
         },
       });
     } catch (error) {
-      console.error('[Founder] Assign owner error:', error);
+      logger.error('Failed to assign owner', { route: 'Founder', businessId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to assign owner' });
     }
   }
@@ -229,7 +230,7 @@ export class FounderController {
 
       res.json({ success: true, data: result.rows[0] });
     } catch (error) {
-      console.error('[Founder] Update status error:', error);
+      logger.error('Failed to update status', { route: 'Founder', businessId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update status' });
     }
   }
@@ -261,7 +262,7 @@ export class FounderController {
       const result = await pool.query(query, params);
       res.json({ success: true, data: result.rows });
     } catch (error) {
-      console.error('[Founder] Users error:', error);
+      logger.error('Failed to load users', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load users' });
     }
   }
@@ -298,7 +299,7 @@ export class FounderController {
         },
       });
     } catch (error) {
-      console.error('[Founder] Get user error:', error);
+      logger.error('Failed to load user', { route: 'Founder', userId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load user' });
     }
   }
@@ -324,7 +325,7 @@ export class FounderController {
         data: { updated: result.rowCount ?? 0, profiles: result.rows },
       });
     } catch (error) {
-      console.error('[Founder] Update user status error:', error);
+      logger.error('Failed to update user status', { route: 'Founder', userId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update user status' });
     }
   }
@@ -350,15 +351,15 @@ export class FounderController {
       });
 
       if (resetError) {
-        console.error('[Founder] Password reset error:', resetError);
+        logger.error('Password reset error', { route: 'Founder', userId: req.params?.id, error: resetError instanceof Error ? resetError.message : String(resetError) });
         res.status(500).json({ success: false, error: 'Failed to generate reset link' });
         return;
       }
 
-      console.log(`[Founder] Password reset sent: userId=${id} email=${email}`);
+      logger.info('Password reset sent', { route: 'Founder', userId: id, email });
       res.json({ success: true, data: { message: 'Password reset link sent' } });
     } catch (error) {
-      console.error('[Founder] Reset password error:', error);
+      logger.error('Failed to reset password', { route: 'Founder', userId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to reset password' });
     }
   }
@@ -418,7 +419,7 @@ export class FounderController {
 
         await client.query('COMMIT');
 
-        console.log(`[Founder] Ownership transferred: business=${businessId} newOwner=${newOwnerId}`);
+        logger.info('Ownership transferred', { route: 'Founder', businessId, newOwnerId });
         res.json({ success: true, data: { businessId, newOwnerId } });
       } catch (err) {
         await client.query('ROLLBACK');
@@ -427,7 +428,7 @@ export class FounderController {
         client.release();
       }
     } catch (error) {
-      console.error('[Founder] Transfer ownership error:', error);
+      logger.error('Failed to transfer ownership', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to transfer ownership' });
     }
   }
@@ -452,7 +453,7 @@ export class FounderController {
         data: { removed: result.rowCount ?? 0 },
       });
     } catch (error) {
-      console.error('[Founder] Remove membership error:', error);
+      logger.error('Failed to remove membership', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to remove membership' });
     }
   }
@@ -471,7 +472,7 @@ export class FounderController {
 
       res.json({ success: true, data: result.rows });
     } catch (error) {
-      console.error('[Founder] Onboarding error:', error);
+      logger.error('Failed to load onboarding data', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load onboarding data' });
     }
   }

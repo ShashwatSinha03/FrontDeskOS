@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import pool from '../config/db';
+import { logger } from '../lib/logger';
 
 export class AnalyticsController {
   async overview(req: Request, res: Response): Promise<void> {
@@ -59,7 +60,7 @@ export class AnalyticsController {
         },
       });
     } catch (error) {
-      console.error('[Analytics] Overview error:', error);
+      logger.error('Failed to load analytics overview', { route: 'Analytics', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load analytics overview' });
     }
   }
@@ -84,7 +85,7 @@ export class AnalyticsController {
 
       res.json({ success: true, data: result.rows });
     } catch (error) {
-      console.error('[Analytics] Services error:', error);
+      logger.error('Failed to load service analytics', { route: 'Analytics', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load service analytics' });
     }
   }
@@ -123,7 +124,7 @@ export class AnalyticsController {
 
       res.json({ success: true, data: result.rows });
     } catch (error) {
-      console.error('[Analytics] Trends error:', error);
+      logger.error('Failed to load trends', { route: 'Analytics', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load trends' });
     }
   }
@@ -151,7 +152,7 @@ export class AnalyticsController {
 
       res.json({ success: true, data: funnel });
     } catch (error) {
-      console.error('[Analytics] Funnel error:', error);
+      logger.error('Failed to load funnel', { route: 'Analytics', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load funnel' });
     }
   }

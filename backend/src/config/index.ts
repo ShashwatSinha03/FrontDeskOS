@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import { logger } from '../lib/logger';
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +38,9 @@ const configSchema = z.object({
 
   // Admin Auth
   ADMIN_API_KEY: z.string().default('dev-api-key-change-in-production'),
+
+  // Sentry Error Tracking
+  SENTRY_DSN: z.string().optional(),
 }).refine((data) => {
   // Enforce that active provider has its respective API key
   if (data.LLM_PROVIDER === 'groq' && !data.GROQ_API_KEY) {
@@ -57,8 +61,7 @@ const configSchema = z.object({
 const parsedConfig = configSchema.safeParse(process.env);
 
 if (!parsedConfig.success) {
-  console.error('❌ Invalid environment configuration:');
-  console.error(JSON.stringify(parsedConfig.error.format(), null, 2));
+  logger.error('❌ Invalid environment configuration', { errors: parsedConfig.error.format() });
   process.exit(1);
 }
 

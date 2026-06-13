@@ -43,6 +43,7 @@ import {
   INTENT_TO_NODE,
   detectPromptInjection,
 } from './agent.prompts';
+import { logger } from '../lib/logger';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPER: Safely parse LLM JSON output
@@ -159,7 +160,7 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
   // ── Prompt injection detection ────────────────────────────
   const injection = detectPromptInjection(state.userMessage);
   if (injection.isInjection) {
-    console.warn(`🚨 Prompt injection detected: score=${injection.score} reason="${injection.reason}" message="${state.userMessage.slice(0, 100)}"`);
+    logger.warn('🚨 Prompt injection detected', { route: 'AgentNodes', businessId: state.business?.id, injectionScore: injection.score, injectionReason: injection.reason, messagePreview: state.userMessage.slice(0, 100) });
   }
 
   // ── Workflow continuation guard ──────────────────────────────
@@ -194,7 +195,7 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
         !/^(is\s+this|does\s+that)/i.test(msg);
 
       if (isContinuation) {
-        console.log(`🔁 Workflow continuation: "${lastIntent}" via "${msg}"`);
+        logger.info(`🔁 Workflow continuation`, { route: 'AgentNodes', businessId: state.business?.id, lastIntent, message: msg });
       return {
         intent: lastIntent as ConversationIntent,
         intentConfidence: 1.0,
@@ -225,7 +226,7 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.0, responseFormat: 'json' });
   } catch (err) {
-    console.error('❌ Intent detection LLM error:', err);
+    logger.error('❌ Intent detection LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
     return {
       intent: 'unknown',
       intentConfidence: 0,
@@ -248,7 +249,7 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
 
   const confidence = parsed?.confidence ?? 0;
 
-  console.log(`🧠 Intent detected: "${intent}" (confidence: ${confidence}) in ${Date.now() - t0}ms`);
+  logger.info('🧠 Intent detected', { route: 'AgentNodes', businessId: state.business?.id, intent, confidence, durationMs: Date.now() - t0 });
 
   return {
     intent,
@@ -284,7 +285,7 @@ export async function informationNode(state: AgentState): Promise<Partial<AgentS
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.2 });
   } catch (err) {
-    console.error('❌ Information node LLM error:', err);
+    logger.error('❌ Information node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   return {
@@ -314,7 +315,7 @@ export async function pricingNode(state: AgentState): Promise<Partial<AgentState
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.1 });
   } catch (err) {
-    console.error('❌ Pricing node LLM error:', err);
+    logger.error('❌ Pricing node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   return {
@@ -418,9 +419,9 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
           email: parsed.customerEmail || undefined,
           phone: parsed.customerPhone || undefined,
         });
-        console.log(`✅ BookingNode: Customer profile updated`);
+        logger.info('✅ BookingNode: Customer profile updated', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id });
       } catch (err) {
-        console.error('❌ BookingNode: Error updating customer profile:', err);
+        logger.error('❌ BookingNode: Error updating customer profile', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
       }
     }
 
@@ -431,7 +432,7 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
         return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, validationFailed: true } };
       }
       if (!validateServiceId(parsed.serviceId, state.services)) {
-        console.warn(`🚨 BookingNode: LLM returned invalid serviceId "${parsed.serviceId}" — not in active services`);
+        logger.warn('🚨 BookingNode: LLM returned invalid serviceId — not in active services', { route: 'AgentNodes', businessId: state.business?.id, serviceId: parsed.serviceId });
         reply = "I'm sorry, that service doesn't appear to be available. Would you like to choose another?";
         return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, validationFailed: true } };
       }
@@ -447,15 +448,15 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
           });
           appointmentId = appointment.id;
           await customerRepository.updateLifecycleState(state.customer.id, 'Booked', 'agent:booking');
-          console.log(`✅ BookingNode: Appointment created ${appointmentId}`);
+          logger.info('✅ BookingNode: Appointment created', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, appointmentId });
         } catch (err) {
-          console.error('❌ BookingNode: Error creating appointment:', err);
+          logger.error('❌ BookingNode: Error creating appointment', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
           reply = "I'm sorry, I wasn't able to book that slot. It may already be taken. Would you like to try a different time?";
         }
       }
     }
   } catch (err) {
-    console.error('❌ BookingNode LLM error:', err);
+    logger.error('❌ BookingNode LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
     reply = "Let me help you with that! What date and time works best for you?";
   }
 
@@ -521,18 +522,18 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
           if (active) {
             const newAppointment = await appointmentRepository.reschedule(active.id, active.businessId, newTime);
             appointmentId = newAppointment.id;
-            console.log(`✅ RescheduleNode: Appointment rescheduled ${active.id} → ${newAppointment.id}`);
+            logger.info('✅ RescheduleNode: Appointment rescheduled', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, oldAppointmentId: active.id, newAppointmentId: newAppointment.id });
           } else {
             reply = "I couldn't find an active appointment to reschedule. Would you like to book a new one instead?";
           }
         } catch (err) {
-          console.error('❌ RescheduleNode: Error rescheduling:', err);
+          logger.error('❌ RescheduleNode: Error rescheduling', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
           reply = "I'm sorry, I wasn't able to reschedule that appointment. That time may not be available.";
         }
       }
     }
   } catch (err) {
-    console.error('❌ RescheduleNode LLM error:', err);
+    logger.error('❌ RescheduleNode LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   return {
@@ -564,7 +565,7 @@ export async function cancellationNode(state: AgentState): Promise<Partial<Agent
       await appointmentRepository.updateStatus(active.id, 'cancelled', active.businessId);
     }
   } catch (err) {
-    console.error('❌ Cancellation: Error fetching/cancelling appointment:', err);
+    logger.error('❌ Cancellation: Error fetching/cancelling appointment', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   const systemPrompt = buildCancellationPrompt(
@@ -611,7 +612,7 @@ export async function escalationNode(state: AgentState): Promise<Partial<AgentSt
       reason,
     });
     escalationId = escalation.id;
-    console.log(`🚨 Escalation created: ${escalationId} (reason: ${reason})`);
+    logger.info('🚨 Escalation created', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, escalationId, reason });
 
     notificationService.create({
       businessId: state.business.id,
@@ -620,9 +621,9 @@ export async function escalationNode(state: AgentState): Promise<Partial<AgentSt
       message: `${state.customer.name || 'A customer'} escalated: ${reason}`,
       entityType: 'escalation',
       entityId: escalation.id,
-    }).catch((err) => console.error('[Notifications] Failed to create escalation_raised:', err));
+    }).catch((err) => logger.error('[Notifications] Failed to create escalation_raised', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) }));
   } catch (err) {
-    console.error('❌ Escalation: Error creating escalation record:', err);
+    logger.error('❌ Escalation: Error creating escalation record', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   const systemPrompt = buildEscalationPrompt(
@@ -639,7 +640,7 @@ export async function escalationNode(state: AgentState): Promise<Partial<AgentSt
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.2 });
   } catch (err) {
-    console.error('❌ Escalation node LLM error:', err);
+    logger.error('❌ Escalation node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   return {
@@ -674,7 +675,7 @@ export async function greetingNode(state: AgentState): Promise<Partial<AgentStat
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.4 });
   } catch (err) {
-    console.error('❌ Greeting node LLM error:', err);
+    logger.error('❌ Greeting node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   return {
@@ -715,7 +716,7 @@ export async function unknownNode(state: AgentState): Promise<Partial<AgentState
     if (parsed?.reply) reply = parsed.reply;
     if (parsed?.suggestedAnswer) suggestedAnswer = parsed.suggestedAnswer;
   } catch (err) {
-    console.error('❌ Unknown node LLM error:', err);
+    logger.error('❌ Unknown node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   // Log to the Learning Inbox for owner review — only for genuine questions
@@ -729,9 +730,9 @@ export async function unknownNode(state: AgentState): Promise<Partial<AgentState
         suggestedAnswer,
       });
       knowledgeRequestId = kr.id;
-      console.log(`📚 Knowledge request created: ${knowledgeRequestId}`);
+      logger.info('📚 Knowledge request created', { route: 'AgentNodes', businessId: state.business?.id, conversationId: state.conversation?.id, knowledgeRequestId });
     } catch (err) {
-      console.error('❌ Unknown node: Error creating knowledge request:', err);
+      logger.error('❌ Unknown node: Error creating knowledge request', { route: 'AgentNodes', businessId: state.business?.id, conversationId: state.conversation?.id, error: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -800,7 +801,7 @@ export async function leadCaptureNode(state: AgentState): Promise<Partial<AgentS
     if (parsed?.email) updatedEmail = parsed.email;
     if (parsed?.phone) updatedPhone = parsed.phone;
   } catch (err) {
-    console.error('❌ LeadCaptureNode LLM error:', err);
+    logger.error('❌ LeadCaptureNode LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
 
   if (updatedName || updatedEmail || updatedPhone) {
@@ -810,9 +811,9 @@ export async function leadCaptureNode(state: AgentState): Promise<Partial<AgentS
         email: updatedEmail,
         phone: updatedPhone,
       });
-      console.log(`✅ LeadCaptureNode: Customer profile updated with collected info`);
+      logger.info('✅ LeadCaptureNode: Customer profile updated with collected info', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id });
     } catch (err) {
-      console.error('❌ LeadCaptureNode: Error updating customer profile:', err);
+      logger.error('❌ LeadCaptureNode: Error updating customer profile', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
     }
   }
 

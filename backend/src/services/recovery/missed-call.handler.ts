@@ -1,5 +1,6 @@
 import pool from '../../config/db';
 import { RecoveryService } from './recovery.service';
+import { logger } from '../../lib/logger';
 
 export class MissedCallHandler {
   constructor(private recoveryService: RecoveryService) {}
@@ -27,7 +28,7 @@ export class MissedCallHandler {
         await this.recoveryService.scheduleRecovery(row.customer_id, row.business_id, 'missed_call', row.id);
         processed++;
       } catch (err) {
-        console.error(`Missed call recovery failed for voice_call ${row.id}:`, err);
+        logger.error('Missed call recovery failed', { route: 'MissedCallHandler', voiceCallId: row.id, businessId: row.business_id, customerId: row.customer_id, error: err instanceof Error ? err.message : String(err) });
       }
     }
 

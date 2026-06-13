@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { chatService } from '../services';
+import { logger } from '../lib/logger';
 
 const chatMessageSchema = z.object({
   businessId: z.string().uuid('businessId must be a valid UUID'),
@@ -38,7 +39,7 @@ export class ChatController {
         return;
       }
       
-      console.error('❌ Error handling chat message:', error);
+      logger.error('❌ Error handling chat message', { route: 'Chat', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ 
         success: false, 
         error: error.message || 'Internal server error' 

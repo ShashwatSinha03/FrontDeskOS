@@ -8,6 +8,7 @@ import {
 } from '../repositories';
 import { notificationService } from '../services/notification.service';
 import { CustomerLifecycleState, AppointmentStatus, EscalationStatus } from '../types';
+import { logger } from '../lib/logger';
 
 const LEAD_STATES: CustomerLifecycleState[] = [
   'New Inquiry', 'Information Gathering', 'Qualified',
@@ -84,7 +85,7 @@ export class OperationalController {
         },
       });
     } catch (error) {
-      console.error('[Operate] Dashboard error:', error);
+      logger.error('Failed to load dashboard', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load dashboard' });
     }
   }
@@ -114,7 +115,7 @@ export class OperationalController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Operate] Leads error:', error);
+      logger.error('Failed to load leads', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load leads' });
     }
   }
@@ -158,7 +159,7 @@ export class OperationalController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Operate] Update lifecycle error:', error);
+      logger.error('Failed to update lead status', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update lead status' });
     }
   }
@@ -185,7 +186,7 @@ export class OperationalController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Operate] Appointments error:', error);
+      logger.error('Failed to load appointments', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load appointments' });
     }
   }
@@ -230,7 +231,7 @@ export class OperationalController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Operate] Appt status error:', error);
+      logger.error('Failed to update appointment', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update appointment' });
     }
   }
@@ -267,7 +268,7 @@ export class OperationalController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Operate] Reschedule error:', error);
+      logger.error('Failed to reschedule appointment', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to reschedule appointment' });
     }
   }
@@ -294,7 +295,7 @@ export class OperationalController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Operate] Escalations error:', error);
+      logger.error('Failed to load escalations', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load escalations' });
     }
   }
@@ -341,7 +342,7 @@ export class OperationalController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Operate] Resolve escalation error:', error);
+      logger.error('Failed to resolve escalation', { route: 'Operate', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to resolve escalation' });
     }
   }

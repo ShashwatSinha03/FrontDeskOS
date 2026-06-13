@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import config from '../config';
 import pool from '../config/db';
 import { onboardingService } from '../services/onboarding/onboarding.service';
+import { logger } from '../lib/logger';
 
 function generatePassword(length = 12): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -38,7 +39,7 @@ export class OnboardingController {
         data: template,
       });
     } catch (error: any) {
-      console.error('[Onboarding] Error fetching template:', error);
+      logger.error('Error fetching template', { route: 'Onboarding', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({
         success: false,
         error: 'Failed to load industry template',
@@ -90,7 +91,7 @@ export class OnboardingController {
 
       const parsed = schema.parse(req.body);
 
-      console.log(`[Onboarding] publish_attempted session=${parsed.sessionId} industry=${parsed.industryTemplate} business=${parsed.business.name}`);
+      logger.info('Publish attempted', { route: 'Onboarding', sessionId: parsed.sessionId, industry: parsed.industryTemplate, business: parsed.business.name });
 
       const errors = onboardingService.validatePublishRequest(parsed);
       if (errors.length > 0) {
@@ -104,7 +105,7 @@ export class OnboardingController {
       const result = await onboardingService.publish(parsed);
 
       const action = result.idempotent ? 'idempotent_replay' : 'created';
-      console.log(`[Onboarding] publish_succeeded session=${parsed.sessionId} businessId=${result.businessId} action=${action}`);
+      logger.info('Publish succeeded', { route: 'Onboarding', sessionId: parsed.sessionId, businessId: result.businessId, action });
 
       res.status(result.idempotent ? 200 : 201).json({
         success: true,
@@ -127,7 +128,7 @@ export class OnboardingController {
         return;
       }
 
-      console.error('[Onboarding] Publish error:', error);
+      logger.error('Publish error', { route: 'Onboarding', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({
         success: false,
         error: 'Failed to publish tenant. Please try again.',
@@ -145,7 +146,7 @@ export class OnboardingController {
 
       const parsed = schema.parse(req.body);
 
-      console.log(`[Onboarding] owner_invited businessId=${parsed.businessId} email=${parsed.email}`);
+      logger.info('Owner invited', { route: 'Onboarding', businessId: parsed.businessId, email: parsed.email });
 
       // Verify business exists
       const bizQuery = `SELECT id, slug FROM businesses WHERE id = $1`;
@@ -181,7 +182,7 @@ export class OnboardingController {
       });
 
       if (authError || !authUser.user) {
-        console.error(`[Onboarding] Supabase auth user creation failed:`, authError);
+        logger.error('Supabase auth user creation failed', { route: 'Onboarding', businessId: parsed.businessId, email: parsed.email, error: authError instanceof Error ? authError.message : String(authError) });
         res.status(201).json({
           success: true,
           data: {
@@ -202,7 +203,7 @@ export class OnboardingController {
       `;
       const insertRes = await pool.query(insertQuery, [authUser.user.id, parsed.businessId, parsed.name]);
 
-      console.log(`[Onboarding] owner_created businessId=${parsed.businessId} profileId=${insertRes.rows[0].id} authUserId=${authUser.user.id}`);
+      logger.info('Owner created', { route: 'Onboarding', businessId: parsed.businessId, profileId: insertRes.rows[0].id, authUserId: authUser.user.id });
 
       res.status(201).json({
         success: true,
@@ -224,7 +225,7 @@ export class OnboardingController {
         return;
       }
 
-      console.error('[Onboarding] Owner creation error:', error);
+      logger.error('Owner creation error', { route: 'Onboarding', error: error instanceof Error ? error.message : String(error) });
       // Tenant stays active — never rollback tenant creation
       res.status(500).json({
         success: false,

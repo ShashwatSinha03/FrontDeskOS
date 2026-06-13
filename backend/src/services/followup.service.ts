@@ -5,6 +5,7 @@ import {
 } from '../repositories';
 import { LLMProviderFactory } from './llm/provider.factory';
 import { FollowUp, FollowUpType } from '../types';
+import { logger } from '../lib/logger';
 
 export class FollowUpService {
   /**
@@ -131,7 +132,7 @@ Response:`;
         await customerRepository.updateLifecycleState(followUp.customerId, 'Lost', 'system:no_response_to_day_3_followup');
       }
     } catch (error) {
-      console.error(`Error executing follow-up ${followUp.id}:`, error);
+      logger.error('Error executing follow-up', { route: 'FollowUpService', followUpId: followUp.id, businessId: followUp.businessId, customerId: followUp.customerId, error: error instanceof Error ? error.message : String(error) });
     }
   }
 }

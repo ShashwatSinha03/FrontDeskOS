@@ -38,6 +38,7 @@ import {
   unknownNode,
   leadCaptureNode,
 } from './agent.nodes';
+import { logger } from '../lib/logger';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ROUTING FUNCTION
@@ -50,7 +51,7 @@ import {
  */
 function routeByIntent(state: AgentState): string {
   const nodeName = INTENT_TO_NODE[state.intent] || 'unknownNode';
-  console.log(`🔀 Routing intent "${state.intent}" → ${nodeName}`);
+  logger.info(`🔀 Routing intent "${state.intent}" → ${nodeName}`, { route: 'AgentGraph', businessId: state.business?.id, intent: state.intent });
   return nodeName;
 }
 

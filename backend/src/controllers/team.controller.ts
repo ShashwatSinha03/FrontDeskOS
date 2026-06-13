@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import pool from '../config/db';
 import config from '../config';
 import { notificationService } from '../services/notification.service';
+import { logger } from '../lib/logger';
 
 export class TeamController {
   async list(req: Request, res: Response): Promise<void> {
@@ -20,7 +21,7 @@ export class TeamController {
 
       res.json({ success: true, data: result.rows });
     } catch (error) {
-      console.error('[Team] List error:', error);
+      logger.error('Failed to load team', { route: 'Team', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load team' });
     }
   }
@@ -49,7 +50,7 @@ export class TeamController {
       });
 
       if (authError || !authUser.user) {
-        console.error('[Team] Auth user creation failed:', authError);
+        logger.error('Auth user creation failed', { route: 'Team', businessId, error: authError instanceof Error ? authError.message : String(authError) });
         res.status(500).json({ success: false, error: 'Failed to create user' });
         return;
       }
@@ -61,7 +62,7 @@ export class TeamController {
         RETURNING id, user_id, role, status
       `, [authUser.user.id, businessId, staffRole, name || email]);
 
-      console.log(`[Team] Staff invited: business=${businessId} userId=${authUser.user.id} role=${staffRole}`);
+      logger.info('Staff invited', { route: 'Team', businessId, userId: authUser.user.id, role: staffRole });
 
       await notificationService.create({
         businessId, type: 'staff_invited', title: 'Staff Invited',
@@ -79,7 +80,7 @@ export class TeamController {
         },
       });
     } catch (error) {
-      console.error('[Team] Invite error:', error);
+      logger.error('Failed to invite staff', { route: 'Team', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to invite staff' });
     }
   }
@@ -108,7 +109,7 @@ export class TeamController {
 
       res.json({ success: true, data: result.rows[0] });
     } catch (error) {
-      console.error('[Team] Update status error:', error);
+      logger.error('Failed to update staff status', { route: 'Team', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update staff status' });
     }
   }
@@ -139,7 +140,7 @@ export class TeamController {
 
       res.json({ success: true, data: { removed: true } });
     } catch (error) {
-      console.error('[Team] Remove error:', error);
+      logger.error('Failed to remove staff', { route: 'Team', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to remove staff' });
     }
   }
@@ -160,7 +161,7 @@ export class TeamController {
         return;
       }
 
-      console.log(`[Team] Staff promoted to owner: profileId=${id} business=${businessId}`);
+      logger.info('Staff promoted to owner', { route: 'Team', profileId: id, businessId });
 
       const promProfile = result.rows[0];
       const promNameRes = await pool.query('SELECT full_name FROM staff_profiles WHERE id = $1', [id]);
@@ -173,7 +174,7 @@ export class TeamController {
 
       res.json({ success: true, data: promProfile });
     } catch (error) {
-      console.error('[Team] Promote error:', error);
+      logger.error('Failed to promote staff', { route: 'Team', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to promote staff' });
     }
   }

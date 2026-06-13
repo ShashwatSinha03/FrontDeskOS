@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { recoveryService } from '../services/recovery';
 import { AbandonmentDetector } from '../services/recovery/abandonment-detector';
 import { MissedCallHandler } from '../services/recovery/missed-call.handler';
+import { logger } from '../lib/logger';
 
 export class CronController {
   async triggerFollowUps(req: Request, res: Response): Promise<void> {
@@ -19,7 +20,7 @@ export class CronController {
         counts: { abandoned, missedCallRecoveries, processed },
       });
     } catch (error: any) {
-      console.error('Error in recovery cron trigger:', error);
+      logger.error('Error in recovery cron trigger', { route: 'Cron', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({
         success: false,
         error: error.message || 'Error processing recoveries',

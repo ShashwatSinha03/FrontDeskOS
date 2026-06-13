@@ -24,6 +24,7 @@ import { notificationService } from './notification.service';
 import { conversationAgent } from '../workflows/agent.graph';
 import { ChannelType, Customer, Conversation, Message, AgentResult, ConversationIntent, CustomerLifecycleState } from '../types';
 import pool from '../config/db';
+import { logger } from '../lib/logger';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Internal type for the agent graph output
@@ -96,7 +97,7 @@ export class ChatService {
         message: `${leadName} submitted an inquiry.`,
         entityType: 'customer',
         entityId: customer.id,
-      }).catch((err) => console.error('[Notifications] Failed to create lead_captured:', err));
+      }).catch((err) => logger.error('Failed to create lead_captured notification', { route: 'ChatService', businessId: input.businessId, customerId: customer?.id, error: err instanceof Error ? err.message : String(err) }));
     } else {
       // Enrich profile with any newly provided details
       const profileUpdates: Partial<Pick<Customer, 'name' | 'email' | 'phone'>> = {};
@@ -159,7 +160,7 @@ export class ChatService {
         history: history.slice(0, -1), // exclude the message we just inserted
       });
     } catch (err) {
-      console.error('❌ Graph invocation crashed — returning safe fallback:', err);
+      logger.error('❌ Graph invocation crashed — returning safe fallback', { route: 'ChatService', businessId: input.businessId, error: err instanceof Error ? err.message : String(err) });
       agentOutput = {
         intent: 'unknown' as ConversationIntent,
         intentConfidence: 0,
@@ -173,7 +174,7 @@ export class ChatService {
     }
 
     const totalMs = Date.now() - t0;
-    console.log(`✅ Agent invocation complete in ${totalMs}ms | Intent: ${agentOutput.intent}`);
+    logger.info('✅ Agent invocation complete', { route: 'ChatService', businessId: input.businessId, durationMs: totalMs, intent: agentOutput.intent });
 
     // ── 7. Apply side-effects from the agent ─────────────────────────────────
 

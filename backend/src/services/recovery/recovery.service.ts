@@ -12,6 +12,7 @@ import { VoiceChannel } from './voice.channel';
 import { SmsChannel } from './sms.channel';
 import { FollowUp, RecoveryStep, RecoveryConfig, FollowUpTriggerReason } from '../../types';
 import pool from '../../config/db';
+import { logger } from '../../lib/logger';
 
 export class RecoveryService {
   private channels: Map<string, RecoveryChannel> = new Map();
@@ -59,7 +60,7 @@ export class RecoveryService {
         voiceCallId: reason === 'missed_call' ? voiceCallId : undefined,
       });
       if (!followUp && reason === 'missed_call') {
-        console.log(`Missed call recovery already scheduled for ${customerId} (voice_call ${voiceCallId}), skipping`);
+        logger.info('Missed call recovery already scheduled, skipping', { route: 'RecoveryService', customerId, businessId, voiceCallId });
         return;
       }
     }
@@ -92,7 +93,7 @@ export class RecoveryService {
 
       const channel = this.channels.get(followUp.channel);
       if (!channel) {
-        console.error(`No channel adapter registered for '${followUp.channel}' — cancelling follow-up ${followUp.id}`);
+        logger.error('No channel adapter registered — cancelling follow-up', { route: 'RecoveryService', channel: followUp.channel, followUpId: followUp.id, businessId: followUp.businessId, customerId: followUp.customerId });
         await followUpRepository.cancelPending(followUp.customerId, followUp.businessId, followUp.type);
         return;
       }
@@ -116,7 +117,7 @@ export class RecoveryService {
         await customerRepository.updateLifecycleState(followUp.customerId, 'Lost', 'system:no_response_to_day_3_followup');
       }
     } catch (error) {
-      console.error(`Error executing recovery step ${followUp.id} — cancelling:`, error);
+      logger.error('Error executing recovery step — cancelling', { route: 'RecoveryService', followUpId: followUp.id, businessId: followUp.businessId, customerId: followUp.customerId, error: error instanceof Error ? error.message : String(error) });
       await followUpRepository.cancelPending(followUp.customerId, followUp.businessId, followUp.type);
     }
   }

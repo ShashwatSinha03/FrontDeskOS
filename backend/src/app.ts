@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -11,6 +12,7 @@ import { operationalRouter } from './routes/operational.routes';
 import { notificationRouter } from './routes/notification.routes';
 import { analyticsRouter } from './routes/analytics.routes';
 import { createRateLimiter, chatLimiter } from './middleware/rate-limit';
+import { logger } from './lib/logger';
 
 const app = express();
 
@@ -66,11 +68,14 @@ app.use((req: Request, res: Response) => {
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error('❌ Global error encountered:', err);
+  Sentry.captureException(err);
+  logger.error('❌ Global error encountered', { error: err instanceof Error ? err.message : String(err) });
   res.status(500).json({
     success: false,
     error: config.NODE_ENV === 'production' ? 'Internal server error' : err.message
   });
 });
+
+Sentry.setupExpressErrorHandler(app);
 
 export default app;

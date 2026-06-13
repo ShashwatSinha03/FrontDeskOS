@@ -7,6 +7,7 @@ import {
   knowledgeRequestRepository,
   businessRepository
 } from '../repositories';
+import { logger } from '../lib/logger';
 import { CustomerLifecycleState, EscalationStatus, KnowledgeRequestStatus } from '../types';
 
 const uuidParam = z.string().uuid('Invalid UUID parameter');
@@ -107,7 +108,7 @@ export class DashboardController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('❌ Error compiling summary:', error);
+      logger.error('❌ Error compiling summary', { route: 'Dashboard', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: error.message });
     }
   }

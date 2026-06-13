@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import pool from '../config/db';
 import { businessRepository, availabilityRepository } from '../repositories';
+import { logger } from '../lib/logger';
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -24,7 +25,7 @@ export class SettingsController {
         },
       });
     } catch (error) {
-      console.error('[Settings] getBusiness error:', error);
+      logger.error('Failed to load business settings', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load business settings' });
     }
   }
@@ -67,7 +68,7 @@ export class SettingsController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Settings] updateBusiness error:', error);
+      logger.error('Failed to update business settings', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update business' });
     }
   }
@@ -94,7 +95,7 @@ export class SettingsController {
         })),
       });
     } catch (error) {
-      console.error('[Settings] getServices error:', error);
+      logger.error('Failed to load services', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load services' });
     }
   }
@@ -132,7 +133,7 @@ export class SettingsController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Settings] createService error:', error);
+      logger.error('Failed to create service', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to create service' });
     }
   }
@@ -188,7 +189,7 @@ export class SettingsController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Settings] updateService error:', error);
+      logger.error('Failed to update service', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update service' });
     }
   }
@@ -216,7 +217,7 @@ export class SettingsController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Settings] toggleService error:', error);
+      logger.error('Failed to toggle service', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to toggle service' });
     }
   }
@@ -239,7 +240,7 @@ export class SettingsController {
 
       res.json({ success: true, data: week });
     } catch (error) {
-      console.error('[Settings] getHours error:', error);
+      logger.error('Failed to load hours', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load hours' });
     }
   }
@@ -285,7 +286,7 @@ export class SettingsController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Settings] updateHours error:', error);
+      logger.error('Failed to update hours', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update hours' });
     }
   }
@@ -299,7 +300,7 @@ export class SettingsController {
       }
       res.json({ success: true, data: business.faqs });
     } catch (error) {
-      console.error('[Settings] getFaqs error:', error);
+      logger.error('Failed to load FAQs', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load FAQs' });
     }
   }
@@ -321,7 +322,7 @@ export class SettingsController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Settings] updateFaqs error:', error);
+      logger.error('Failed to update FAQs', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update FAQs' });
     }
   }
@@ -347,7 +348,7 @@ export class SettingsController {
         },
       });
     } catch (error) {
-      console.error('[Settings] getAi error:', error);
+      logger.error('Failed to load AI settings', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load AI settings' });
     }
   }
@@ -394,7 +395,7 @@ export class SettingsController {
         res.status(400).json({ success: false, errors: error.errors });
         return;
       }
-      console.error('[Settings] updateAi error:', error);
+      logger.error('Failed to update AI settings', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update AI settings' });
     }
   }
