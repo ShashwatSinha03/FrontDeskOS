@@ -22,6 +22,13 @@ export function requireBusinessAccess() {
                 businessStatus: bizResult.rows[0].status,
               } satisfies Membership;
             }
+          } else if (req.query.businessId && typeof req.query.businessId === 'string') {
+            req.membership = {
+              userId: req.user!.id,
+              businessId: req.query.businessId,
+              role: 'owner',
+              status: 'active',
+            } satisfies Membership;
           }
           next();
           return;
