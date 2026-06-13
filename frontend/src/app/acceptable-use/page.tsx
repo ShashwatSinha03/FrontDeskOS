@@ -101,6 +101,8 @@ export default function AcceptableUsePage() {
         Report violations to <a href={`mailto:${config.contactEmail}`} className="text-zinc-300 underline hover:text-white transition-colors">{config.contactEmail}</a>.
       </Paragraph>
 
+      <Paragraph>ps. we dont vibecode w/o a brain.</Paragraph>
+
       <SectionHeading>Contact</SectionHeading>
       <Paragraph>
         <strong className="text-zinc-300">Company:</strong><span className="text-zinc-500"> {config.companyName}</span><br />

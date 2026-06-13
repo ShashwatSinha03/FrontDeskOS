@@ -121,6 +121,8 @@ export default function TermsPage() {
         <em className="text-zinc-500">Governing law to be determined based on business registration.</em> These terms are governed by the laws of {config.jurisdiction}.
       </Paragraph>
 
+      <Paragraph>ps. we dont vibecode w/o a brain.</Paragraph>
+
       <SectionHeading>Contact</SectionHeading>
       <Paragraph>
         <strong className="text-zinc-300">Company:</strong><span className="text-zinc-500"> {config.companyName}</span><br />

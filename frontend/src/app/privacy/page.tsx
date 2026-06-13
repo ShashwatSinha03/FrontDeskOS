@@ -84,6 +84,8 @@ export default function PrivacyPage() {
         We may update this Privacy Policy from time to time. Material changes will be communicated via email or through our platform.
       </Paragraph>
 
+      <Paragraph>ps. we dont vibecode w/o a brain.</Paragraph>
+
       <SectionHeading>Contact</SectionHeading>
       <Paragraph>
         For privacy-related inquiries:<br />
