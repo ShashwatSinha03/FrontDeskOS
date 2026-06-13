@@ -81,9 +81,14 @@ export default function SettingsPage() {
     (async () => {
       const token = await getToken();
       if (!token) { setLoadingRole(false); return; }
-      const res = await apiGet('/me/membership');
-      if (res.success && res.data) {
-        setRole(res.data.role);
+      const [membershipRes, profileRes] = await Promise.all([
+        apiGet('/me/membership'),
+        apiGet('/me/profile'),
+      ]);
+      if (membershipRes.success && membershipRes.data) {
+        setRole(membershipRes.data.role);
+      } else if (profileRes.success && profileRes.data?.global_role === 'SUPER_ADMIN') {
+        setRole('owner');
       }
       setLoadingRole(false);
     })();
