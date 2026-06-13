@@ -1,3 +1,4 @@
+export * from './channel';
 export * from './llm/provider.interface';
 export * from './llm/provider.factory';
 export * from './chat.service';

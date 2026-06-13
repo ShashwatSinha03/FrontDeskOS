@@ -21,6 +21,7 @@ import {
 } from '../repositories';
 import { recoveryService } from './recovery';
 import { notificationService } from './notification.service';
+import { deliveryService } from './channel/delivery.service';
 import { conversationAgent } from '../workflows/agent.graph';
 import { ChannelType, Customer, Conversation, Message, AgentResult, ConversationIntent, CustomerLifecycleState } from '../types';
 import pool from '../config/db';
@@ -212,6 +213,23 @@ export class ChatService {
         ...agentOutput.metadata,
       }
     );
+
+    // ── 8b. Deliver through delivery service ─────────────────────────────────
+    deliveryService.sendMessage({
+      businessId: input.businessId,
+      customerId: customer.id,
+      conversationId: conversation.id,
+      messageId: replyMessage.id,
+      channelType: conversation.channelType as ChannelType,
+      content: agentOutput.reply,
+      metadata: {
+        intent: agentOutput.intent,
+        intentConfidence: agentOutput.intentConfidence,
+        agentTotalMs: totalMs,
+      },
+    }).catch((err) => {
+      logger.error('Delivery service error', { route: 'ChatService', businessId: input.businessId, channelType: conversation.channelType, error: err instanceof Error ? err.message : String(err) });
+    });
 
     // ── 9. Update last_interaction_at ────────────────────────────────────────
     const updatedCustomer =

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import pool from '../config/db';
 import { businessRepository, availabilityRepository } from '../repositories';
+import { channelService, getAllChannelCapabilities } from '../services/channel';
 import { logger } from '../lib/logger';
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -397,6 +398,39 @@ export class SettingsController {
       }
       logger.error('Failed to update AI settings', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to update AI settings' });
+    }
+  }
+
+  async getChannels(req: Request, res: Response): Promise<void> {
+    try {
+      const channels = await channelService.getChannels(req.membership!.businessId);
+      const capabilities = getAllChannelCapabilities();
+      res.json({ success: true, data: { channels, capabilities } });
+    } catch (error) {
+      logger.error('Failed to load channels', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
+      res.status(500).json({ success: false, error: 'Failed to load channels' });
+    }
+  }
+
+  async updateChannel(req: Request, res: Response): Promise<void> {
+    try {
+      const { channelType } = req.params;
+      const schema = z.object({
+        enabled: z.boolean().optional(),
+        provider: z.string().optional(),
+        configJson: z.record(z.unknown()).optional(),
+      });
+      const config = schema.parse(req.body);
+
+      const updated = await channelService.updateChannel(req.membership!.businessId, channelType, config);
+      res.json({ success: true, data: updated });
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, errors: error.errors });
+        return;
+      }
+      logger.error('Failed to update channel', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
+      res.status(500).json({ success: false, error: error.message || 'Failed to update channel' });
     }
   }
 }

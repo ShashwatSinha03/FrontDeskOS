@@ -3,10 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/lib/auth';
 import { TeamManagement } from '@/components/admin/team-management';
+import { Globe, MessageCircle, Phone, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
-type TabId = 'business' | 'services' | 'hours' | 'faqs' | 'ai' | 'team';
+type TabId = 'business' | 'services' | 'hours' | 'faqs' | 'ai' | 'team' | 'channels';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'business', label: 'Business' },
@@ -15,6 +16,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'faqs', label: 'FAQs' },
   { id: 'ai', label: 'AI' },
   { id: 'team', label: 'Team' },
+  { id: 'channels', label: 'Channels' },
 ];
 
 async function getToken(): Promise<string | null> {
@@ -182,6 +184,9 @@ export default function SettingsPage() {
           </p>
           <TeamManagement readOnly={!isOwner} />
         </div>
+      )}
+      {activeTab === 'channels' && (
+        <ChannelsTab isOwner={isOwner} onError={setError} onMsg={setMsg} />
       )}
     </div>
   );
@@ -680,6 +685,212 @@ function FaqsTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: an
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
           {saving ? 'Saving...' : 'Save FAQs'}
         </button>
+      )}
+    </div>
+  );
+}
+
+const CHANNEL_META: Record<string, { label: string; description: string; icon: any; badge?: string }> = {
+  web_chat: { label: 'Website Chat', description: 'Real-time chat on your website', icon: Globe },
+  whatsapp: { label: 'WhatsApp', description: 'WhatsApp Business messaging', icon: MessageCircle },
+  voice: { label: 'Voice AI', description: 'AI-powered phone receptionist', icon: Phone, badge: 'Coming Soon' },
+};
+
+function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (msg: string) => void; onMsg: (msg: string) => void }) {
+  const [channels, setChannels] = useState<any[]>([]);
+  const [capabilities, setCapabilities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [toggling, setToggling] = useState<string | null>(null);
+  const [whatsappPhone, setWhatsappPhone] = useState('');
+  const [savingPhone, setSavingPhone] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const res = await apiGet('/settings/channels');
+      if (res.success) {
+        setChannels(res.data.channels);
+        setCapabilities(res.data.capabilities);
+        const wa = res.data.channels.find((c: any) => c.channelType === 'whatsapp');
+        if (wa?.configJson?.whatsappNumber) {
+          setWhatsappPhone(wa.configJson.whatsappNumber);
+        }
+      } else {
+        onError(res.error || 'Failed to load channels');
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  async function handleToggle(channelType: string, currentEnabled: boolean) {
+    setToggling(channelType);
+    onError('');
+    onMsg('');
+    try {
+      const res = await apiMutate(`/settings/channels/${channelType}`, 'PATCH', {
+        enabled: !currentEnabled,
+      });
+      if (res.success) {
+        setChannels((prev) =>
+          prev.map((c) =>
+            c.channelType === channelType ? { ...c, enabled: !currentEnabled } : c
+          )
+        );
+        onMsg(currentEnabled ? 'Channel disabled.' : 'Channel enabled.');
+      } else {
+        onError(res.error || 'Failed to update channel');
+      }
+    } catch {
+      onError('Failed to update channel');
+    }
+    setToggling(null);
+  }
+
+  async function handleSaveWhatsappPhone() {
+    setSavingPhone(true);
+    onError('');
+    onMsg('');
+    try {
+      const res = await apiMutate('/settings/channels/whatsapp', 'PATCH', {
+        configJson: { whatsappNumber: whatsappPhone },
+      });
+      if (res.success) {
+        setChannels((prev) =>
+          prev.map((c) =>
+            c.channelType === 'whatsapp' ? { ...c, configJson: { whatsappNumber: whatsappPhone } } : c
+          )
+        );
+        onMsg('WhatsApp number saved.');
+      } else {
+        onError(res.error || 'Failed to save WhatsApp number');
+      }
+    } catch {
+      onError('Failed to save WhatsApp number');
+    }
+    setSavingPhone(false);
+  }
+
+  if (loading) return <div className="h-48 animate-pulse rounded-lg bg-muted" />;
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Manage communication channels for your business. At least one channel must remain enabled.
+      </p>
+
+      {channels.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No channels configured.</p>
+      ) : (
+        <div className="space-y-3">
+          {channels.map((ch: any) => {
+            const meta = CHANNEL_META[ch.channelType] || {
+              label: ch.channelType,
+              description: '',
+              icon: MessageCircle,
+            };
+            const Icon = meta.icon;
+
+            return (
+              <div
+                key={ch.channelType}
+                className={`rounded-lg border p-4 transition-opacity ${!ch.enabled ? 'opacity-60' : ''}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`rounded-lg p-2 ${ch.enabled ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">{meta.label}</p>
+                        {meta.badge && (
+                          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                            {meta.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{meta.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {ch.enabled ? (
+                      <span className="flex items-center gap-1 text-xs font-medium text-green-600">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        Connected
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+                        <XCircle className="h-3.5 w-3.5" />
+                        Disabled
+                      </span>
+                    )}
+
+                    {isOwner && !meta.badge && (
+                      <button
+                        onClick={() => handleToggle(ch.channelType, ch.enabled)}
+                        disabled={toggling === ch.channelType}
+                        className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+                          ch.enabled
+                            ? 'border-red-200 text-red-600 hover:bg-red-50'
+                            : 'border-green-200 text-green-600 hover:bg-green-50'
+                        }`}
+                      >
+                        {toggling === ch.channelType
+                          ? '...'
+                          : ch.enabled
+                          ? 'Disable'
+                          : 'Enable'}
+                      </button>
+                    )}
+
+                    {!isOwner && (
+                      <span className="text-xs text-muted-foreground">
+                        {ch.enabled ? 'Active' : 'Inactive'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {ch.channelType === 'whatsapp' && isOwner && (
+                  <div className="mt-4 border-t pt-4">
+                    <div className="flex items-end gap-3">
+                      <div className="flex-1">
+                        <label className="block text-xs font-medium mb-1">WhatsApp Phone Number</label>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          The Twilio WhatsApp-enabled number for your business (e.g., +1234567890).
+                        </p>
+                        <input
+                          type="text"
+                          value={whatsappPhone}
+                          onChange={(e) => setWhatsappPhone(e.target.value)}
+                          placeholder="+1234567890"
+                          className="w-full rounded-md border px-3 py-2 text-sm"
+                        />
+                      </div>
+                      <button
+                        onClick={handleSaveWhatsappPhone}
+                        disabled={savingPhone || !whatsappPhone}
+                        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+                      >
+                        {savingPhone ? 'Saving...' : 'Save'}
+                      </button>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        Provider: {ch.provider === 'twilio' ? 'Twilio' : ch.provider || 'Not configured'}
+                      </span>
+                      {ch.configJson?.whatsappNumber && (
+                        <span className="text-xs text-green-600">
+                          Number configured
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

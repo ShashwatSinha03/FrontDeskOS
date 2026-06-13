@@ -12,6 +12,7 @@ readRouter.get('/settings/services', (req, res) => settingsController.getService
 readRouter.get('/settings/hours', (req, res) => settingsController.getHours(req, res));
 readRouter.get('/settings/faqs', (req, res) => settingsController.getFaqs(req, res));
 readRouter.get('/settings/ai', (req, res) => settingsController.getAi(req, res));
+readRouter.get('/settings/channels', (req, res) => settingsController.getChannels(req, res));
 
 const writeRouter = Router();
 writeRouter.use(authenticate);
@@ -26,6 +27,7 @@ writeRouter.patch('/settings/services/:id/toggle', (req, res) => settingsControl
 writeRouter.put('/settings/hours', (req, res) => settingsController.updateHours(req, res));
 writeRouter.put('/settings/faqs', (req, res) => settingsController.updateFaqs(req, res));
 writeRouter.patch('/settings/ai', (req, res) => settingsController.updateAi(req, res));
+writeRouter.patch('/settings/channels/:channelType', (req, res) => settingsController.updateChannel(req, res));
 
 const settingsRouter = Router();
 settingsRouter.use(readRouter);

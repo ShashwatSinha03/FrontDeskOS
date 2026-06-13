@@ -11,6 +11,7 @@ import { settingsRouter } from './routes/settings.routes';
 import { operationalRouter } from './routes/operational.routes';
 import { notificationRouter } from './routes/notification.routes';
 import { analyticsRouter } from './routes/analytics.routes';
+import { webhookRouter } from './routes/webhook.routes';
 import { createRateLimiter, chatLimiter } from './middleware/rate-limit';
 import { logger } from './lib/logger';
 
@@ -41,6 +42,9 @@ const adminLimiter = createRateLimiter(100, 15 * 60 * 1000, (req) =>
 );
 app.use('/api', publicLimiter);
 app.use('/api', adminLimiter);
+
+app.use('/api', express.urlencoded({ extended: false }));
+app.use('/api', webhookRouter);
 
 app.use(express.json({ limit: '10kb' }));
 

@@ -31,6 +31,8 @@ export type FollowUpType = 're_engagement' | 'day_1' | 'day_3' | 'missed_call';
 export type FollowUpChannel = 'web_chat' | 'whatsapp' | 'voice' | 'sms';
 export type FollowUpTriggerReason = 'inactivity' | 'missed_call' | 'booking_no_show' | 'manual';
 
+export type DeliveryStatus = 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
+
 // ==========================================
 // Sub-types & Configuration Schemas
 // ==========================================
@@ -127,6 +129,17 @@ export interface CalendarCredentials {
   updatedAt: Date;
 }
 
+export interface BusinessChannel {
+  id: string;
+  businessId: string;
+  channelType: string;
+  enabled: boolean;
+  provider: string;
+  configJson: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // ==========================================
 // Domain Entities
 // ==========================================
@@ -181,6 +194,20 @@ export interface Customer {
   phone: string | null;
   lifecycleState: CustomerLifecycleState;
   lastInteractionAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface MessageDelivery {
+  id: string;
+  messageId: string;
+  conversationId: string;
+  businessId: string;
+  channelType: string;
+  deliveryStatus: DeliveryStatus;
+  provider: string;
+  providerMessageId: string | null;
+  failureReason: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
