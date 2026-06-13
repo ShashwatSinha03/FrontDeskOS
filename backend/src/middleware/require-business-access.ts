@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import pool from '../config/db';
+import type { Membership } from './load-membership';
 
 export function requireBusinessAccess() {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -10,6 +11,18 @@ export function requireBusinessAccess() {
           [req.user?.id]
         );
         if (result.rows.length > 0 && result.rows[0].global_role === 'SUPER_ADMIN') {
+          if (req.query.slug && typeof req.query.slug === 'string') {
+            const bizResult = await pool.query('SELECT id, status FROM businesses WHERE slug = $1', [req.query.slug]);
+            if (bizResult.rows.length > 0) {
+              req.membership = {
+                userId: req.user!.id,
+                businessId: bizResult.rows[0].id,
+                role: 'owner',
+                status: 'active',
+                businessStatus: bizResult.rows[0].status,
+              } satisfies Membership;
+            }
+          }
           next();
           return;
         }

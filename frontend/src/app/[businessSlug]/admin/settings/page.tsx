@@ -24,10 +24,22 @@ async function getToken(): Promise<string | null> {
   return session?.access_token || null;
 }
 
+function getCurrentSlug(): string | null {
+  if (typeof window === 'undefined') return null;
+  const match = window.location.pathname.match(/^\/([^/]+)\/admin/);
+  return match?.[1] || null;
+}
+
+function withSlug(path: string) {
+  const slug = getCurrentSlug();
+  if (!slug) return path;
+  return `${path}${path.includes('?') ? '&' : '?'}slug=${encodeURIComponent(slug)}`;
+}
+
 async function apiGet(path: string) {
   const token = await getToken();
   if (!token) throw new Error('No session');
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`${API_URL}${withSlug(path)}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
@@ -36,7 +48,7 @@ async function apiGet(path: string) {
 async function apiMutate(path: string, method: string, body: unknown) {
   const token = await getToken();
   if (!token) throw new Error('No session');
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`${API_URL}${withSlug(path)}`, {
     method,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -70,7 +82,7 @@ export default function SettingsPage() {
       const token = await getToken();
       if (!token) { setLoadingRole(false); return; }
       const res = await apiGet('/me/membership');
-      if (res.success) {
+      if (res.success && res.data) {
         setRole(res.data.role);
       }
       setLoadingRole(false);

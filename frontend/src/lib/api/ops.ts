@@ -8,9 +8,19 @@ async function getToken(): Promise<string> {
   return session.access_token;
 }
 
+function getCurrentSlug(): string | null {
+  if (typeof window === 'undefined') return null;
+  const match = window.location.pathname.match(/^\/([^/]+)\/admin/);
+  return match?.[1] || null;
+}
+
 async function opsFetch(path: string, options?: RequestInit) {
   const token = await getToken();
-  const res = await fetch(`${API_URL}${path}`, {
+  const slug = getCurrentSlug();
+  const url = slug
+    ? `${API_URL}${path}${path.includes('?') ? '&' : '?'}slug=${encodeURIComponent(slug)}`
+    : `${API_URL}${path}`;
+  const res = await fetch(url, {
     ...options,
     headers: {
       ...options?.headers,
