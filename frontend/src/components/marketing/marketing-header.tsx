@@ -54,14 +54,14 @@ export function MarketingHeader() {
             </button>
           ))}
           <div className="ml-4">
-            <a href="#cta">
+            <a href="https://calendly.com/sinhashashwat21/30min" target="_blank" rel="noopener noreferrer">
               <Button size="sm">Book a Demo</Button>
             </a>
           </div>
         </nav>
 
         <div className="flex items-center gap-3 md:hidden">
-          <a href="#cta">
+          <a href="https://calendly.com/sinhashashwat21/30min" target="_blank" rel="noopener noreferrer">
             <Button size="sm">Book a Demo</Button>
           </a>
           <button

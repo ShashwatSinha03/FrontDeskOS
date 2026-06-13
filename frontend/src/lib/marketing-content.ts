@@ -106,7 +106,7 @@ export const defaultContent: MarketingContent = {
     headline: 'How Many Customers Did You Miss Today?',
     subheadline:
       'Nuvora handles enquiries, bookings, follow-ups, and customer questions 24/7 so opportunities don not disappear between business hours.',
-    primaryCta: { label: 'Book a Demo', href: '#cta' },
+    primaryCta: { label: 'Book a Demo', href: 'https://calendly.com/sinhashashwat21/30min' },
     secondaryCta: { label: 'See It Live', href: '/brightsmile-dental' },
   },
 
