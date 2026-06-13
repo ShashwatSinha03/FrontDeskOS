@@ -363,7 +363,7 @@ export function ProductScreenshots() {
               visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
             }`}
           >
-            Built for real service businesses.
+            Built for businesses wanting systems, not headaches.
           </h2>
           <p
             className={`mt-4 text-base leading-relaxed text-zinc-400 transition-all duration-700 ${
@@ -371,7 +371,7 @@ export function ProductScreenshots() {
             }`}
             style={{ transitionDelay: visible ? '200ms' : '0ms' }}
           >
-            Every screen you see here is part of the live product — not a mockup.
+            Every screen tied to a business outcome. More leads, more bookings and less admin work.
           </p>
         </div>
 
@@ -387,14 +387,6 @@ export function ProductScreenshots() {
           ))}
         </div>
 
-        <div className="mx-auto mt-12 max-w-xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/50 px-4 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span className="text-xs text-zinc-400">
-              Deployed and handling real customer interactions
-            </span>
-          </div>
-        </div>
       </div>
     </section>
   );
