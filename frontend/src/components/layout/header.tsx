@@ -36,10 +36,10 @@ export function Header({ businessName, slug }: { businessName: string; slug: str
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 border-b transition-all duration-300',
+        'sticky top-0 z-50 transition-all duration-300',
         scrolled
-          ? 'bg-background/95 backdrop-blur-md border-border'
-          : 'bg-background border-transparent'
+          ? 'bg-background/80 backdrop-blur-xl border-b shadow-sm'
+          : 'bg-transparent border-b border-transparent'
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">

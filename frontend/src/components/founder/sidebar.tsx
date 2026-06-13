@@ -22,7 +22,10 @@ export function FounderSidebar() {
 
   return (
     <aside className="w-56 border-r bg-card shrink-0 hidden md:flex flex-col">
-      <div className="flex h-14 items-center border-b px-5">
+      <div className="flex h-14 items-center gap-2.5 border-b px-5">
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-[10px] font-bold text-primary-foreground">
+          N
+        </div>
         <Link href="/ops" className="text-sm font-semibold tracking-tight">
           Nuvora
         </Link>
@@ -38,22 +41,23 @@ export function FounderSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-all duration-150',
                 isActive
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-foreground/[0.06] text-foreground font-medium'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className={cn('h-4 w-4', isActive ? 'text-foreground' : 'text-muted-foreground')} />
               {item.label}
             </Link>
           );
         })}
       </nav>
       <div className="border-t px-5 py-3">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Founder
-        </span>
+        <div className="flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="text-xs font-medium text-muted-foreground">Founder Access</span>
+        </div>
       </div>
     </aside>
   );

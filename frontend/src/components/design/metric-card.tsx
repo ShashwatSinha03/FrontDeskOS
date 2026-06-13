@@ -10,7 +10,7 @@ interface MetricCardProps {
 
 export function MetricCard({ label, value, icon: Icon, trend, className }: MetricCardProps) {
   return (
-    <div className={cn('rounded-xl border bg-card p-5', className)}>
+    <div className={cn('rounded-xl border bg-card p-5 transition-shadow hover:shadow-sm', className)}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
         {Icon && (
@@ -21,7 +21,7 @@ export function MetricCard({ label, value, icon: Icon, trend, className }: Metri
       </div>
       <p className="mt-2 text-2xl font-semibold tracking-tight">{value}</p>
       {trend && (
-        <p className={cn('mt-1 text-xs', trend.positive ? 'text-green-600' : 'text-red-600')}>
+        <p className={cn('mt-1 text-xs font-medium', trend.positive ? 'text-emerald-600' : 'text-red-600')}>
           {trend.value}
         </p>
       )}

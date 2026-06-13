@@ -66,20 +66,20 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <div>
-      <div className="rounded-xl border">
+      <div className="overflow-hidden rounded-xl border bg-card">
         <table className="w-full">
           <thead>
-            <tr>
+            <tr className="border-b bg-muted/20">
               {columns.map((col) => (
-                <th key={col.key} className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th key={col.key} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {col.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border/50">
             {data.map((row, i) => (
-              <tr key={row.id || i} className="border-t first:border-t-0 hover:bg-muted/20 transition-colors" onClick={() => onRowClick?.(row)}>
+              <tr key={row.id || i} className="hover:bg-muted/30 transition-colors duration-150" onClick={() => onRowClick?.(row)}>
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-3 text-sm">
                     {col.render ? col.render(row[col.key], row) : String(row[col.key] ?? '')}

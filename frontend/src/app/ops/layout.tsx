@@ -38,7 +38,7 @@ export default async function OpsLayout({
   return (
     <div className="flex min-h-screen bg-background">
       <FounderSidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto bg-secondary/30">
         <div className="mx-auto max-w-6xl px-6 py-8">
           {children}
         </div>

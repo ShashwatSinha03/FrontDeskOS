@@ -99,10 +99,10 @@ export default async function AdminLayout({
         slug={businessSlug}
       />
       <div className="flex flex-1 flex-col overflow-auto">
-        <header className="flex items-center justify-end border-b px-6 py-2.5">
+        <header className="flex items-center justify-end border-b bg-card px-6 py-2.5">
           <NotificationBell />
         </header>
-        <main className="flex-1">
+        <main className="flex-1 bg-secondary/20">
           <div className="mx-auto max-w-7xl px-6 py-8">
             {children}
           </div>

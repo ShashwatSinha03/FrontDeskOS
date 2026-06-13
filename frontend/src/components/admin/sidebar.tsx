@@ -32,7 +32,7 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
   return (
     <aside className="w-56 border-r bg-card shrink-0 hidden md:flex flex-col">
       <div className="flex h-14 items-center border-b px-5">
-        <Link href={`/${slug}`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+        <Link href={`/${slug}`} className="text-sm font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors">
           {businessName}
         </Link>
       </div>
@@ -48,13 +48,13 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
               key={item.href}
               href={fullHref}
               className={cn(
-                'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-all duration-150',
                 isActive
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-primary/[0.08] text-primary font-medium'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className={cn('h-4 w-4', isActive ? 'text-primary' : 'text-muted-foreground')} />
               {item.label}
             </Link>
           );
