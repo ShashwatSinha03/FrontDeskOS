@@ -23,11 +23,9 @@ export function FounderSidebar() {
   return (
     <aside className="w-56 border-r bg-card shrink-0 hidden md:flex flex-col">
       <div className="flex h-14 items-center gap-2.5 border-b px-5">
-        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-[10px] font-bold text-primary-foreground">
-          N
-        </div>
-        <Link href="/ops" className="text-sm font-semibold tracking-tight">
-          Nuvora
+        <Link href="/ops" className="flex items-center gap-2">
+          <img src="/logo-20.png" alt="Nuvora" className="h-5 w-5" />
+          <span className="text-sm font-semibold tracking-tight">Nuvora</span>
         </Link>
       </div>
       <nav className="flex flex-col gap-0.5 p-3 flex-1">

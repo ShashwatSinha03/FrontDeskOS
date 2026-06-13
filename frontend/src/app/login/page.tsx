@@ -40,7 +40,8 @@ function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
+          <img src="/logo-32.png" alt="Nuvora" className="mx-auto h-8 w-8" />
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight">Sign in</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Sign in to your Nuvora account
           </p>

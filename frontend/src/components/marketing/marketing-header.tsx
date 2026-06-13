@@ -39,8 +39,9 @@ export function MarketingHeader() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-lg font-semibold tracking-tight text-white">
-          Nuvora
+        <Link href="/" className="flex items-center gap-2">
+          <img src="/logo-28.png" alt="Nuvora" className="h-7 w-7" />
+          <span className="text-lg font-semibold tracking-tight text-white">Nuvora</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

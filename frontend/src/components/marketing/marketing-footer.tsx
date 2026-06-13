@@ -30,8 +30,9 @@ export function MarketingFooter() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <Link href="/" className="text-lg font-semibold tracking-tight text-white">
-              Nuvora
+            <Link href="/" className="flex items-center gap-2">
+              <img src="/logo-24.png" alt="Nuvora" className="h-6 w-6" />
+              <span className="text-lg font-semibold tracking-tight text-white">Nuvora</span>
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-zinc-500 max-w-xs">
               The 24/7 AI receptionist that answers questions, captures leads, books appointments, and follows up automatically.
