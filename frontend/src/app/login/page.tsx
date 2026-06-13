@@ -4,6 +4,7 @@ import { Suspense, useState, FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { Logo } from '@/components/ui/logo';
 
 function LoginForm() {
   const router = useRouter();
@@ -40,7 +41,8 @@ function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
+          <Logo className="mx-auto h-10 w-10 text-4xl text-foreground" />
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight">Sign in</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Sign in to your Nuvora account
           </p>
