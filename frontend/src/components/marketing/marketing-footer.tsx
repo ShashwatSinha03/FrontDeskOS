@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Mail, Phone, ArrowUpRight } from 'lucide-react';
-import { Logo } from '@/components/ui/logo';
+import { LogoWithName } from '@/components/ui/logo';
 
 const PRODUCT_LINKS = [
   { label: 'Features', href: '#features' },
@@ -32,8 +32,7 @@ export function MarketingFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <Logo className="text-2xl text-white" />
-              <span className="text-lg font-semibold tracking-tight text-white">Nuvora</span>
+              <LogoWithName className="text-xl text-white" />
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-zinc-500 max-w-xs">
               The 24/7 AI receptionist that answers questions, captures leads, books appointments, and follows up automatically.

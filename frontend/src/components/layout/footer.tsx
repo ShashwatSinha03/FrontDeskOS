@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Mail, Phone, MapPin } from 'lucide-react';
-import { Logo } from '@/components/ui/logo';
+import { LogoWithName } from '@/components/ui/logo';
 
 const NAV_LINKS = [
   { label: 'Home', href: '' },
@@ -73,7 +73,7 @@ export function Footer({ businessName, slug }: { businessName: string; slug?: st
             &copy; {currentYear} {businessName}. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Powered by <Logo className="inline-block text-base align-middle" /> <span className="font-medium">Nuvora</span>
+            Powered by <LogoWithName className="inline-block text-base align-middle font-normal" />
           </p>
         </div>
       </div>

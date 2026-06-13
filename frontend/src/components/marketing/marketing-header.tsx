@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Logo } from '@/components/ui/logo';
+import { LogoWithName } from '@/components/ui/logo';
 
 const NAV_ITEMS = [
   { label: 'How It Works', href: '#how-it-works' },
@@ -41,8 +41,7 @@ export function MarketingHeader() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <Logo className="text-2xl text-white" />
-          <span className="text-lg font-semibold tracking-tight text-white">Nuvora</span>
+          <LogoWithName className="text-xl text-white" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
