@@ -10,7 +10,38 @@ export class BusinessChannelRepository {
       ORDER BY channel_type ASC
     `;
     const res = await pool.query(query, [businessId]);
-    return res.rows.map(r => this.mapToEntity(r));
+    if (res.rows.length > 0) {
+      return res.rows.map(r => this.mapToEntity(r));
+    }
+    return this.insertDefaultChannels(businessId);
+  }
+
+  private async insertDefaultChannels(businessId: string): Promise<BusinessChannel[]> {
+    const defaults = [
+      { channelType: 'web_chat', provider: 'internal', enabled: true },
+      { channelType: 'whatsapp', provider: 'internal', enabled: false },
+      { channelType: 'voice', provider: 'internal', enabled: false },
+      { channelType: 'sms', provider: 'internal', enabled: false },
+    ];
+    const query = `
+      INSERT INTO business_channels (business_id, channel_type, enabled, provider, config_json, created_at, updated_at)
+      SELECT $1, $2, $3, $4, '{}'::jsonb, NOW(), NOW()
+      WHERE NOT EXISTS (
+        SELECT 1 FROM business_channels WHERE business_id = $1 AND channel_type = $2
+      )
+      RETURNING id, business_id, channel_type, enabled, provider, config_json, created_at, updated_at
+    `;
+    const channels: BusinessChannel[] = [];
+    for (const d of defaults) {
+      const res = await pool.query(query, [businessId, d.channelType, d.enabled, d.provider]);
+      if (res.rows.length > 0) {
+        channels.push(this.mapToEntity(res.rows[0]));
+      }
+    }
+    if (channels.length === 0) {
+      return this.getChannels(businessId);
+    }
+    return channels;
   }
 
   async getChannel(businessId: string, channelType: string): Promise<BusinessChannel | null> {
