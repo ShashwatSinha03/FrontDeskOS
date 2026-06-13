@@ -24,7 +24,6 @@ export function FounderSidebar() {
     <aside className="w-56 border-r bg-card shrink-0 hidden md:flex flex-col">
       <div className="flex h-14 items-center gap-2.5 border-b px-5">
         <Link href="/ops" className="flex items-center gap-2">
-          <img src="/logo-20.png" alt="Nuvora" className="h-5 w-5" />
           <span className="text-sm font-semibold tracking-tight">Nuvora</span>
         </Link>
       </div>

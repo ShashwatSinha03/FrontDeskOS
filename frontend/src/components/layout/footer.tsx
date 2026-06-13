@@ -71,9 +71,8 @@ export function Footer({ businessName, slug }: { businessName: string; slug?: st
           <p className="text-xs text-muted-foreground">
             &copy; {currentYear} {businessName}. All rights reserved.
           </p>
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            Powered by <img src="/logo-16.png" alt="Nuvora" className="h-4 w-4" />
-            <span className="font-medium">Nuvora</span>
+          <p className="text-xs text-muted-foreground">
+            Powered by <span className="font-medium">Nuvora</span>
           </p>
         </div>
       </div>
