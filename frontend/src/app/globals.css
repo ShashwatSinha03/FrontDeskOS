@@ -1,10 +1,11 @@
-@import "https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap";
+@import "https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap";
+@import "https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap";
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'General Sans', 'Quicksand', system-ui, -apple-system, sans-serif;
   --color-background: oklch(0.145 0 0);
   --color-foreground: oklch(0.985 0 0);
   --color-card: oklch(0.18 0 0);
