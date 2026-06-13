@@ -10,8 +10,9 @@ const NAV_LINKS = [
 ];
 
 const LEGAL_LINKS = [
-  { label: 'Privacy Policy', href: '#' },
-  { label: 'Terms of Service', href: '#' },
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Terms of Service', href: '/terms' },
+  { label: 'Acceptable Use', href: '/acceptable-use' },
 ];
 
 export function Footer({ businessName, slug }: { businessName: string; slug?: string }) {
@@ -72,9 +73,14 @@ export function Footer({ businessName, slug }: { businessName: string; slug?: st
           <p className="text-xs text-muted-foreground">
             &copy; {currentYear} {businessName}. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Powered by <LogoWithName className="inline-block text-base align-middle font-normal" />
-          </p>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <Link href="/privacy" className="underline hover:text-foreground transition-colors">Privacy</Link>
+            <Link href="/terms" className="underline hover:text-foreground transition-colors">Terms</Link>
+            <Link href="/acceptable-use" className="underline hover:text-foreground transition-colors">AUP</Link>
+            <span className="flex items-center gap-1.5">
+              Powered by <LogoWithName className="inline-block text-base align-middle font-normal" />
+            </span>
+          </div>
         </div>
       </div>
     </footer>

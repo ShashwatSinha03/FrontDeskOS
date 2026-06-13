@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { LegalConsent } from '@/components/legal/legal-consent';
 import { ensureSession } from '@/lib/session';
 import { TurnstileWidget } from '@/components/ui/turnstile-widget';
 
@@ -15,6 +16,7 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0);
+  const [consent, setConsent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,8 +98,9 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
             onExpire={() => setTurnstileToken(null)}
             onError={() => setTurnstileToken(null)}
           />
+          <LegalConsent checked={consent} onChange={setConsent} id="contact-consent" />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <Button type="submit" disabled={sending}>
+          <Button type="submit" disabled={sending || !consent}>
             {sending ? 'Sending...' : 'Send Message'}
           </Button>
         </form>

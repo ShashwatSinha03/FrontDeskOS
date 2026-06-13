@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { LegalConsent } from '@/components/legal/legal-consent';
 import { createOwnerInvite } from '@/lib/onboarding';
 
 interface OwnerCreationFormProps {
@@ -15,11 +16,12 @@ interface OwnerCreationFormProps {
 export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreationFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [consent, setConsent] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<{ email: string; password: string; dashboardUrl: string } | null>(null);
 
-  const isValid = name.trim().length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValid = name.trim().length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && consent;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,6 +120,7 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
               required
             />
           </div>
+          <LegalConsent checked={consent} onChange={setConsent} />
           {error && <p className="text-sm text-destructive">{error}</p>}
         </CardContent>
         <CardFooter className="flex gap-3">

@@ -19,8 +19,9 @@ const INDUSTRIES_LINKS = [
 ];
 
 const COMPANY_LINKS = [
-  { label: 'Privacy Policy', href: '#' },
-  { label: 'Terms of Service', href: '#' },
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Terms of Service', href: '/terms' },
+  { label: 'Acceptable Use', href: '/acceptable-use' },
 ];
 
 export function MarketingFooter() {
@@ -110,9 +111,11 @@ export function MarketingFooter() {
           <p className="text-xs text-zinc-600">
             &copy; {currentYear} Nuvora. All rights reserved.
           </p>
-          <p className="text-xs text-zinc-600">
-            Built for businesses that never want to miss another customer.
-          </p>
+          <div className="flex items-center gap-4 text-xs text-zinc-600">
+            <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>
+            <Link href="/acceptable-use" className="hover:text-zinc-300 transition-colors">AUP</Link>
+          </div>
         </div>
       </div>
     </footer>

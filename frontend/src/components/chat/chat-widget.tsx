@@ -107,24 +107,32 @@ export function ChatWidget() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="border-t px-4 py-3 flex items-center gap-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            maxLength={1000}
-            disabled={sending || !sessionReady}
-            className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
-          />
-          <Button
-            size="icon"
-            className="h-9 w-9 shrink-0 rounded-lg"
-            onClick={handleSend}
-            disabled={!input.trim() || sending || !sessionReady}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+        <div className="border-t px-4 py-3 flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your message..."
+              maxLength={1000}
+              disabled={sending || !sessionReady}
+              className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+            />
+            <Button
+              size="icon"
+              className="h-9 w-9 shrink-0 rounded-lg"
+              onClick={handleSend}
+              disabled={!input.trim() || sending || !sessionReady}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-[10px] text-muted-foreground/60 leading-tight px-0.5">
+            By continuing, you agree to our{' '}
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors">Terms</a>{' '}
+            and{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors">Privacy Policy</a>.
+          </p>
         </div>
       </SheetContent>
     </Sheet>

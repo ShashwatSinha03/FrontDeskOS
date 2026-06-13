@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { bookAppointment } from '@/lib/api';
 import { ensureSession } from '@/lib/session';
 import { TurnstileWidget } from '@/components/ui/turnstile-widget';
+import { LegalConsent } from '@/components/legal/legal-consent';
 import { CheckCircle, Calendar, Clock, User } from 'lucide-react';
 
 interface ServiceItem {
@@ -43,6 +44,7 @@ export function StepConfirm({
   const [errorMsg, setErrorMsg] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0);
+  const [consent, setConsent] = useState(false);
 
   const handleConfirm = async () => {
     setBooking('loading');
@@ -162,9 +164,15 @@ export function StepConfirm({
         onError={() => setTurnstileToken(null)}
       />
 
+      <LegalConsent checked={consent} onChange={setConsent} id="booking-consent" />
+
+      {!consent && booking !== 'loading' && (
+        <p className="text-xs text-muted-foreground">You must agree to the terms to continue.</p>
+      )}
+
       <div className="flex justify-between">
         <Button variant="outline" onClick={onBack} disabled={booking === 'loading'}>Back</Button>
-        <Button onClick={handleConfirm} disabled={booking === 'loading'}>
+        <Button onClick={handleConfirm} disabled={booking === 'loading' || !consent}>
           {booking === 'loading' ? 'Booking...' : 'Confirm Booking'}
         </Button>
       </div>

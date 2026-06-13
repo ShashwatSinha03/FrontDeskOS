@@ -2,6 +2,7 @@
 
 import { useReducer, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useBusiness } from '@/hooks/use-business';
 import { useServices } from '@/hooks/use-services';
 import { StepService } from '@/components/booking/step-service';
@@ -210,6 +211,12 @@ export default function BookPage() {
             onDone={onDone}
           />
         )}
+      </div>
+
+      <div className="mt-12 flex items-center justify-center gap-4 text-xs text-muted-foreground border-t pt-6">
+        <Link href="/privacy" className="underline hover:text-foreground transition-colors">Privacy</Link>
+        <Link href="/terms" className="underline hover:text-foreground transition-colors">Terms</Link>
+        <Link href="/acceptable-use" className="underline hover:text-foreground transition-colors">AUP</Link>
       </div>
     </div>
   );

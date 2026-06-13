@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { useBusiness } from '@/hooks/use-business';
 import { BusinessInfo } from '@/components/contact/business-info';
 import { Skeleton } from '@/components/design/skeleton';
@@ -36,6 +37,12 @@ export default function ContactPage() {
       </div>
       <div className="mx-auto max-w-xl">
         {business && <BusinessInfo business={business} />}
+
+      <div className="mt-12 flex items-center justify-center gap-4 text-xs text-muted-foreground border-t pt-6">
+        <Link href="/privacy" className="underline hover:text-foreground transition-colors">Privacy</Link>
+        <Link href="/terms" className="underline hover:text-foreground transition-colors">Terms</Link>
+        <Link href="/acceptable-use" className="underline hover:text-foreground transition-colors">AUP</Link>
+      </div>
       </div>
     </div>
   );

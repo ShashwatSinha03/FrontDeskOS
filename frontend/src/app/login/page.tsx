@@ -102,6 +102,12 @@ function LoginForm() {
             Forgot your password?
           </Link>
         </div>
+
+        <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+          <Link href="/privacy" className="underline hover:text-foreground transition-colors">Privacy</Link>
+          <Link href="/terms" className="underline hover:text-foreground transition-colors">Terms</Link>
+          <Link href="/acceptable-use" className="underline hover:text-foreground transition-colors">AUP</Link>
+        </div>
       </div>
     </div>
   );
