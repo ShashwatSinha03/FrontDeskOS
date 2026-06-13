@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import GlitchText from '@/components/GlitchText';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Users, Calendar, MessageSquare } from 'lucide-react';
 
@@ -363,7 +364,11 @@ export function ProductScreenshots() {
               visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
             }`}
           >
-            Built for businesses wanting systems, not headaches.
+            Built for businesses wanting systems, not{' '}
+            <GlitchText speed={4.1} enableShadows enableOnHover={false} className="inline">
+              headaches
+            </GlitchText>
+            .
           </h2>
           <p
             className={`mt-4 text-base leading-relaxed text-zinc-400 transition-all duration-700 ${
