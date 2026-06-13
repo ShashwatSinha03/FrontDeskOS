@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { LegalPage } from '@/components/legal/legal-page';
+import { LegalPage, SectionHeading, SubHeading, Paragraph, List, ListItem } from '@/components/legal/legal-page';
 import { getLegalConfig } from '@/lib/legal-config';
 
 export const metadata: Metadata = {
@@ -19,114 +19,115 @@ export default function TermsPage() {
       title="Terms of Service"
       description={`Version 1.0.0 — Effective ${config.effectiveDate}`}
     >
-      <h2>1. Account Eligibility</h2>
-      <p>By creating an account, you represent that:</p>
-      <ul>
-        <li>You are at least 18 years of age</li>
-        <li>You have the legal authority to bind your business to these terms</li>
-        <li>You are not located in a jurisdiction where Nuvora&apos;s services are prohibited</li>
-        <li>You will provide accurate and complete registration information</li>
-      </ul>
+      <SectionHeading>1. Account Eligibility</SectionHeading>
+      <Paragraph>By creating an account, you represent that:</Paragraph>
+      <List>
+        <ListItem>You are at least 18 years of age</ListItem>
+        <ListItem>You have the legal authority to bind your business to these terms</ListItem>
+        <ListItem>You are not located in a jurisdiction where Nuvora&apos;s services are prohibited</ListItem>
+        <ListItem>You will provide accurate and complete registration information</ListItem>
+      </List>
 
-      <h2>2. Account Responsibility</h2>
-      <p>You are responsible for:</p>
-      <ul>
-        <li>Maintaining the confidentiality of your login credentials</li>
-        <li>All activities that occur under your account</li>
-        <li>Notifying us immediately of any unauthorized use</li>
-        <li>Ensuring your account information remains accurate and current</li>
-      </ul>
+      <SectionHeading>2. Account Responsibility</SectionHeading>
+      <Paragraph>You are responsible for:</Paragraph>
+      <List>
+        <ListItem>Maintaining the confidentiality of your login credentials</ListItem>
+        <ListItem>All activities that occur under your account</ListItem>
+        <ListItem>Notifying us immediately of any unauthorized use</ListItem>
+        <ListItem>Ensuring your account information remains accurate and current</ListItem>
+      </List>
 
-      <h2>3. Business Responsibility</h2>
-      <p>As a business using Nuvora, you agree to:</p>
-      <ul>
-        <li>Review and configure AI responses appropriate for your business</li>
-        <li>Monitor AI interactions with your customers</li>
-        <li>Ensure compliance with applicable laws in your jurisdiction</li>
-        <li>Maintain your own privacy policy that discloses your use of AI receptionist services</li>
-        <li>Obtain any necessary consent from your customers for AI processing of their inquiries</li>
-      </ul>
+      <SectionHeading>3. Business Responsibility</SectionHeading>
+      <Paragraph>As a business using Nuvora, you agree to:</Paragraph>
+      <List>
+        <ListItem>Review and configure AI responses appropriate for your business</ListItem>
+        <ListItem>Monitor AI interactions with your customers</ListItem>
+        <ListItem>Ensure compliance with applicable laws in your jurisdiction</ListItem>
+        <ListItem>Maintain your own privacy policy that discloses your use of AI receptionist services</ListItem>
+        <ListItem>Obtain any necessary consent from your customers for AI processing of their inquiries</ListItem>
+      </List>
 
-      <h2>4. Subscription and Payment</h2>
-      <p>
-        <em>Pricing, billing terms, and payment obligations will be defined in your subscription agreement or order form.</em>
-      </p>
+      <SectionHeading>4. Subscription and Payment</SectionHeading>
+      <Paragraph>
+        <em className="text-zinc-500">Pricing, billing terms, and payment obligations will be defined in your subscription agreement or order form.</em>
+      </Paragraph>
 
-      <h2>5. Service Availability</h2>
-      <p>
+      <SectionHeading>5. Service Availability</SectionHeading>
+      <Paragraph>
         Nuvora strives to maintain high availability but does not guarantee uninterrupted service. We reserve the right to perform maintenance, upgrades, or emergency repairs that may temporarily affect availability.
-      </p>
-      <p>Nuvora is not liable for:</p>
-      <ul>
-        <li>Downtime beyond our reasonable control</li>
-        <li>Data loss due to circumstances outside our control</li>
-        <li>Damages arising from service unavailability</li>
-      </ul>
+      </Paragraph>
+      <Paragraph>Nuvora is not liable for:</Paragraph>
+      <List>
+        <ListItem>Downtime beyond our reasonable control</ListItem>
+        <ListItem>Data loss due to circumstances outside our control</ListItem>
+        <ListItem>Damages arising from service unavailability</ListItem>
+      </List>
 
-      <h2>6. AI-Specific Terms</h2>
+      <SectionHeading>6. AI-Specific Terms</SectionHeading>
 
-      <h3>6.1 AI Output Accuracy</h3>
-      <p>Nuvora&apos;s AI receptionist uses artificial intelligence to generate responses. You acknowledge that:</p>
-      <ul>
-        <li>AI outputs may be inaccurate or contain errors</li>
-        <li>AI outputs may not always be appropriate for your specific business context</li>
-        <li>Nuvora does not guarantee the accuracy, completeness, or appropriateness of AI-generated content</li>
-        <li>You should review and test AI configurations before deploying them</li>
-      </ul>
+      <SubHeading>6.1 AI Output Accuracy</SubHeading>
+      <Paragraph>Nuvora&apos;s AI receptionist uses artificial intelligence to generate responses. You acknowledge that:</Paragraph>
+      <List>
+        <ListItem>AI outputs may be inaccurate or contain errors</ListItem>
+        <ListItem>AI outputs may not always be appropriate for your specific business context</ListItem>
+        <ListItem>Nuvora does not guarantee the accuracy, completeness, or appropriateness of AI-generated content</ListItem>
+        <ListItem>You should review and test AI configurations before deploying them</ListItem>
+      </List>
 
-      <h3>6.2 Business Responsibility for AI</h3>
-      <p>You remain solely responsible for:</p>
-      <ul>
-        <li>Customer interactions handled by the AI</li>
-        <li>Reviewing and approving AI response configurations</li>
-        <li>Ensuring AI responses comply with applicable laws and regulations</li>
-        <li>Handling escalations and complaints arising from AI interactions</li>
-      </ul>
+      <SubHeading>6.2 Business Responsibility for AI</SubHeading>
+      <Paragraph>You remain solely responsible for:</Paragraph>
+      <List>
+        <ListItem>Customer interactions handled by the AI</ListItem>
+        <ListItem>Reviewing and approving AI response configurations</ListItem>
+        <ListItem>Ensuring AI responses comply with applicable laws and regulations</ListItem>
+        <ListItem>Handling escalations and complaints arising from AI interactions</ListItem>
+      </List>
 
-      <h3>6.3 No Guarantee of Outcomes</h3>
-      <p>Nuvora does not guarantee:</p>
-      <ul>
-        <li>Specific business outcomes, including lead conversion or customer satisfaction</li>
-        <li>That AI responses will match the quality of human representatives</li>
-        <li>That the AI will handle all edge cases or unusual customer inquiries appropriately</li>
-      </ul>
+      <SubHeading>6.3 No Guarantee of Outcomes</SubHeading>
+      <Paragraph>Nuvora does not guarantee:</Paragraph>
+      <List>
+        <ListItem>Specific business outcomes, including lead conversion or customer satisfaction</ListItem>
+        <ListItem>That AI responses will match the quality of human representatives</ListItem>
+        <ListItem>That the AI will handle all edge cases or unusual customer inquiries appropriately</ListItem>
+      </List>
 
-      <h2>7. Suspension and Termination</h2>
-      <p>We may suspend or terminate your access if:</p>
-      <ul>
-        <li>You violate these terms</li>
-        <li>Your use poses a security risk to our platform</li>
-        <li>You fail to pay applicable fees</li>
-        <li>Required by law</li>
-      </ul>
-      <p>You may terminate your account at any time by contacting us.</p>
+      <SectionHeading>7. Suspension and Termination</SectionHeading>
+      <Paragraph>We may suspend or terminate your access if:</Paragraph>
+      <List>
+        <ListItem>You violate these terms</ListItem>
+        <ListItem>Your use poses a security risk to our platform</ListItem>
+        <ListItem>You fail to pay applicable fees</ListItem>
+        <ListItem>Required by law</ListItem>
+      </List>
+      <Paragraph>You may terminate your account at any time by contacting us.</Paragraph>
 
-      <h2>8. Intellectual Property</h2>
-      <ul>
-        <li>Nuvora retains all rights to our platform, technology, and AI models</li>
-        <li>You retain all rights to your business data and customer information</li>
-        <li>Nothing in these terms transfers ownership of intellectual property</li>
-      </ul>
+      <SectionHeading>8. Intellectual Property</SectionHeading>
+      <List>
+        <ListItem>Nuvora retains all rights to our platform, technology, and AI models</ListItem>
+        <ListItem>You retain all rights to your business data and customer information</ListItem>
+        <ListItem>Nothing in these terms transfers ownership of intellectual property</ListItem>
+      </List>
 
-      <h2>9. Limitation of Liability</h2>
-      <p>To the maximum extent permitted by law:</p>
-      <ul>
-        <li>Nuvora is not liable for indirect, incidental, or consequential damages</li>
-        <li>Our total liability is limited to the amount you paid us in the 12 months preceding the claim</li>
-        <li>We are not liable for damages resulting from AI-generated content or decisions based on AI outputs</li>
-      </ul>
+      <SectionHeading>9. Limitation of Liability</SectionHeading>
+      <Paragraph>To the maximum extent permitted by law:</Paragraph>
+      <List>
+        <ListItem>Nuvora is not liable for indirect, incidental, or consequential damages</ListItem>
+        <ListItem>Our total liability is limited to the amount you paid us in the 12 months preceding the claim</ListItem>
+        <ListItem>We are not liable for damages resulting from AI-generated content or decisions based on AI outputs</ListItem>
+      </List>
 
-      <h2>10. Governing Law</h2>
-      <p>
-        <em>Governing law to be determined based on business registration.</em> These terms are governed by the laws of {config.jurisdiction}.
-      </p>
+      <SectionHeading>10. Governing Law</SectionHeading>
+      <Paragraph>
+        <em className="text-zinc-500">Governing law to be determined based on business registration.</em> These terms are governed by the laws of {config.jurisdiction}.
+      </Paragraph>
 
-      <h2>Contact</h2>
-      <p>
-        <strong>Company:</strong> {config.companyName}<br />
-        <strong>Email:</strong> <a href={`mailto:${config.contactEmail}`}>{config.contactEmail}</a><br />
-        {config.address && <><strong>Address:</strong> {config.address}<br /></>}
-      </p>
+      <SectionHeading>Contact</SectionHeading>
+      <Paragraph>
+        <strong className="text-zinc-300">Company:</strong><span className="text-zinc-500"> {config.companyName}</span><br />
+        <strong className="text-zinc-300">Email:</strong>{' '}
+        <a href={`mailto:${config.contactEmail}`} className="text-zinc-300 underline hover:text-white transition-colors">{config.contactEmail}</a><br />
+        {config.address && <><strong className="text-zinc-300">Address:</strong><span className="text-zinc-500"> {config.address}</span><br /></>}
+      </Paragraph>
     </LegalPage>
   );
 }
