@@ -132,9 +132,9 @@ export class OnboardingService {
         idempotent: true,
         businessId: existing.id,
         slug: existing.slug,
-        tenantUrl: `https://nevuraos.vercel.app/${existing.slug}`,
-        adminUrl: `https://nevuraos.vercel.app/${existing.slug}/admin`,
-        bookingUrl: `https://nevuraos.vercel.app/${existing.slug}/book`,
+        tenantUrl: `https://nuvoraos.vercel.app/${existing.slug}`,
+        adminUrl: `https://nuvoraos.vercel.app/${existing.slug}/admin`,
+        bookingUrl: `https://nuvoraos.vercel.app/${existing.slug}/book`,
         createdAt: new Date().toISOString(),
       };
     }
@@ -219,9 +219,9 @@ export class OnboardingService {
       idempotent: false,
       businessId: result.businessId,
       slug: result.slug,
-      tenantUrl: `https://nevuraos.vercel.app/${result.slug}`,
-      adminUrl: `https://nevuraos.vercel.app/${result.slug}/admin`,
-      bookingUrl: `https://nevuraos.vercel.app/${result.slug}/book`,
+      tenantUrl: `https://nuvoraos.vercel.app/${result.slug}`,
+      adminUrl: `https://nuvoraos.vercel.app/${result.slug}/admin`,
+      bookingUrl: `https://nuvoraos.vercel.app/${result.slug}/book`,
       createdAt: result.createdAt.toISOString(),
     };
   }

@@ -1,4 +1,4 @@
-// Nevura Frontend - Shared Domain Types & Interfaces
+// Nuvora Frontend - Shared Domain Types & Interfaces
 
 export type CustomerLifecycleState =
   | 'New Inquiry'

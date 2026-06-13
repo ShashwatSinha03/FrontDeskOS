@@ -25,7 +25,7 @@ process.on('uncaughtException', (err) => {
 });
 
 const server = app.listen(config.PORT, () => {
-  logger.info(`🚀 Nevura Backend listening on port ${config.PORT}`, { port: config.PORT });
+  logger.info(`🚀 Nuvora Backend listening on port ${config.PORT}`, { port: config.PORT });
   logger.info(`👉 Environment: ${config.NODE_ENV}`, { environment: config.NODE_ENV });
   logger.info(`👉 LLM Provider: ${config.LLM_PROVIDER}`, { provider: config.LLM_PROVIDER });
 });

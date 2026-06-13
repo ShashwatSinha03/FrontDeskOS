@@ -95,7 +95,7 @@ export class OwnerController {
         return;
       }
 
-      await customerRepository.updateLifecycleState(id, lifecycleState as CustomerLifecycleState, 'owner:manual_change');
+      await customerRepository.updateLifecycleState(id, businessId, lifecycleState as CustomerLifecycleState, 'owner:manual_change');
       res.status(200).json({ success: true, message: `Lifecycle updated to ${lifecycleState}` });
     } catch (error: any) {
       if (error instanceof z.ZodError) {

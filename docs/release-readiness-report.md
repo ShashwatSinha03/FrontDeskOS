@@ -1,4 +1,4 @@
-# Nevura — Release Readiness Report
+# Nuvora — Release Readiness Report
 
 **Generated:** 2026-06-09
 **Commit:** (pending)

@@ -105,7 +105,7 @@ export const defaultContent: MarketingContent = {
   hero: {
     headline: 'How Many Customers Did You Miss Today?',
     subheadline:
-      'Nevura handles enquiries, bookings, follow-ups, and customer questions 24/7 so opportunities don not disappear between business hours.',
+      'Nuvora handles enquiries, bookings, follow-ups, and customer questions 24/7 so opportunities don not disappear between business hours.',
     primaryCta: { label: 'Book a Demo', href: '#cta' },
     secondaryCta: { label: 'See It Live', href: '/brightsmile-dental' },
   },
@@ -186,13 +186,13 @@ export const defaultContent: MarketingContent = {
     name: 'Shashwat Sinha',
     title: 'Founder & CEO',
     story:
-      "The issue was never a lack of demand. Customers were already reaching out. The problem was what happened next. Missed calls. Delayed responses. Forgotten follow ups. Good businesses were losing customers they never even knew they had. Nevura exists to close that gap. So every conversation gets answered, every lead gets tracked, and every opportunity has a chance to become revenue.",
+      "The issue was never a lack of demand. Customers were already reaching out. The problem was what happened next. Missed calls. Delayed responses. Forgotten follow ups. Good businesses were losing customers they never even knew they had. Nuvora exists to close that gap. So every conversation gets answered, every lead gets tracked, and every opportunity has a chance to become revenue.",
   },
 
   cta: {
     headline: 'Stop Losing Customers After Hours.',
     subheadline:
-    'The phone does not stop ringing when the workday ends. Messages keep coming. Questions keep coming. Opportunities keep coming. Nevura makes sure they do not go unanswered.',
+    'The phone does not stop ringing when the workday ends. Messages keep coming. Questions keep coming. Opportunities keep coming. Nuvora makes sure they do not go unanswered.',
     primaryCta: {
       label: 'Book a Demo',
       href: 'https://calendly.com/sinhashashwat21/30min',

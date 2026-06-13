@@ -42,7 +42,7 @@ function LoginForm() {
         <div className="text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to your Nevura account
+            Sign in to your Nuvora account
           </p>
         </div>
 

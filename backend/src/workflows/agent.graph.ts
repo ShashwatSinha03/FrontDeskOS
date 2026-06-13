@@ -1,7 +1,7 @@
 /**
  * agent.graph.ts
  *
- * Assembles the Nevura Conversation Agent as a LangGraph StateGraph.
+ * Assembles the Nuvora Conversation Agent as a LangGraph StateGraph.
  *
  * Graph topology:
  *

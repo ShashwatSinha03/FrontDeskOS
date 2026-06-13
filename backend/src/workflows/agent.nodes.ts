@@ -1,7 +1,7 @@
 /**
  * agent.nodes.ts
  *
- * Individual LangGraph node implementations for the Nevura Conversation Agent.
+ * Individual LangGraph node implementations for the Nuvora Conversation Agent.
  * Each node is a pure async function: (state: AgentState) => Partial<AgentState>.
  * Nodes read from state, produce side-effects (DB writes), and return state updates.
  *
@@ -447,7 +447,7 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
             appointmentTime,
           });
           appointmentId = appointment.id;
-          await customerRepository.updateLifecycleState(state.customer.id, 'Booked', 'agent:booking');
+          await customerRepository.updateLifecycleState(state.customer.id, state.business.id, 'Booked', 'agent:booking');
           logger.info('✅ BookingNode: Appointment created', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, appointmentId });
         } catch (err) {
           logger.error('❌ BookingNode: Error creating appointment', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });

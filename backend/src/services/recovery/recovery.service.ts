@@ -114,7 +114,7 @@ export class RecoveryService {
       await followUpRepository.markSent(followUp.id, followUp.businessId);
 
       if (followUp.type === 'day_3') {
-        await customerRepository.updateLifecycleState(followUp.customerId, 'Lost', 'system:no_response_to_day_3_followup');
+        await customerRepository.updateLifecycleState(followUp.customerId, followUp.businessId, 'Lost', 'system:no_response_to_day_3_followup');
       }
     } catch (error) {
       logger.error('Error executing recovery step — cancelling', { route: 'RecoveryService', followUpId: followUp.id, businessId: followUp.businessId, customerId: followUp.customerId, error: error instanceof Error ? error.message : String(error) });

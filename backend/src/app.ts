@@ -20,9 +20,9 @@ app.use(helmet());
 
 if (config.NODE_ENV === 'production') {
   const allowedOrigins = [
-    'https://nevuraos.app',
-    'https://brightsmile.nevuraos.app',
-    'https://nevuraos.vercel.app',
+    'https://nuvoraos.app',
+    'https://brightsmile.nuvoraos.app',
+    'https://nuvoraos.vercel.app',
   ];
   if (process.env.FRONTEND_URL) {
     allowedOrigins.push(process.env.FRONTEND_URL);

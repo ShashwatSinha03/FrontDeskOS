@@ -27,7 +27,7 @@ export class FollowUpService {
     });
 
     // Update customer lifecycle state to 'Follow-Up Pending'
-    await customerRepository.updateLifecycleState(customerId, 'Follow-Up Pending', 'system:inactivity');
+    await customerRepository.updateLifecycleState(customerId, businessId, 'Follow-Up Pending', 'system:inactivity');
   }
 
   /**
@@ -129,7 +129,7 @@ Response:`;
         });
       } else if (followUp.type === 'day_3') {
         // Final state change: Mark customer as 'Lost' after no response to Day 3 follow-up
-        await customerRepository.updateLifecycleState(followUp.customerId, 'Lost', 'system:no_response_to_day_3_followup');
+        await customerRepository.updateLifecycleState(followUp.customerId, followUp.businessId, 'Lost', 'system:no_response_to_day_3_followup');
       }
     } catch (error) {
       logger.error('Error executing follow-up', { route: 'FollowUpService', followUpId: followUp.id, businessId: followUp.businessId, customerId: followUp.customerId, error: error instanceof Error ? error.message : String(error) });

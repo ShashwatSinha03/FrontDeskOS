@@ -1,7 +1,7 @@
 {
   "name": "frontdeskos-backend",
   "version": "1.0.0",
-  "description": "Nevura V1 Backend - Express, Supabase, LangGraph, LLM Abstraction",
+  "description": "Nuvora V1 Backend - Express, Supabase, LangGraph, LLM Abstraction",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",

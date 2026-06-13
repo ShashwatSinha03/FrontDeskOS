@@ -20,11 +20,11 @@ Use this checklist for each pilot customer. One checklist per customer.
 
 ## Setup
 
-- [ ] **Business created in Nevura ops dashboard** — Navigate to ops dashboard → Add Business → enter name + slug + vertical
+- [ ] **Business created in Nuvora ops dashboard** — Navigate to ops dashboard → Add Business → enter name + slug + vertical
 - [ ] **Owner email address collected** — Must be a real, deliverable email
 - [ ] **Owner assigned to business** — Ops dashboard → business detail → Assign Owner → enter email
 - [ ] **Owner receives login credentials** — Credentials shared securely (email or out-of-band); confirm owner can log in at `/{slug}/admin`
-- [ ] **Business slug verified** — Slug is unique, URL-friendly, matches expected domain pattern (`{slug}.nevuraos.app`)
+- [ ] **Business slug verified** — Slug is unique, URL-friendly, matches expected domain pattern (`{slug}.nuvoraos.app`)
 
 ---
 
@@ -52,7 +52,7 @@ Use this checklist for each pilot customer. One checklist per customer.
 ## Launch
 
 - [ ] **Owner briefed on dashboard** — Walk through: viewing leads, managing appointments, responding to escalations, accessing settings
-- [ ] **Support contact shared** — Owner has email (founder@nevura.io) and expected response time
+- [ ] **Support contact shared** — Owner has email (founder@nuvora.io) and expected response time
 - [ ] **Go-live confirmed** — Owner acknowledges system is ready for real customer traffic
 - [ ] **Monitoring activated** — Check that the business appears in ops dashboard monitoring; verify first customer interaction is tracked
 - [ ] **Post-launch review scheduled** — Set a date 7 days post-launch to review metrics and gather feedback

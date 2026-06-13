@@ -72,7 +72,7 @@ export function Footer({ businessName, slug }: { businessName: string; slug?: st
             &copy; {currentYear} {businessName}. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Powered by <span className="font-medium">Nevura</span>
+            Powered by <span className="font-medium">Nuvora</span>
           </p>
         </div>
       </div>

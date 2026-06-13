@@ -1,4 +1,4 @@
-# Nevura — RLS Architecture Audit
+# Nuvora — RLS Architecture Audit
 
 > **Status:** NOT APPROVED FOR IMPLEMENTATION — Critical architectural blocker found
 >

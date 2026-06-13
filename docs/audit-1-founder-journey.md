@@ -1,4 +1,4 @@
-# Nevura Audit 1 — Founder Journey Audit
+# Nuvora Audit 1 — Founder Journey Audit
 
 **Auditor:** Platform analysis  
 **Date:** June 12, 2026  
@@ -9,7 +9,7 @@
 
 # 1. Executive Summary
 
-Nevura has the bones of a working platform — the AI receptionist is genuinely impressive, the booking engine works, and the operations dashboard gives owners real utility. But the founder experience of onboarding a paying client is fragile, manual, and missing critical tooling.
+Nuvora has the bones of a working platform — the AI receptionist is genuinely impressive, the booking engine works, and the operations dashboard gives owners real utility. But the founder experience of onboarding a paying client is fragile, manual, and missing critical tooling.
 
 The core problem: **the founder has no workflow**. The platform was built feature-first (AI agent, booking, dashboard, analytics) without building the operational layer that a SaaS founder needs to run a multi-business platform. Onboarding a single client requires 6+ manual steps across 4 different pages, involves creating real Supabase auth users without any welcome email, and provides zero visibility into whether the client is actually using the system after onboarding.
 
@@ -25,7 +25,7 @@ The core problem: **the founder has no workflow**. The platform was built featur
 
 ### The Flow
 
-1. Founder navigates to `https://nevuraos.vercel.app/login`
+1. Founder navigates to `https://nuvoraos.vercel.app/login`
 2. Sees an email/password form with a "Sign in" button
 3. Below the form: "Forgot your password?" link
 4. No signup link (signup page exists at `/signup` but is not linked from login)
@@ -48,7 +48,7 @@ The core problem: **the founder has no workflow**. The platform was built featur
 - **Single session.** No session management UI — can't see active sessions, can't revoke them.
 
 ### Friction Points
-- New founders will not know `https://nevuraos.vercel.app/login` exists. There is no public landing page at `/` that explains what Nevura is or provides a login link. The root `/` redirects to `/dashboard-placeholder` which is a generic page.
+- New founders will not know `https://nuvoraos.vercel.app/login` exists. There is no public landing page at `/` that explains what Nuvora is or provides a login link. The root `/` redirects to `/dashboard-placeholder` which is a generic page.
 
 ---
 
@@ -305,7 +305,7 @@ After onboarding, the founder returns to `/ops` periodically to check on their c
   - Which businesses have disabled their AI or booking (possibly confused)
   - Which businesses have pending escalations that haven't been resolved
 - **No notification of problems.** If a business's LLM API key fails, if their database queries are slow, if they have 10 unanswered escalations — the founder has no way of knowing.
-- **No engagement metrics.** The founder cannot answer: "Is Client A actually using Nevura?" without logging into the client's admin dashboard (which they cannot do without the client's credentials).
+- **No engagement metrics.** The founder cannot answer: "Is Client A actually using Nuvora?" without logging into the client's admin dashboard (which they cannot do without the client's credentials).
 - **No churn prediction.** No way to identify businesses that are about to churn (low activity, declining bookings, unread notifications stacking up).
 
 ### Friction Points
@@ -322,7 +322,7 @@ After onboarding, the founder returns to `/ops` periodically to check on their c
 To verify the platform works end-to-end, the founder must:
 
 1. Open an incognito/private browser window
-2. Navigate to `https://nevuraos.vercel.app/{slug}`
+2. Navigate to `https://nuvoraos.vercel.app/{slug}`
 3. Open the AI chat widget
 4. Send a message (e.g., "Hi, I'd like to book a personal training session")
 5. Wait for the AI to respond
@@ -462,7 +462,7 @@ To verify the platform works end-to-end, the founder must:
 1. Create the owner account
 2. Navigate to a different page
 3. Initiate a password reset
-4. Hope the owner receives the reset email (which might go to spam because it's from Supabase, not from "Nevura")
+4. Hope the owner receives the reset email (which might go to spam because it's from Supabase, not from "Nuvora")
 5. Explain to a non-technical gym owner how to click a password reset link and set a new password
 6. Hope they don't get frustrated and ask for a refund
 

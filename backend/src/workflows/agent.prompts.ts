@@ -1,7 +1,7 @@
 /**
  * agent.prompts.ts
  *
- * All LLM prompt templates and builder functions for the Nevura Conversation Agent.
+ * All LLM prompt templates and builder functions for the Nuvora Conversation Agent.
  * Centralizing prompts here makes them testable, auditable, and easy to tune
  * independently from the node logic.
  */

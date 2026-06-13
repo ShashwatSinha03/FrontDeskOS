@@ -133,7 +133,7 @@ export class OperationalController {
         return;
       }
 
-      await customerRepository.updateLifecycleState(id, lifecycleState as CustomerLifecycleState, 'dashboard:manual_update');
+      await customerRepository.updateLifecycleState(id, businessId, lifecycleState as CustomerLifecycleState, 'dashboard:manual_update');
 
       const name = customer.name || 'A lead';
       if (lifecycleState === 'Qualified') {
@@ -252,7 +252,7 @@ export class OperationalController {
         return;
       }
 
-      await appointmentRepository.reschedule(id, new Date(appointmentTime), notes);
+      await appointmentRepository.reschedule(id, businessId, new Date(appointmentTime), notes);
 
       const custResult = await pool.query('SELECT name FROM customers WHERE id = $1', [appointment.customerId]);
       const custName = custResult.rows[0]?.name || 'A customer';

@@ -45,7 +45,7 @@
 | Variable | Service | Purpose | Required | Current Value Source | Notes |
 |---|---|---|---|---|---|
 | `PORT` | Frontend (Next.js) | Dev server port | Development-only | `.env.example` = `3000` | Next.js defaults to 3000; not used in Vercel production |
-| `NEXT_PUBLIC_API_URL` | Frontend | Backend API base URL for client-side fetch | **Yes (production)** | `.env` = `https://frontdeskos.onrender.com/api` | Must point to Render backend; currently references old Render URL (frontdeskos, not nevuraos-api) |
+| `NEXT_PUBLIC_API_URL` | Frontend | Backend API base URL for client-side fetch | **Yes (production)** | `.env` = `https://frontdeskos.onrender.com/api` | Must point to Render backend; currently references old Render URL (frontdeskos, not nuvoraos-api) |
 | `NEXT_PUBLIC_SUPABASE_URL` | Frontend | Future client-side Supabase client | Future | `.env` = `https://dndbfkhrndrcwoknivxt.supabase.co` | Not consumed by any current code; for future `@supabase/supabase-js` usage |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Frontend | Future client-side Supabase anon key | Future | `.env` = `eyJhbGciOi...` (anon key) | Not consumed by any current code; for future client-side auth |
 | `NODE_ENV` | Frontend | Next.js runtime environment | No | Next.js sets automatically | Not in `.env.example`; Vercel injects automatically |
@@ -58,6 +58,6 @@
 |---|---|---|
 | `SUPABASE_ANON_KEY` validated by Zod but absent from `.env.example` | Local dev startup fails if using `.env.example` directly | Add to `.env.example` or mark optional in Zod |
 | `FRONTEND_URL` used in deployment guide but not in `.env.example` | Easy to miss in production setup | Add to `.env.example` with a comment |
-| `NEXT_PUBLIC_API_URL` in `.env` points to `frontdeskos.onrender.com` (old service name) | May break if old Render service is decommissioned | Update to `https://api.nevuraos.app/api` |
+| `NEXT_PUBLIC_API_URL` in `.env` points to `frontdeskos.onrender.com` (old service name) | May break if old Render service is decommissioned | Update to `https://api.nuvoraos.app/api` |
 | Backend `.env.example` defines `SUPABASE_SERVICE_ROLE_KEY` but not `SUPABASE_ANON_KEY` | Anon key must be obtained separately | Document both keys in `.env.example` |
 | AI provider API keys stored as empty strings in `.env.example` | Safe, but could cause confusion | Comment each as `# Required if LLM_PROVIDER=<provider>` |

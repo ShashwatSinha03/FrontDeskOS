@@ -1,13 +1,13 @@
 # Disaster Recovery Plan
 
 **Last updated:** 2026-06-13
-**Contact:** founder@nevura.io
+**Contact:** founder@nuvora.io
 **RTO Target:** 4 hours
 **RPO Target:** 24 hours
 
 **Services:**
-- Frontend: Vercel (`nevuraos.app`, `brightsmile.nevuraos.app`, `*.nevuraos.app`)
-- Backend: Render (`api.nevuraos.app` → `nevuraos-api`)
+- Frontend: Vercel (`nuvoraos.app`, `brightsmile.nuvoraos.app`, `*.nuvoraos.app`)
+- Backend: Render (`api.nuvoraos.app` → `nuvoraos-api`)
 - Database: Supabase Postgres (`frontdeskos` project, ref `dndbfkhrndrcwoknivxt`)
 
 ---
@@ -39,7 +39,7 @@
 4. **Update DATABASE_URL**
    - Get new connection string: **Supabase Dashboard → Project Settings → Database → Connection string (URI)**
    - Update `DATABASE_URL` in:
-     - **Render Dashboard → nevuraos-api → Environment Variables**
+     - **Render Dashboard → nuvoraos-api → Environment Variables**
      - Local `.env` files if needed
    - Use port `6543` (pooler) in production
 
@@ -108,7 +108,7 @@ Use when all infrastructure (local dev, CI, or deployment environments) needs to
 
 1. **Navigate to Render Dashboard**
    - Go to [dashboard.render.com](https://dashboard.render.com)
-   - Select **nevuraos-api**
+   - Select **nuvoraos-api**
 
 2. **Find the last known good deployment**
    - Click **Deploys** in the left sidebar
@@ -122,14 +122,14 @@ Use when all infrastructure (local dev, CI, or deployment environments) needs to
    - Wait for the service to become healthy (check `/health` endpoint)
 
 4. **Verify**
-   - `curl https://api.nevuraos.app/health` → expect `{"status":"healthy"}`
+   - `curl https://api.nuvoraos.app/health` → expect `{"status":"healthy"}`
    - Test a critical flow (business page load, chat, booking)
 
 ### Frontend (Vercel)
 
 1. **Navigate to Vercel Dashboard**
    - Go to [vercel.com](https://vercel.com)
-   - Select the project (frontend, likely named `frontdeskos` or `nevuraos`)
+   - Select the project (frontend, likely named `frontdeskos` or `nuvoraos`)
 
 2. **Find the last known good deployment**
    - Click **Deployments** in the top navigation
@@ -143,8 +143,8 @@ Use when all infrastructure (local dev, CI, or deployment environments) needs to
    - No build step — promotion is instantaneous
 
 4. **Verify**
-   - Visit `https://nevuraos.app` — page loads without errors
-   - Visit `https://brightsmile.nevuraos.app` — tenant page loads
+   - Visit `https://nuvoraos.app` — page loads without errors
+   - Visit `https://brightsmile.nuvoraos.app` — tenant page loads
    - Check browser console for 404s or CORS errors
 
 ### Database Rollback (if needed alongside code rollback)
@@ -161,7 +161,7 @@ If a deployment introduced a schema migration that needs reversal:
 
 | Role | Contact |
 |---|---|
-| Incident Response | founder@nevura.io |
+| Incident Response | founder@nuvora.io |
 
 ## RTO / RPO Summary
 

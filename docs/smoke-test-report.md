@@ -12,7 +12,7 @@
 |---|---|
 | **Test ID** | FOUNDER-001 |
 | **Test Name** | Founder login to ops dashboard |
-| **Precondition** | Founder credentials known; ops dashboard deployed at `https://nevuraos.app/ops` (or internal URL) |
+| **Precondition** | Founder credentials known; ops dashboard deployed at `https://nuvoraos.app/ops` (or internal URL) |
 | **Steps** | 1. Navigate to ops dashboard login page<br>2. Enter founder email + password<br>3. Submit form<br>4. Observe redirect to ops dashboard home |
 | **Expected Result** | Dashboard loads with business list, analytics summary, and management controls. No 401/403 errors. |
 | **Actual Result** | PENDING |

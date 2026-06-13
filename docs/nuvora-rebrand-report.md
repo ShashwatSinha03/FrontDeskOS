@@ -1,8 +1,8 @@
-# Nevura Rebrand — Completion Report
+# Nuvora Rebrand — Completion Report
 
 ## Summary
 
-Rebranded all public-facing and developer-facing references from "FrontDeskOS" to "Nevura". Updated Vercel domain from `frontdeskos.vercel.app` to `nevuraos.vercel.app` and infrastructure names in deployment docs.
+Rebranded all public-facing and developer-facing references from "FrontDeskOS" to "Nuvora". Updated Vercel domain from `frontdeskos.vercel.app` to `nuvoraos.vercel.app` and infrastructure names in deployment docs.
 
 ## Files Changed
 
@@ -10,7 +10,7 @@ Rebranded all public-facing and developer-facing references from "FrontDeskOS" t
 
 | Category | Files | Changes |
 |---|---|---|
-| Documentation | 10 | FrontDeskOS → Nevura, domain updates |
+| Documentation | 10 | FrontDeskOS → Nuvora, domain updates |
 | Frontend source | 12 | Brand text, metadata, URLs |
 | Backend source | 10 | CORS origins, response URLs, file headers, server log |
 | Misc (schema, scripts, env, package) | 4 | File header comments |
@@ -35,7 +35,7 @@ All 22 remaining lowercase references fall into 4 permitted categories:
 
 ## What Changed Per Scope
 
-### 🔤 Brand name: FrontDeskOS → Nevura
+### 🔤 Brand name: FrontDeskOS → Nuvora
 - App title, layout metadata, OpenGraph, Twitter cards, SEO descriptions
 - Login page text, sidebar brand, footer "Powered by", header brand
 - Marketing copy (3 strings)
@@ -43,7 +43,7 @@ All 22 remaining lowercase references fall into 4 permitted categories:
 - Server startup log
 - Package description
 
-### 🌐 Domain: frontdeskos.vercel.app → nevuraos.vercel.app
+### 🌐 Domain: frontdeskos.vercel.app → nuvoraos.vercel.app
 - CORS origins (`backend/src/app.ts`)
 - Onboarding controller response URLs (dashboardUrl)
 - Onboarding service response URLs (tenantUrl, adminUrl, bookingUrl)
@@ -52,8 +52,8 @@ All 22 remaining lowercase references fall into 4 permitted categories:
 - All documentation references
 
 ### 🏗 Infrastructure names in deployment docs
-- `frontdeskos.app` → `nevuraos.app`
-- `frontdeskos-api` → `nevuraos-api`
+- `frontdeskos.app` → `nuvoraos.app`
+- `frontdeskos-api` → `nuvoraos-api`
 
 ## What Was Preserved
 
@@ -75,5 +75,5 @@ All 22 remaining lowercase references fall into 4 permitted categories:
 ## Commit
 
 ```
-fdcba77 rebrand FrontDeskOS to Nevura across all public-facing code and docs
+fdcba77 rebrand FrontDeskOS to Nuvora across all public-facing code and docs
 ```

@@ -3,21 +3,21 @@ import { AuthProvider } from '@/lib/auth';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Nevura — AI Receptionist for Service Businesses',
+  title: 'Nuvora — AI Receptionist for Service Businesses',
   description:
-    'Nevura acts like a 24/7 AI receptionist that answers questions, captures leads, books appointments, follows up automatically, and escalates urgent issues to your team.',
+    'Nuvora acts like a 24/7 AI receptionist that answers questions, captures leads, books appointments, follows up automatically, and escalates urgent issues to your team.',
   openGraph: {
-    title: 'Nevura — AI Receptionist for Service Businesses',
+    title: 'Nuvora — AI Receptionist for Service Businesses',
     description:
-      'Never miss another customer. Nevura handles inquiries, bookings, and follow-ups while your team focuses on delivering great service.',
-    siteName: 'Nevura',
+      'Never miss another customer. Nuvora handles inquiries, bookings, and follow-ups while your team focuses on delivering great service.',
+    siteName: 'Nuvora',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nevura — AI Receptionist for Service Businesses',
+    title: 'Nuvora — AI Receptionist for Service Businesses',
     description:
-      'Never miss another customer. Nevura handles inquiries, bookings, and follow-ups while your team focuses on delivering great service.',
+      'Never miss another customer. Nuvora handles inquiries, bookings, and follow-ups while your team focuses on delivering great service.',
   },
 };
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== Nevura Test Database Setup ==="
+echo "=== Nuvora Test Database Setup ==="
 
 DB_NAME="${DB_NAME:-frontdeskos_test}"
 DB_USER="${DB_USER:-postgres}"

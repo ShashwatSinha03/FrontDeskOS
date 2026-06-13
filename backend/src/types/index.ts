@@ -1,4 +1,4 @@
-// Nevura TypeScript Types & Interfaces
+// Nuvora TypeScript Types & Interfaces
 
 // ==========================================
 // Enums

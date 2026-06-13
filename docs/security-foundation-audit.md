@@ -1,4 +1,4 @@
-# Nevura — Security Foundation Architecture Audit
+# Nuvora — Security Foundation Architecture Audit
 
 > **Status:** Pre-Implementation Architecture Plan
 >

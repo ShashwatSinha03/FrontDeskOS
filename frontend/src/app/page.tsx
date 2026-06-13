@@ -14,9 +14,9 @@ import { FinalCta } from '@/components/marketing/final-cta';
 import { MarketingFooter } from '@/components/marketing/marketing-footer';
 
 export const metadata: Metadata = {
-  title: 'Nevura — 24/7 AI Receptionist for Service Businesses',
+  title: 'Nuvora — 24/7 AI Receptionist for Service Businesses',
   description:
-    'Nevura acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.',
+    'Nuvora acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.',
 };
 
 export default function MarketingPage() {

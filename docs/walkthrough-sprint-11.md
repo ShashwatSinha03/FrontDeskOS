@@ -1,4 +1,4 @@
-# Nevura — Platform Walkthrough & Audit (Sprint 11)
+# Nuvora — Platform Walkthrough & Audit (Sprint 11)
 
 **Date:** June 12, 2026
 **Commit:** `7d96a4f` (Sprint 10: Notification Center)
@@ -395,7 +395,7 @@
 
 ## Step 1: Login as Founder
 
-1. Navigate to `https://nevuraos.vercel.app/login`
+1. Navigate to `https://nuvoraos.vercel.app/login`
 2. Enter founder email and password
 3. Supabase validates credentials via `signInWithPassword()`
 4. On success, redirects to `/ops?redirectTo=...` (defaults to `/ops`)
@@ -471,7 +471,7 @@
 
 ## Step 2: Login
 
-1. Navigate to `https://nevuraos.vercel.app/login`
+1. Navigate to `https://nuvoraos.vercel.app/login`
 2. Enter email and password
 3. On success, redirects to `/{slug}/admin`
 4. Middleware checks session, admin layout validates membership against the business
@@ -570,7 +570,7 @@ Disable a service:
 
 ## Step 1: Login
 
-1. Same login as owner: `https://nevuraos.vercel.app/login`
+1. Same login as owner: `https://nuvoraos.vercel.app/login`
 2. Redirected to `/{slug}/admin`
 3. Membership check validates staff role is 'staff' (not 'owner')
 
@@ -625,7 +625,7 @@ Disable a service:
 
 ## Step 1: Visit Website
 
-1. Navigate to `/{slug}` (e.g. `https://nevuraos.vercel.app/brightsmile`)
+1. Navigate to `/{slug}` (e.g. `https://nuvoraos.vercel.app/brightsmile`)
 2. See business name, description, services grid, FAQ accordion
 3. See floating AI chat widget in bottom-right corner
 
@@ -1042,9 +1042,9 @@ Same routes as owner above, except:
 5. Note the returned `slug` and `businessId`
 6. Go to `/ops/businesses/[businessId]`
 7. Assign an owner by providing email and name
-8. Share the login URL (`https://nevuraos.vercel.app/login`) and password with the owner
-9. Share their admin URL (`https://nevuraos.vercel.app/{slug}/admin`)
-10. Share their booking URL (`https://nevuraos.vercel.app/{slug}/book`)
+8. Share the login URL (`https://nuvoraos.vercel.app/login`) and password with the owner
+9. Share their admin URL (`https://nuvoraos.vercel.app/{slug}/admin`)
+10. Share their booking URL (`https://nuvoraos.vercel.app/{slug}/book`)
 
 **Handling a forgotten password:**
 1. Go to `/ops/users`
@@ -1079,7 +1079,7 @@ Same routes as owner above, except:
 
 - [ ] Supabase project is running and not paused
 - [ ] Backend (`https://frontdeskos.onrender.com`) returns healthy status
-- [ ] Frontend (`https://nevuraos.vercel.app`) loads the marketing page
+- [ ] Frontend (`https://nuvoraos.vercel.app`) loads the marketing page
 - [ ] All 6 migrations have been run in Supabase SQL Editor
 - [ ] LLM provider API key is valid and has quota
 - [ ] Frontend environment variables point to the correct Supabase project

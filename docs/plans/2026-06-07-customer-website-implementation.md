@@ -2,7 +2,7 @@
 
 > **For Claude:** Use superpowers:subagent-driven-development to implement this plan task-by-task.
 
-**Goal:** Build a multi-tenant, customer-facing mini website for Nevura clinics with Home, Services, Book Appointment, Contact pages, embeddable chat widget, and session-based customer tracking.
+**Goal:** Build a multi-tenant, customer-facing mini website for Nuvora clinics with Home, Services, Book Appointment, Contact pages, embeddable chat widget, and session-based customer tracking.
 
 **Architecture:** Next.js App Router with middleware-based subdomain routing. Server Components for business data, client components with SWR for dynamic data. Backend additions: slug-based business lookup, customer session tracking, public API endpoints.
 

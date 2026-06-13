@@ -91,7 +91,7 @@ export function StepBusiness({ data, onChange, onNext, onBack }: StepBusinessPro
             <div className="space-y-2 sm:col-span-2">
               <label className="text-sm font-medium">URL Slug</label>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>nevuraos.vercel.app/</span>
+                <span>nuvoraos.vercel.app/</span>
                 <Input
                   className="w-64"
                   placeholder="peak-performance-gym"
