@@ -3,6 +3,7 @@ import { requireApiKey } from '../middleware/auth';
 import { authenticate, loadMembership, requireStaff, requireBusinessAccess, requireActiveBusiness } from '../middleware';
 import { resolveSession } from '../middleware/session';
 import { chatLimiter } from '../middleware/rate-limit';
+import { requireTurnstile } from '../middleware/require-turnstile';
 import { chatController } from '../controllers/chat.controller';
 import { conversationController } from '../controllers/conversation.controller';
 import { dashboardController } from '../controllers/dashboard.controller';
@@ -20,14 +21,14 @@ import { onboardingRouter } from './onboarding.routes';
 // ==========================================
 const publicRouter = Router();
 
-publicRouter.post('/chat', chatLimiter, requireActiveBusiness(), resolveSession, (req: Request, res: Response) => chatController.handleMessage(req, res));
+publicRouter.post('/chat', chatLimiter, requireActiveBusiness(), requireTurnstile(), resolveSession, (req: Request, res: Response) => chatController.handleMessage(req, res));
 
 publicRouter.get('/public/businesses/:slug', (req: Request, res: Response) => publicController.getBusiness(req, res));
 publicRouter.get('/public/businesses/:slug/services', (req: Request, res: Response) => publicController.getServices(req, res));
-publicRouter.post('/public/businesses/:slug/contact', (req: Request, res: Response) => publicController.submitContact(req, res));
+publicRouter.post('/public/businesses/:slug/contact', requireTurnstile(), (req: Request, res: Response) => publicController.submitContact(req, res));
 publicRouter.post('/public/sessions/create', requireActiveBusiness(), (req: Request, res: Response) => publicController.createSession(req, res));
 publicRouter.get('/appointments/slots', requireActiveBusiness(), (req: Request, res: Response) => appointmentController.getSlots(req, res));
-publicRouter.post('/appointments/book', requireActiveBusiness(), (req: Request, res: Response) => appointmentController.book(req, res));
+publicRouter.post('/appointments/book', requireActiveBusiness(), requireTurnstile(), (req: Request, res: Response) => appointmentController.book(req, res));
 
 // ==========================================
 // Admin Router — requires x-api-key

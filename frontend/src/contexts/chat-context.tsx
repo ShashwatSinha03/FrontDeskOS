@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useRef, useEffect, useCallback } from 'react';
 import { sendChatMessage } from '@/lib/api';
 import { ensureSession } from '@/lib/session';
+import { TurnstileWidget } from '@/components/ui/turnstile-widget';
 
 export interface ChatMessage {
   id: string;
@@ -38,6 +39,8 @@ export function ChatProvider({
   ]);
   const [sending, setSending] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
   const sendingRef = useRef(false);
 
   useEffect(() => {
@@ -60,7 +63,10 @@ export function ChatProvider({
         channelIdentity: sessionId,
         content: content.trim(),
         sessionId,
+        turnstileToken: turnstileToken || undefined,
       });
+      setTurnstileToken(null);
+      setTurnstileKey((k) => k + 1);
 
       if (res.success && res.data?.replyMessage) {
         setMessages((prev) => [...prev, {
@@ -99,6 +105,12 @@ export function ChatProvider({
       businessName,
     }}>
       {children}
+      <TurnstileWidget
+        key={turnstileKey}
+        onVerify={(token) => setTurnstileToken(token)}
+        onExpire={() => setTurnstileToken(null)}
+        onError={() => setTurnstileToken(null)}
+      />
     </ChatContext.Provider>
   );
 }

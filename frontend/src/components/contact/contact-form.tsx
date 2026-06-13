@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ensureSession } from '@/lib/session';
+import { TurnstileWidget } from '@/components/ui/turnstile-widget';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -12,6 +13,8 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +31,7 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
       const res = await fetch(`${API_URL}/public/businesses/${slug}/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message, sessionId }),
+        body: JSON.stringify({ name, email, message, sessionId, turnstileToken: turnstileToken || undefined }),
       });
       const json = await res.json();
       if (json.success) {
@@ -36,8 +39,12 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
       } else {
         setError(json.error || 'Failed to send message');
       }
+      setTurnstileToken(null);
+      setTurnstileKey((k) => k + 1);
     } catch {
       setError('Network error. Please try again.');
+      setTurnstileToken(null);
+      setTurnstileKey((k) => k + 1);
     } finally {
       setSending(false);
     }
@@ -83,6 +90,12 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
               required
             />
           </div>
+          <TurnstileWidget
+            key={turnstileKey}
+            onVerify={(token) => setTurnstileToken(token)}
+            onExpire={() => setTurnstileToken(null)}
+            onError={() => setTurnstileToken(null)}
+          />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" disabled={sending}>
             {sending ? 'Sending...' : 'Send Message'}

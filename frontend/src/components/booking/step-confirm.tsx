@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { bookAppointment } from '@/lib/api';
 import { ensureSession } from '@/lib/session';
+import { TurnstileWidget } from '@/components/ui/turnstile-widget';
 import { CheckCircle, Calendar, Clock, User } from 'lucide-react';
 
 interface ServiceItem {
@@ -40,6 +41,8 @@ export function StepConfirm({
   const router = useRouter();
   const [booking, setBooking] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const handleConfirm = async () => {
     setBooking('loading');
@@ -61,7 +64,11 @@ export function StepConfirm({
         name: customerName,
         email: customerEmail,
         phone: customerPhone,
+        turnstileToken: turnstileToken || undefined,
       });
+
+      setTurnstileToken(null);
+      setTurnstileKey((k) => k + 1);
 
       if (res.success) {
         setBooking('success');
@@ -147,6 +154,13 @@ export function StepConfirm({
       {booking === 'error' && (
         <p className="text-sm text-red-500">{errorMsg}</p>
       )}
+
+      <TurnstileWidget
+        key={turnstileKey}
+        onVerify={(token) => setTurnstileToken(token)}
+        onExpire={() => setTurnstileToken(null)}
+        onError={() => setTurnstileToken(null)}
+      />
 
       <div className="flex justify-between">
         <Button variant="outline" onClick={onBack} disabled={booking === 'loading'}>Back</Button>

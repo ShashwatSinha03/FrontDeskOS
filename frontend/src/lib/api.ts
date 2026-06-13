@@ -59,6 +59,7 @@ export async function sendChatMessage(payload: {
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
+  turnstileToken?: string;
 }): Promise<ApiResponse<{
   conversation: Conversation;
   customer: Customer;
@@ -188,6 +189,7 @@ export async function bookAppointment(payload: {
   name?: string;
   email?: string;
   phone?: string;
+  turnstileToken?: string;
 }): Promise<ApiResponse<Appointment>> {
   const response = await fetch(`${API_URL}/appointments/book`, {
     method: 'POST',

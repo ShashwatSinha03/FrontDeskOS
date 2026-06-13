@@ -41,6 +41,11 @@ const configSchema = z.object({
 
   // Sentry Error Tracking
   SENTRY_DSN: z.string().optional(),
+
+  // Turnstile Bot Protection
+  TURNSTILE_SECRET_KEY: z.string({
+    required_error: 'TURNSTILE_SECRET_KEY is required for Turnstile bot protection',
+  }),
 }).refine((data) => {
   // Enforce that active provider has its respective API key
   if (data.LLM_PROVIDER === 'groq' && !data.GROQ_API_KEY) {
