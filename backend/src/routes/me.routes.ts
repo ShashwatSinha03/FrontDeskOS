@@ -7,14 +7,14 @@ const meRouter = Router();
 meRouter.use(authenticate);
 meRouter.use(loadMembership);
 
-meRouter.get('/membership', (req: Request, res: Response) => {
+meRouter.get('/me/membership', (req: Request, res: Response) => {
   res.json({
     success: true,
     data: req.membership,
   });
 });
 
-meRouter.get('/profile', async (req: Request, res: Response) => {
+meRouter.get('/me/profile', async (req: Request, res: Response) => {
   try {
     const result = await pool.query(
       'SELECT id, email, full_name, global_role, created_at FROM profiles WHERE id = $1',

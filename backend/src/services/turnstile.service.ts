@@ -7,7 +7,7 @@ export async function verifyTurnstile(token: string): Promise<boolean> {
 
   try {
     const formData = new URLSearchParams();
-    formData.append('secret', config.TURNSTILE_SECRET_KEY);
+    formData.append('secret', config.TURNSTILE_SECRET_KEY || '');
     formData.append('response', token);
 
     const response = await fetch(TURNSTILE_VERIFY_URL, {
