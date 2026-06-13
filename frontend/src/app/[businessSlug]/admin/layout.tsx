@@ -30,6 +30,21 @@ async function getMembership(accessToken: string) {
   }
 }
 
+async function getProfile(accessToken: string) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+  try {
+    const res = await fetch(`${apiUrl}/me/profile`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      next: { revalidate: 0 },
+    });
+    const json = await res.json();
+    if (json.success && json.data) return json.data;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function AdminLayout({
   children,
   params,
@@ -55,13 +70,18 @@ export default async function AdminLayout({
     redirect(`/login?redirectTo=/${businessSlug}/admin`);
   }
 
-  const membership = await getMembership(session.access_token);
+  const [membership, profile] = await Promise.all([
+    getMembership(session.access_token),
+    getProfile(session.access_token),
+  ]);
 
-  if (!membership || membership.businessId !== business.id) {
+  const isSuperAdmin = profile?.global_role === 'SUPER_ADMIN';
+
+  if (!isSuperAdmin && (!membership || membership.businessId !== business.id)) {
     redirect('/unauthorized');
   }
 
-  if (membership.businessStatus === 'disabled') {
+  if (!isSuperAdmin && membership?.businessStatus === 'disabled') {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center space-y-3">
