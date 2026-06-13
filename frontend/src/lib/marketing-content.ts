@@ -113,7 +113,7 @@ export const defaultContent: MarketingContent = {
   problem: {
     headline: 'Customers do not disappear by accident.',
     problems: [
-      { text: 'Inconsistent follow-ups' },
+      { text: 'Customer unattended at off times' },
       { text: 'Manual processes' },
       { text: 'Inconsistent follow-ups' },
       { text: 'Leads slip through the cracks' },
