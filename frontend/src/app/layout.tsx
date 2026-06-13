@@ -23,10 +23,12 @@ export const metadata: Metadata = {
     'Nuvora acts like a 24/7 AI receptionist that answers questions, captures leads, books appointments, follows up automatically, and escalates urgent issues to your team.',
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/icon-16.png', sizes: '16x16', type: 'image/png' },
       { url: '/icon-32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
+    shortcut: '/favicon.ico',
     apple: '/icon-192.png',
   },
   openGraph: {
