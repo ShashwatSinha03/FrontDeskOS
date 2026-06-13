@@ -1,7 +1,8 @@
 export function Logo({ className = '' }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center justify-center font-[var(--font-bungee-outline)] leading-none select-none ${className}`}
+      className={`inline-flex items-center justify-center leading-none select-none ${className}`}
+      style={{ fontFamily: 'var(--font-bungee-outline)' }}
     >
       N
     </span>
@@ -13,8 +14,8 @@ export function LogoWithName({ className = '' }: { className?: string }) {
     <span
       className={`inline-flex items-center gap-0 leading-none select-none ${className}`}
     >
-      <span className="font-[var(--font-bungee-outline)]">N</span>
-      <span className="font-[var(--font-bungee-hairline)]" style={{ fontWeight: 600 }}>uvora</span>
+      <span style={{ fontFamily: 'var(--font-bungee-outline)' }}>N</span>
+      <span style={{ fontFamily: 'var(--font-bungee-hairline)', fontWeight: 600 }}>uvora</span>
     </span>
   );
 }
