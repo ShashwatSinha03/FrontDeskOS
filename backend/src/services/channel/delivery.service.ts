@@ -98,10 +98,21 @@ export class DeliveryService {
     return messageDeliveryRepository.getPendingDeliveries(businessId, limit);
   }
 
+  async getFailedDeliveries(businessId: string, limit?: number) {
+    return messageDeliveryRepository.getFailedDeliveries(businessId, limit);
+  }
+
+  async getDeliveryHealth(businessId: string) {
+    return messageDeliveryRepository.getDeliveryHealth(businessId);
+  }
+
   private async resolveProvider(businessId: string, channelType: string): Promise<string> {
     if (channelType === 'web_chat') return 'internal';
     const channel = await businessChannelRepository.getChannel(businessId, channelType).catch(() => null);
-    return channel?.provider || 'internal';
+    if (!channel) return 'internal';
+    if (channel.provider !== 'internal') return channel.provider;
+    if (channelType === 'whatsapp' && channel.configJson?.whatsappNumber) return 'twilio';
+    return 'internal';
   }
 }
 

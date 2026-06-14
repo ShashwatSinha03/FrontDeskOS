@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import pool from '../config/db';
 import { businessRepository, availabilityRepository } from '../repositories';
-import { channelService, getAllChannelCapabilities } from '../services/channel';
+import { channelService, getAllChannelCapabilities, deliveryService } from '../services/channel';
 import { logger } from '../lib/logger';
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -403,9 +403,12 @@ export class SettingsController {
 
   async getChannels(req: Request, res: Response): Promise<void> {
     try {
-      const channels = await channelService.getChannels(req.membership!.businessId);
+      const [channels, deliveryHealth] = await Promise.all([
+        channelService.getChannels(req.membership!.businessId),
+        deliveryService.getDeliveryHealth(req.membership!.businessId),
+      ]);
       const capabilities = getAllChannelCapabilities();
-      res.json({ success: true, data: { channels, capabilities } });
+      res.json({ success: true, data: { channels, capabilities, deliveryHealth } });
     } catch (error) {
       logger.error('Failed to load channels', { route: 'Settings', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to load channels' });

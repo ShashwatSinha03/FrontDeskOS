@@ -699,6 +699,7 @@ const CHANNEL_META: Record<string, { label: string; description: string; icon: a
 function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (msg: string) => void; onMsg: (msg: string) => void }) {
   const [channels, setChannels] = useState<any[]>([]);
   const [capabilities, setCapabilities] = useState<any[]>([]);
+  const [deliveryHealth, setDeliveryHealth] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
   const [whatsappPhone, setWhatsappPhone] = useState('');
@@ -710,6 +711,9 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
       if (res.success) {
         setChannels(res.data.channels);
         setCapabilities(res.data.capabilities);
+        if (res.data.deliveryHealth) {
+          setDeliveryHealth(res.data.deliveryHealth);
+        }
         const wa = res.data.channels.find((c: any) => c.channelType === 'whatsapp');
         if (wa?.configJson?.whatsappNumber) {
           setWhatsappPhone(wa.configJson.whatsappNumber);
@@ -875,12 +879,35 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
                         {savingPhone ? 'Saving...' : 'Save'}
                       </button>
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
+
+                    {deliveryHealth && (
+                      <div className="mt-3 grid grid-cols-2 gap-3">
+                        <div className="rounded-md border bg-muted/30 p-3">
+                          <p className="text-xs text-muted-foreground">Delivery Health</p>
+                          <p className="mt-1 text-lg font-semibold">
+                            {deliveryHealth.successRate}%
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {deliveryHealth.delivered} delivered · {deliveryHealth.failed} failed
+                          </p>
+                        </div>
+                        <div className="rounded-md border bg-muted/30 p-3">
+                          <p className="text-xs text-muted-foreground">Total Messages</p>
+                          <p className="mt-1 text-lg font-semibold">{deliveryHealth.total}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {deliveryHealth.pending > 0 ? `${deliveryHealth.pending} pending` : 'All processed'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-3 flex items-center gap-3">
                       <span className="text-xs text-muted-foreground">
                         Provider: {ch.provider === 'twilio' ? 'Twilio' : ch.provider || 'Not configured'}
                       </span>
                       {ch.configJson?.whatsappNumber && (
-                        <span className="text-xs text-green-600">
+                        <span className="flex items-center gap-1 text-xs text-green-600">
+                          <CheckCircle2 className="h-3 w-3" />
                           Number configured
                         </span>
                       )}

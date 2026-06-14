@@ -124,6 +124,61 @@ export class MessageDeliveryRepository {
     return res.rows.map(r => this.mapToEntity(r));
   }
 
+  async getFailedDeliveries(businessId: string, limit: number = 20): Promise<MessageDelivery[]> {
+    const query = `
+      SELECT id, message_id, conversation_id, business_id, channel_type, delivery_status, provider, provider_message_id, failure_reason, created_at, updated_at
+      FROM message_deliveries
+      WHERE business_id = $1 AND delivery_status = 'failed'
+      ORDER BY updated_at DESC
+      LIMIT $2
+    `;
+    const res = await pool.query(query, [businessId, limit]);
+    return res.rows.map(r => this.mapToEntity(r));
+  }
+
+  async getDeliveryHealth(businessId: string): Promise<{
+    total: number;
+    pending: number;
+    sent: number;
+    delivered: number;
+    failed: number;
+    successRate: number;
+    channelBreakdown: { channelType: string; total: number; failed: number }[];
+  }> {
+    const total = await this.countTotal(businessId);
+    if (total === 0) {
+      return { total: 0, pending: 0, sent: 0, delivered: 0, failed: 0, successRate: 0, channelBreakdown: [] };
+    }
+    const [pending, sent, delivered, failed] = await Promise.all([
+      this.countByStatus(businessId, 'pending'),
+      this.countByStatus(businessId, 'sent'),
+      this.countByStatus(businessId, 'delivered'),
+      this.countByStatus(businessId, 'failed'),
+    ]);
+    const breakdownQuery = `
+      SELECT channel_type, COUNT(*) as total, SUM(CASE WHEN delivery_status = 'failed' THEN 1 ELSE 0 END) as failed
+      FROM message_deliveries
+      WHERE business_id = $1
+      GROUP BY channel_type
+      ORDER BY channel_type
+    `;
+    const breakdown = await pool.query(breakdownQuery, [businessId]);
+    const successCount = sent + delivered;
+    return {
+      total,
+      pending,
+      sent,
+      delivered,
+      failed,
+      successRate: total > 0 ? Math.round((successCount / total) * 100) : 0,
+      channelBreakdown: breakdown.rows.map(r => ({
+        channelType: r.channel_type,
+        total: parseInt(r.total, 10),
+        failed: parseInt(r.failed, 10),
+      })),
+    };
+  }
+
   private mapToEntity(row: any): MessageDelivery {
     return {
       id: row.id,

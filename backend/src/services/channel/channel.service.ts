@@ -41,6 +41,10 @@ export class ChannelService {
       this.validateProvider(channelType, config.provider);
     }
 
+    if (config.configJson?.whatsappNumber && channelType === 'whatsapp' && !config.provider) {
+      config.provider = 'twilio';
+    }
+
     return businessChannelRepository.updateChannelConfig(businessId, channelType, config);
   }
 

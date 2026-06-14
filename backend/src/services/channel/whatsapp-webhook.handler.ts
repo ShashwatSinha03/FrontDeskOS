@@ -141,8 +141,10 @@ export class WhatsAppWebhookHandler {
   private mapTwilioStatus(status: string): string | null {
     const map: Record<string, string> = {
       queued: 'pending',
+      accepted: 'pending',
       sent: 'sent',
       delivered: 'delivered',
+      read: 'delivered',
       failed: 'failed',
       undelivered: 'failed',
     };
