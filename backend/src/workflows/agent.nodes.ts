@@ -667,7 +667,7 @@ export async function greetingNode(state: AgentState): Promise<Partial<AgentStat
     state.services
   );
 
-  let reply = `Hi! 👋 Welcome to ${state.business.name}.\n\nI'm here to help with appointments, treatments, pricing, and general clinic information.\n\nHow can I help you today?`;
+  let reply = `Hi! 👋 Welcome to ${state.business.name}. How can I help you today?`;
 
   try {
     reply = await provider.chat([
