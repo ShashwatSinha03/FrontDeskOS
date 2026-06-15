@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
+import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 import pool from '../config/db';
 import config from '../config';
@@ -455,6 +456,215 @@ export class FounderController {
     } catch (error) {
       logger.error('Failed to remove membership', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to remove membership' });
+    }
+  }
+
+  async getPilotHealth(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await pool.query(`
+        SELECT
+          b.id, b.name, b.slug, b.status, b.created_at,
+          COALESCE(conv.conversations_today, 0) AS conversations_today,
+          COALESCE(lead.leads_today, 0) AS leads_today,
+          COALESCE(appt.appointments_today, 0) AS appointments_today,
+          COALESCE(esc.escalations, 0) AS escalations,
+          COALESCE(del.failed_deliveries, 0) AS failed_deliveries,
+          COALESCE(del.total_deliveries, 0) AS total_deliveries,
+          CASE
+            WHEN COALESCE(del.total_deliveries, 0) = 0 THEN NULL
+            ELSE ROUND(((COALESCE(del.total_deliveries, 0) - COALESCE(del.failed_deliveries, 0))::numeric / NULLIF(COALESCE(del.total_deliveries, 0), 0) * 100), 1)
+          END AS delivery_rate
+        FROM businesses b
+        LEFT JOIN LATERAL (
+          SELECT COUNT(*)::int AS conversations_today
+          FROM conversations WHERE business_id = b.id AND created_at::date = CURRENT_DATE
+        ) conv ON true
+        LEFT JOIN LATERAL (
+          SELECT COUNT(*)::int AS leads_today
+          FROM customers WHERE business_id = b.id AND created_at::date = CURRENT_DATE
+        ) lead ON true
+        LEFT JOIN LATERAL (
+          SELECT COUNT(*)::int AS appointments_today
+          FROM appointments WHERE business_id = b.id AND created_at::date = CURRENT_DATE
+        ) appt ON true
+        LEFT JOIN LATERAL (
+          SELECT COUNT(*)::int AS escalations
+          FROM escalations WHERE business_id = b.id AND status = 'pending'
+        ) esc ON true
+        LEFT JOIN LATERAL (
+          SELECT
+            COUNT(*)::int AS total_deliveries,
+            COUNT(*) FILTER (WHERE delivery_status = 'failed')::int AS failed_deliveries
+          FROM message_deliveries
+          WHERE business_id = b.id AND created_at > NOW() - INTERVAL '7 days'
+        ) del ON true
+        ORDER BY b.created_at DESC
+      `);
+
+      const rows = result.rows.map((row: any) => {
+        let riskLevel: string;
+        const totalDeliveries = row.total_deliveries;
+        const failedDeliveries = row.failed_deliveries;
+        const deliveryRate = row.delivery_rate;
+        const escalations = row.escalations;
+
+        if (totalDeliveries === 0) {
+          riskLevel = 'unknown';
+        } else if (failedDeliveries > 0 && deliveryRate !== null && deliveryRate < 80) {
+          riskLevel = 'critical';
+        } else if (escalations > 5) {
+          riskLevel = 'warning';
+        } else if (failedDeliveries > 0) {
+          riskLevel = 'warning';
+        } else {
+          riskLevel = 'healthy';
+        }
+
+        return { ...row, risk_level: riskLevel };
+      });
+
+      res.json({ success: true, data: rows });
+    } catch (error) {
+      logger.error('Failed to load pilot health', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
+      res.status(500).json({ success: false, error: 'Failed to load pilot health' });
+    }
+  }
+
+  async supportSearch(req: Request, res: Response): Promise<void> {
+    try {
+      const schema = z.object({
+        q: z.string().min(2, 'Search query must be at least 2 characters'),
+      });
+      const { q } = schema.parse(req.query);
+      const pattern = `%${q}%`;
+
+      const [businesses, leads, conversations, appointments] = await Promise.all([
+        pool.query(`
+          SELECT id, name, slug, 'business' AS entity_type
+          FROM businesses
+          WHERE name ILIKE $1 OR slug ILIKE $1
+          LIMIT 20
+        `, [pattern]),
+        pool.query(`
+          SELECT c.id AS customer_id, c.name AS customer_name, c.phone, c.email,
+            c.business_id, b.name AS business_name, b.slug AS business_slug,
+            c.lifecycle_state, 'lead' AS entity_type
+          FROM customers c
+          JOIN businesses b ON b.id = c.business_id
+          WHERE c.name ILIKE $1 OR c.phone ILIKE $1 OR c.email ILIKE $1
+          LIMIT 20
+        `, [pattern]),
+        pool.query(`
+          SELECT conv.id AS conversation_id, conv.channel_type, cust.name AS customer_name,
+            conv.business_id, b.name AS business_name, b.slug AS business_slug,
+            'conversation' AS entity_type
+          FROM conversations conv
+          JOIN businesses b ON b.id = conv.business_id
+          LEFT JOIN customers cust ON cust.id = conv.customer_id
+          WHERE conv.id::text ILIKE $1
+          LIMIT 20
+        `, [pattern]),
+        pool.query(`
+          SELECT a.id AS appointment_id, a.appointment_time, a.status AS appointment_status,
+            cust.name AS customer_name, a.business_id, b.name AS business_name,
+            b.slug AS business_slug, 'appointment' AS entity_type
+          FROM appointments a
+          JOIN businesses b ON b.id = a.business_id
+          LEFT JOIN customers cust ON cust.id = a.customer_id
+          WHERE a.id::text ILIKE $1
+          LIMIT 20
+        `, [pattern]),
+      ]);
+
+      res.json({
+        success: true,
+        data: {
+          businesses: businesses.rows,
+          leads: leads.rows,
+          conversations: conversations.rows,
+          appointments: appointments.rows,
+        },
+      });
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, errors: error.errors });
+        return;
+      }
+      logger.error('Failed to search support data', { route: 'Founder', error: error instanceof Error ? error.message : String(error) });
+      res.status(500).json({ success: false, error: 'Failed to search support data' });
+    }
+  }
+
+  async getBusinessHealth(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      const bizResult = await pool.query(`
+        SELECT b.id, b.name, b.slug, b.status, b.business_type, b.phone, b.email, b.timezone,
+          b.created_at, sp.full_name AS owner_name, p.email AS owner_email
+        FROM businesses b
+        LEFT JOIN staff_profiles sp ON sp.business_id = b.id AND sp.role = 'owner'
+        LEFT JOIN profiles p ON p.id = sp.user_id
+        WHERE b.id = $1
+      `, [id]);
+
+      if (bizResult.rows.length === 0) {
+        res.status(404).json({ success: false, error: 'Business not found' });
+        return;
+      }
+
+      const [todayMetrics, deliveryHealth, recentActivity] = await Promise.all([
+        pool.query(`
+          SELECT
+            (SELECT COUNT(*)::int FROM conversations WHERE business_id = $1 AND created_at::date = CURRENT_DATE) AS conversations_today,
+            (SELECT COUNT(*)::int FROM customers WHERE business_id = $1 AND created_at::date = CURRENT_DATE) AS leads_today,
+            (SELECT COUNT(*)::int FROM appointments WHERE business_id = $1 AND created_at::date = CURRENT_DATE) AS appointments_today,
+            (SELECT COUNT(*)::int FROM escalations WHERE business_id = $1 AND status = 'pending') AS pending_escalations,
+            (SELECT COUNT(*)::int FROM escalations WHERE business_id = $1) AS total_escalations
+        `, [id]),
+        pool.query(`
+          SELECT
+            COUNT(*)::int AS total_deliveries,
+            COUNT(*) FILTER (WHERE delivery_status = 'failed')::int AS failed_deliveries,
+            CASE
+              WHEN COUNT(*) = 0 THEN 0
+              ELSE ROUND((COUNT(*) FILTER (WHERE delivery_status IN ('delivered', 'read'))::numeric / COUNT(*) * 100), 1)
+            END AS delivery_rate
+          FROM message_deliveries
+          WHERE business_id = $1 AND created_at > NOW() - INTERVAL '7 days'
+        `, [id]),
+        pool.query(`
+          SELECT event_type, occurred_at, description
+          FROM (
+            SELECT 'lead_created' AS event_type, created_at AS occurred_at,
+              'Lead: ' || COALESCE(name, 'Unknown') AS description
+            FROM customers WHERE business_id = $1 AND created_at > NOW() - INTERVAL '7 days'
+            UNION ALL
+            SELECT 'appointment', created_at,
+              'Appointment: ' || status
+            FROM appointments WHERE business_id = $1 AND created_at > NOW() - INTERVAL '7 days'
+            UNION ALL
+            SELECT 'escalation', created_at,
+              'Escalation: ' || LEFT(reason, 80)
+            FROM escalations WHERE business_id = $1 AND created_at > NOW() - INTERVAL '7 days'
+          ) AS activity
+          ORDER BY occurred_at DESC
+          LIMIT 20
+        `, [id]),
+      ]);
+
+      res.json({
+        success: true,
+        data: {
+          business: bizResult.rows[0],
+          todayMetrics: todayMetrics.rows[0],
+          deliveryHealth: deliveryHealth.rows[0],
+          recentActivity: recentActivity.rows,
+        },
+      });
+    } catch (error) {
+      logger.error('Failed to load business health', { route: 'Founder', businessId: req.params?.id, error: error instanceof Error ? error.message : String(error) });
+      res.status(500).json({ success: false, error: 'Failed to load business health' });
     }
   }
 

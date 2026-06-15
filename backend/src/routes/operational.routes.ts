@@ -17,4 +17,10 @@ router.patch('/operate/appointments/:id/reschedule', (req, res) => operationalCo
 router.get('/operate/escalations', (req, res) => operationalController.getEscalations(req, res));
 router.post('/operate/escalations/:id/resolve', (req, res) => operationalController.resolveEscalation(req, res));
 
+router.get('/operate/conversations', (req, res) => operationalController.getConversations(req, res));
+router.get('/operate/conversations/:id', (req, res) => operationalController.getConversationDetail(req, res));
+router.get('/operate/deliveries/health', (req, res) => operationalController.getDeliveryHealth(req, res));
+router.get('/operate/deliveries/failed', (req, res) => operationalController.getFailedDeliveries(req, res));
+router.get('/operate/activity', (req, res) => operationalController.getActivity(req, res));
+
 export { router as operationalRouter };

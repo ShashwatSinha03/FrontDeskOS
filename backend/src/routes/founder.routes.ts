@@ -22,6 +22,10 @@ founderRouter.post('/users/:id/reset-password', (req, res) => founderController.
 founderRouter.post('/users/:id/transfer-ownership', (req, res) => founderController.transferOwnership(req, res));
 founderRouter.delete('/users/:id/membership', (req, res) => founderController.removeMembership(req, res));
 
+founderRouter.get('/pilot/health', (req, res) => founderController.getPilotHealth(req, res));
+founderRouter.get('/support/search', (req, res) => founderController.supportSearch(req, res));
+founderRouter.get('/businesses/:id/health', (req, res) => founderController.getBusinessHealth(req, res));
+
 founderRouter.get('/onboarding', (req, res) => founderController.getOnboarding(req, res));
 
 export { founderRouter };
