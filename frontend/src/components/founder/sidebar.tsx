@@ -9,6 +9,8 @@ import {
   Building2,
   Users,
   Rocket,
+  Heart,
+  Search,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -16,6 +18,8 @@ const NAV_ITEMS = [
   { label: 'Businesses', href: '/ops/businesses', icon: Building2 },
   { label: 'Users', href: '/ops/users', icon: Users },
   { label: 'Onboarding', href: '/ops/onboarding', icon: Rocket },
+  { label: 'Pilot Health', href: '/ops/pilot', icon: Heart },
+  { label: 'Support', href: '/ops/support', icon: Search },
 ];
 
 export function FounderSidebar() {

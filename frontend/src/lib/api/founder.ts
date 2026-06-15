@@ -20,3 +20,15 @@ export async function founderFetcher(url: string, options?: RequestInit) {
 export function founderUrl(path: string) {
   return `${API_URL}${path}`;
 }
+
+export async function getPilotHealth() {
+  return founderFetcher(founderUrl('/ops/pilot/health'));
+}
+
+export async function supportSearch(q: string) {
+  return founderFetcher(founderUrl(`/ops/support/search?q=${encodeURIComponent(q)}`));
+}
+
+export async function getBusinessHealth(id: string) {
+  return founderFetcher(founderUrl(`/ops/businesses/${id}/health`));
+}

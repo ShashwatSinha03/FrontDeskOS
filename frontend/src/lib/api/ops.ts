@@ -75,9 +75,10 @@ export async function rescheduleAppointment(id: string, appointmentTime: string,
   });
 }
 
-export async function getEscalations(params?: { status?: string; page?: number; limit?: number }) {
+export async function getEscalations(params?: { status?: string; search?: string; page?: number; limit?: number }) {
   const q = new URLSearchParams();
   if (params?.status && params.status !== 'all') q.set('status', params.status);
+  if (params?.search) q.set('search', params.search);
   if (params?.page) q.set('page', String(params.page));
   if (params?.limit) q.set('limit', String(params.limit));
   const qs = q.toString();
@@ -89,4 +90,46 @@ export async function resolveEscalation(id: string, resolutionNote?: string) {
     method: 'POST',
     body: JSON.stringify({ resolutionNote }),
   });
+}
+
+export async function getConversations(params?: {
+  search?: string;
+  channel?: string;
+  workflowState?: string;
+  escalated?: boolean;
+  page?: number;
+  limit?: number;
+}) {
+  const q = new URLSearchParams();
+  if (params?.search) q.set('search', params.search);
+  if (params?.channel) q.set('channel', params.channel);
+  if (params?.workflowState) q.set('workflowState', params.workflowState);
+  if (params?.escalated) q.set('escalated', 'true');
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString();
+  return opsFetch(`/operate/conversations${qs ? `?${qs}` : ''}`);
+}
+
+export async function getConversationDetail(id: string) {
+  return opsFetch(`/operate/conversations/${id}`);
+}
+
+export async function getDeliveryHealth() {
+  return opsFetch('/operate/deliveries/health');
+}
+
+export async function getFailedDeliveries(params?: { page?: number; limit?: number }) {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString();
+  return opsFetch(`/operate/deliveries/failed${qs ? `?${qs}` : ''}`);
+}
+
+export async function getActivity(params?: { limit?: number }) {
+  const q = new URLSearchParams();
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString();
+  return opsFetch(`/operate/activity${qs ? `?${qs}` : ''}`);
 }

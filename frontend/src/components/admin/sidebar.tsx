@@ -12,6 +12,9 @@ import {
   AlertTriangle,
   BookOpen,
   Settings,
+  MessageSquare,
+  Activity,
+  ActivitySquare,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -21,6 +24,9 @@ const NAV_ITEMS = [
   { label: 'Appointments', href: '/appointments', icon: CalendarCheck },
   { label: 'Follow-Ups', href: '/follow-ups', icon: Mail },
   { label: 'Escalations', href: '/escalations', icon: AlertTriangle },
+  { label: 'Conversations', href: '/conversations', icon: MessageSquare },
+  { label: 'Deliveries', href: '/deliveries', icon: Activity },
+  { label: 'Activity', href: '/activity', icon: ActivitySquare },
   { label: 'Learning Inbox', href: '/learning-inbox', icon: BookOpen },
   { label: 'Settings', href: '/settings', icon: Settings },
 ];

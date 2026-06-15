@@ -1,18 +1,25 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { getEscalations, resolveEscalation } from '@/lib/api/ops';
+import { PageHeader } from '@/components/design/page-header';
+import { DataTable } from '@/components/admin/data-table';
+import { StatusBadge } from '@/components/design/status-badge';
+import { Button } from '@/components/ui/button';
 
 export default function EscalationsPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params.businessSlug as string;
+
   const [data, setData] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [resolveId, setResolveId] = useState<string | null>(null);
   const [resolveNote, setResolveNote] = useState('');
@@ -21,11 +28,11 @@ export default function EscalationsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
-    const res = await getEscalations({ status: statusFilter, page, limit });
+    const res = await getEscalations({ status: statusFilter, search: search || undefined, page, limit });
     if (res.success) { setData(res.data); setTotalCount(res.meta?.totalCount ?? 0); }
     else setError(res.error || 'Failed to load');
     setLoading(false);
-  }, [statusFilter, page]);
+  }, [statusFilter, search, page]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -41,19 +48,92 @@ export default function EscalationsPage() {
     } else setError(res.error || 'Failed');
   }
 
-  const totalPages = Math.ceil(totalCount / limit);
+  const columns = [
+    {
+      key: 'customerName',
+      label: 'Customer',
+      render: (_: any, row: any) => (
+        <div>
+          <div className="font-medium">{row.customerName || 'Unknown'}</div>
+          <div className="text-xs text-muted-foreground">{row.customerPhone || row.phone || '—'}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'reason',
+      label: 'Reason',
+      render: (v: string) => (
+        <span className="text-muted-foreground text-xs max-w-[200px] block truncate">
+          {v ? (v.length > 100 ? v.slice(0, 100) + '...' : v) : '—'}
+        </span>
+      ),
+    },
+    {
+      key: 'conversationId',
+      label: 'Conversation',
+      render: (v: string) => v ? (
+        <button onClick={(e) => { e.stopPropagation(); router.push(`/${slug}/admin/conversations/${v}`); }}
+          className="text-xs text-blue-600 hover:text-blue-700 underline">
+          {v.slice(0, 8)}...
+        </button>
+      ) : <span className="text-muted-foreground">—</span>,
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (v: string) => (
+        <StatusBadge level={v === 'resolved' ? 'success' : 'danger'}>{v || 'pending'}</StatusBadge>
+      ),
+    },
+    {
+      key: 'createdAt',
+      label: 'Created',
+      render: (v: string) => (
+        <span className="text-xs text-muted-foreground">{v ? new Date(v).toLocaleString() : '—'}</span>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_: any, row: any) => (
+        <div onClick={(e) => e.stopPropagation()}>
+          {row.status === 'pending' ? (
+            resolveId === row.id ? (
+              <div className="flex items-center gap-1">
+                <input type="text" value={resolveNote} onChange={(e) => setResolveNote(e.target.value)}
+                  placeholder="Note (optional)" className="w-28 rounded border px-2 py-1 text-xs" />
+                <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700"
+                  onClick={() => handleResolve(row.id)}>Resolve</Button>
+                <Button size="sm" variant="outline" onClick={() => { setResolveId(null); setResolveNote(''); }}>X</Button>
+              </div>
+            ) : (
+              <Button size="sm" variant="outline" onClick={() => setResolveId(row.id)}>Resolve</Button>
+            )
+          ) : (
+            <span className="text-xs text-muted-foreground">
+              {row.resolvedAt ? new Date(row.resolvedAt).toLocaleDateString() : '-'}
+            </span>
+          )}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Escalations</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{totalCount} escalations.</p>
-      </div>
+      <PageHeader title="Escalations" description={`${totalCount} escalations.`} />
 
-      {error && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>}
       {msg && <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">{msg}</div>}
+      {error && !loading && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>}
 
       <div className="flex flex-wrap items-center gap-3">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          placeholder="Search by customer name or phone..."
+          className="rounded-md border px-3 py-1.5 text-sm w-64"
+        />
         <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           className="rounded-md border px-3 py-1.5 text-sm">
           <option value="all">All Statuses</option>
@@ -62,73 +142,18 @@ export default function EscalationsPage() {
         </select>
       </div>
 
-      {loading ? (
-        <div className="space-y-2">{[1,2,3].map(i => <div key={i} className="h-12 animate-pulse rounded bg-muted" />)}</div>
-      ) : data.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No escalations found.</p>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">Customer</th>
-                <th className="px-4 py-3 text-left font-medium">Reason</th>
-                <th className="px-4 py-3 text-left font-medium">Status</th>
-                <th className="px-4 py-3 text-left font-medium">Created</th>
-                <th className="px-4 py-3 text-right font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {data.map((e: any) => (
-                <tr key={e.id} className="hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium">{e.customerName || 'Unknown'}</td>
-                  <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{e.reason}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                      e.status === 'resolved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                    }`}>{e.status}</span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
-                    {new Date(e.createdAt).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {e.status === 'pending' && (
-                      resolveId === e.id ? (
-                        <div className="flex items-center gap-1">
-                          <input type="text" value={resolveNote} onChange={(e) => setResolveNote(e.target.value)}
-                            placeholder="Note (optional)" className="w-32 rounded border px-2 py-1 text-xs" />
-                          <button onClick={() => handleResolve(e.id)}
-                            className="rounded bg-green-600 px-2 py-1 text-xs font-medium text-white hover:bg-green-700">Resolve</button>
-                          <button onClick={() => { setResolveId(null); setResolveNote(''); }}
-                            className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">X</button>
-                        </div>
-                      ) : (
-                        <button onClick={() => setResolveId(e.id)}
-                          className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Resolve</button>
-                      )
-                    )}
-                    {e.status === 'resolved' && (
-                      <span className="text-xs text-muted-foreground">
-                        {e.resolvedAt ? new Date(e.resolvedAt).toLocaleDateString() : '-'}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-            className="rounded border px-3 py-1 text-sm font-medium hover:bg-muted disabled:opacity-50">Previous</button>
-          <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-            className="rounded border px-3 py-1 text-sm font-medium hover:bg-muted disabled:opacity-50">Next</button>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={data}
+        totalCount={totalCount}
+        page={page}
+        limit={limit}
+        onPageChange={setPage}
+        isLoading={loading}
+        error={error || null}
+        onRetry={load}
+        emptyMessage="No escalations found."
+      />
     </div>
   );
 }
