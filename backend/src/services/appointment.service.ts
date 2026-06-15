@@ -8,6 +8,11 @@ import { availabilityService } from './availability.service';
 import { calendarService } from './calendar.service';
 import pool from '../config/db';
 import { Appointment, Service } from '../types';
+import {
+  getBusinessDateStrFromUtc,
+  getDayOfWeekInTz,
+  fromBusinessTimeToUtc,
+} from '../lib/timezone';
 
 export class AppointmentService {
   async scheduleAppointment(data: {
@@ -108,13 +113,16 @@ export class AppointmentService {
     dateStr: string,
     serviceId?: string | null
   ): Promise<{ time: string; durationMinutes: number }[]> {
+    const business = await businessRepository.findById(businessId);
+    const tz = business?.timezone || 'UTC';
+
     const date = new Date(dateStr + 'T00:00:00Z');
     const slotDuration = await this.getSlotDuration(businessId, serviceId ?? null);
 
-    const windows = await availabilityService.getTimeWindows(businessId, date, serviceId ?? null);
+    const windows = await availabilityService.getTimeWindows(businessId, date, serviceId ?? null, tz);
 
     if (windows.length === 0) {
-      return this.fallbackSlots(businessId, date, slotDuration, serviceId);
+      return this.fallbackSlots(businessId, date, slotDuration, serviceId, tz);
     }
 
     const slots: { time: string; durationMinutes: number }[] = [];
@@ -172,25 +180,32 @@ export class AppointmentService {
     businessId: string,
     date: Date,
     slotDuration: number,
-    _serviceId?: string | null
+    _serviceId?: string | null,
+    timezone?: string,
   ): Promise<{ time: string; durationMinutes: number }[]> {
     const business = await businessRepository.findById(businessId);
     if (!business) return [];
 
-    const dayOfWeek = date.getDay();
+    const dateStr = timezone
+      ? getBusinessDateStrFromUtc(timezone, date)
+      : date.toISOString().split('T')[0];
+    const dayOfWeek = timezone
+      ? getDayOfWeekInTz(timezone, dateStr)
+      : date.getDay();
+
     let hours = business.appointmentSettings?.workingHours?.weekday;
     if (dayOfWeek === 6) hours = business.appointmentSettings?.workingHours?.saturday;
     if (dayOfWeek === 0) hours = business.appointmentSettings?.workingHours?.sunday;
     if (!hours) return [];
 
     const slots: { time: string; durationMinutes: number }[] = [];
-    const [sh, sm] = hours.start.split(':').map(Number);
-    const [eh, em] = hours.end.split(':').map(Number);
 
-    const current = new Date(date);
-    current.setHours(sh, sm, 0, 0);
-    const end = new Date(date);
-    end.setHours(eh, em, 0, 0);
+    const current = timezone
+      ? fromBusinessTimeToUtc(timezone, dateStr, hours.start)
+      : (() => { const d = new Date(date); const [sh, sm] = hours.start.split(':').map(Number); d.setHours(sh, sm, 0, 0); return d; })();
+    const end = timezone
+      ? fromBusinessTimeToUtc(timezone, dateStr, hours.end)
+      : (() => { const d = new Date(date); const [eh, em] = hours.end.split(':').map(Number); d.setHours(eh, em, 0, 0); return d; })();
 
     while (current.getTime() + slotDuration * 60000 <= end.getTime()) {
       const isAvailable = await appointmentRepository.checkAvailability(businessId, current, slotDuration);

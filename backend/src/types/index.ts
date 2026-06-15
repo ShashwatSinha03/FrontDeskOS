@@ -298,6 +298,47 @@ export interface FollowUp {
 // Agent Types
 // ==========================================
 
+// ==========================================
+// Workflow Types
+// ==========================================
+
+export type WorkflowType = 'appointment_booking';
+
+export type WorkflowState =
+  | 'STARTED'
+  | 'COLLECTING_SERVICE'
+  | 'COLLECTING_DATE'
+  | 'COLLECTING_TIME'
+  | 'COLLECTING_CUSTOMER_DETAILS'
+  | 'CHECKING_AVAILABILITY'
+  | 'CONFIRMING'
+  | 'BOOKED'
+  | 'CANCELLED';
+
+export interface CollectedData {
+  serviceId?: string;
+  serviceName?: string;
+  date?: string;
+  time?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+}
+
+export interface ConversationWorkflow {
+  id: string;
+  conversationId: string;
+  workflowType: WorkflowType;
+  workflowState: WorkflowState;
+  workflowVersion: number;
+  collectedData: CollectedData;
+  lastAskedField?: string;
+  availableSlots?: string[];
+  slotsFetchedAt?: Date;
+  lastUpdatedAt: Date;
+  createdAt: Date;
+}
+
 /** All intents the Conversation Agent can classify and route. */
 export type ConversationIntent =
   | 'greeting'

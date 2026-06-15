@@ -18,6 +18,7 @@ import {
   conversationRepository,
   businessRepository,
   sessionRepository,
+  conversationWorkflowRepository,
 } from '../repositories';
 import { recoveryService } from './recovery';
 import { notificationService } from './notification.service';
@@ -138,15 +139,20 @@ export class ChatService {
     await recoveryService.cancelRecovery(customer.id, input.businessId);
 
     // ── 5. Load context for agent invocation ─────────────────────────────────
-    const [business, services, history] = await Promise.all([
+    const [business, services, history, activeWorkflow] = await Promise.all([
       businessRepository.findById(input.businessId),
       this.fetchServices(input.businessId),
       conversationRepository.getMessages(conversation.id, input.businessId).then(r => r.messages),
+      conversationWorkflowRepository.findByConversation(conversation.id, 'appointment_booking'),
     ]);
 
     if (!business) {
       throw new Error(`Business '${input.businessId}' not found. Cannot process message.`);
     }
+
+    // Determine last intent from the previous agent message's metadata
+    const lastAgentMessage = [...history].reverse().find(m => m.sender === 'agent');
+    const lastIntent = lastAgentMessage?.metadata?.intent as string | undefined;
 
     // ── 6. Invoke the LangGraph Conversation Agent ───────────────────────────
     const t0 = Date.now();
@@ -159,6 +165,8 @@ export class ChatService {
         business,
         services,
         history: history.slice(0, -1), // exclude the message we just inserted
+        activeWorkflow: activeWorkflow ?? undefined,
+        lastIntent: lastIntent as any,
       });
     } catch (err) {
       logger.error('❌ Graph invocation crashed — returning safe fallback', { route: 'ChatService', businessId: input.businessId, error: err instanceof Error ? err.message : String(err) });

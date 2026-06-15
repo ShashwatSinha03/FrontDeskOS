@@ -1,4 +1,9 @@
 import { availabilityRepository } from '../repositories';
+import {
+  getBusinessDateStrFromUtc,
+  getDayOfWeekInTz,
+  fromBusinessTimeToUtc,
+} from '../lib/timezone';
 
 export interface TimeWindow {
   start: Date;
@@ -9,14 +14,19 @@ export class AvailabilityService {
   async getTimeWindows(
     businessId: string,
     date: Date,
-    serviceId?: string | null
+    serviceId?: string | null,
+    timezone?: string,
   ): Promise<TimeWindow[]> {
-    const dayOfWeek = date.getDay();
+    const dateStr = timezone
+      ? getBusinessDateStrFromUtc(timezone, date)
+      : date.toISOString().split('T')[0];
+    const dayOfWeek = timezone
+      ? getDayOfWeekInTz(timezone, dateStr)
+      : date.getDay();
 
     const schedules = await availabilityRepository.findSchedulesByDay(businessId, dayOfWeek, serviceId);
 
     const effectiveSchedules = schedules.filter(s => {
-      const dateStr = date.toISOString().split('T')[0];
       const fromStr = new Date(s.effectiveFrom).toISOString().split('T')[0];
       if (dateStr < fromStr) return false;
       if (s.effectiveUntil) {
@@ -29,6 +39,12 @@ export class AvailabilityService {
     if (effectiveSchedules.length === 0) return [];
 
     const windows: TimeWindow[] = effectiveSchedules.map(s => {
+      if (timezone) {
+        return {
+          start: fromBusinessTimeToUtc(timezone, dateStr, s.startTime),
+          end: fromBusinessTimeToUtc(timezone, dateStr, s.endTime),
+        };
+      }
       const start = new Date(date);
       const [sh, sm] = s.startTime.split(':').map(Number);
       start.setHours(sh, sm, 0, 0);
@@ -43,6 +59,19 @@ export class AvailabilityService {
     const overrides = await availabilityRepository.findOverrides(businessId, date);
 
     for (const override of overrides) {
+      if (timezone) {
+        if (!override.isAvailable) {
+          const blockStart = fromBusinessTimeToUtc(timezone, dateStr, override.startTime || '00:00');
+          const blockEnd = fromBusinessTimeToUtc(timezone, dateStr, override.endTime || '23:59');
+          this.removeOverlap(windows, blockStart, blockEnd);
+        } else if (override.startTime && override.endTime) {
+          windows.push({
+            start: fromBusinessTimeToUtc(timezone, dateStr, override.startTime),
+            end: fromBusinessTimeToUtc(timezone, dateStr, override.endTime),
+          });
+        }
+        continue;
+      }
       if (!override.isAvailable) {
         const blockStart = new Date(date);
         const [bsh, bsm] = (override.startTime || '00:00').split(':').map(Number);
