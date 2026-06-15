@@ -15,6 +15,7 @@ import {
   Service,
   ConversationIntent,
   CustomerLifecycleState,
+  ConversationWorkflow,
 } from '../types';
 
 /**
@@ -59,6 +60,18 @@ export const AgentStateAnnotation = Annotation.Root({
   history: Annotation<Message[]>({
     reducer: (_prev, next) => next,
     default: () => [],
+  }),
+
+  /** Active workflow state (e.g. appointment_booking). Set by ChatService before graph invocation. */
+  activeWorkflow: Annotation<ConversationWorkflow | undefined>({
+    reducer: (_prev, next) => next,
+    default: () => undefined,
+  }),
+
+  /** The intent from the previous turn (used for continuation routing). */
+  lastIntent: Annotation<ConversationIntent | undefined>({
+    reducer: (_prev, next) => next,
+    default: () => undefined,
   }),
 
   // ── Agent-produced outputs ─────────────────────────────────────

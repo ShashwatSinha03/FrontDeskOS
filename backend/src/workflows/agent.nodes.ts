@@ -27,7 +27,7 @@ import {
 } from '../repositories';
 import { notificationService } from '../services/notification.service';
 import pool from '../config/db';
-import { ConversationIntent } from '../types';
+import { ConversationIntent, CollectedData } from '../types';
 import { AgentState } from './agent.state';
 import {
   buildIntentDetectionPrompt,
@@ -44,6 +44,23 @@ import {
   detectPromptInjection,
 } from './agent.prompts';
 import { logger } from '../lib/logger';
+import {
+  getBusinessDateStr,
+  getTimeStrInTz,
+  getDayOfWeekInTz,
+  fromBusinessTimeToUtc,
+} from '../lib/timezone';
+import {
+  workflowStateService,
+  computeWorkflowState,
+  getMissingBookingFields,
+  getMissingCustomerDetails,
+  isDirectAnswerToLastField,
+  extractFieldValue,
+  formatMissingFieldsHint,
+  isWorkflowExpired,
+  WORKFLOW_TIMEOUT_HOURS,
+} from '../services/workflow-state.service';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPER: Safely parse LLM JSON output
@@ -144,10 +161,11 @@ async function validateAppointmentOwnership(appointmentId: string, customerId: s
 }
 
 /**
- * Validates that a date-time string is a valid future date.
+ * Validates that a date-time string is a valid future date
+ * in the business's timezone.
  */
-function isValidFutureDateTime(dateStr: string, timeStr: string): boolean {
-  const dt = new Date(`${dateStr}T${timeStr}:00`);
+function isValidFutureDateTime(dateStr: string, timeStr: string, tz: string): boolean {
+  const dt = fromBusinessTimeToUtc(tz, dateStr, timeStr);
   return !isNaN(dt.getTime()) && dt > new Date();
 }
 
@@ -163,28 +181,69 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
     logger.warn('🚨 Prompt injection detected', { route: 'AgentNodes', businessId: state.business?.id, injectionScore: injection.score, injectionReason: injection.reason, messagePreview: state.userMessage.slice(0, 100) });
   }
 
-  // ── Workflow continuation guard ──────────────────────────────
-  // Skips LLM intent classification when the assistant was already
-  // collecting information for a multi-turn workflow (booking,
-  // lead_capture, reschedule, cancellation) and the user responds
-  // with a short data-like continuation (phone, name, date, time,
-  // yes/no, etc.) rather than an explicit intent switch.
-  //
-  // This prevents bare continuations like "9005093983" from being
-  // misclassified as "unknown" by the LLM intent classifier.
+  const msg = state.userMessage.trim();
+  const isAffirmation = /^(yes|yeah|yep|yup|ok|okay|k|kk|sure|alright|fine|got\s*it|sounds\s*good|that\s*works|perfect|great|awesome|correct|right)\b/i.test(msg) && msg.length < 40;
 
+  // ── Active workflow routing ─────────────────────────────────
+  // If an active booking workflow exists and the user sends a
+  // greeting, unknown, or affirmation message, route to booking
+  // node for workflow recovery instead of starting fresh.
   const CONTINUABLE_WORKFLOWS = ['booking', 'lead_capture', 'reschedule', 'cancellation'];
   const completionFlags = ['bookingCreated', 'rescheduleCreated', 'appointmentCancelled', 'appointmentId'];
 
   const lastAgentMsg = [...state.history].reverse().find(m => m.sender === 'agent');
-  const lastIntent = lastAgentMsg?.metadata?.intent as string | undefined;
+  const lastIntentFromHistory = lastAgentMsg?.metadata?.intent as string | undefined;
 
-  if (lastAgentMsg && lastIntent && CONTINUABLE_WORKFLOWS.includes(lastIntent)) {
+  const activeBookingWorkflow = state.activeWorkflow;
+  if (activeBookingWorkflow) {
+    const isExpired = isWorkflowExpired(activeBookingWorkflow);
+    const isTerminal = activeBookingWorkflow.workflowState === 'BOOKED' || activeBookingWorkflow.workflowState === 'CANCELLED';
+
+    let needsRecovery = false;
+
+    if (!isExpired && !isTerminal) {
+      // Direct answer to last asked field — always route to booking
+      if (activeBookingWorkflow.lastAskedField && isDirectAnswerToLastField(msg, activeBookingWorkflow.lastAskedField)) {
+        needsRecovery = true;
+      }
+
+      // Greeting, affirmation, or short message with active workflow
+      if (!needsRecovery) {
+        const includesQuestion = msg.includes('?');
+        const isPureGreeting = /^(hi|hello|hey|yo|sup|howdy|good\s*(morning|afternoon|evening|day))\b/i.test(msg);
+        const isShortContinuation = msg.length > 0 && msg.length <= 100 && !includesQuestion;
+
+        if (isPureGreeting || isAffirmation || isShortContinuation) {
+          needsRecovery = true;
+        }
+      }
+    }
+
+    if (needsRecovery) {
+      logger.info('🔁 Active workflow recovery routing', { route: 'AgentNodes', businessId: state.business?.id, workflowState: activeBookingWorkflow.workflowState, lastAskedField: activeBookingWorkflow.lastAskedField, message: msg });
+      return {
+        intent: 'booking' as ConversationIntent,
+        intentConfidence: 1.0,
+        metadata: {
+          workflowRecovery: true,
+          continuedFrom: 'booking',
+          intentDetectionMs: Date.now() - t0,
+          injectionScore: injection.score,
+          injectionReason: injection.reason,
+        },
+      };
+    }
+  }
+
+  // ── Existing workflow continuation guard ──────────────────────
+  // Skips LLM intent classification when the assistant was already
+  // collecting information for a multi-turn workflow and the user
+  // responds with a short data-like continuation.
+
+  if (lastAgentMsg && lastIntentFromHistory && CONTINUABLE_WORKFLOWS.includes(lastIntentFromHistory)) {
     const workflowCompleted = completionFlags.some(flag => !!lastAgentMsg.metadata?.[flag]);
 
     if (!workflowCompleted) {
-      const msg = state.userMessage.trim();
-
       const isContinuation =
         msg.length > 0 &&
         msg.length <= 100 &&
@@ -195,13 +254,13 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
         !/^(is\s+this|does\s+that)/i.test(msg);
 
       if (isContinuation) {
-        logger.info(`🔁 Workflow continuation`, { route: 'AgentNodes', businessId: state.business?.id, lastIntent, message: msg });
+        logger.info('🔁 Workflow continuation', { route: 'AgentNodes', businessId: state.business?.id, lastIntent: lastIntentFromHistory, message: msg });
       return {
-        intent: lastIntent as ConversationIntent,
+        intent: lastIntentFromHistory as ConversationIntent,
         intentConfidence: 1.0,
         metadata: {
           workflowContinuation: true,
-          continuedFrom: lastIntent,
+          continuedFrom: lastIntentFromHistory,
           intentDetectionMs: Date.now() - t0,
           injectionScore: injection.score,
           injectionReason: injection.reason,
@@ -213,10 +272,12 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
 
   const provider = LLMProviderFactory.getProvider();
 
+  const tz = state.business.timezone || 'UTC';
   const systemPrompt = buildIntentDetectionPrompt(
     state.business,
     state.services,
-    state.history
+    state.history,
+    getBusinessDateStr(tz)
   );
 
   let rawOutput = '';
@@ -330,63 +391,85 @@ export async function pricingNode(state: AgentState): Promise<Partial<AgentState
 export async function bookingNode(state: AgentState): Promise<Partial<AgentState>> {
   const t0 = Date.now();
   const provider = LLMProviderFactory.getProvider();
+  const tz = state.business.timezone || 'UTC';
+  const servicesCount = state.services.length;
 
-  // Try to fetch available slots for the requested date
-  let availableSlots: string[] = [];
-  let targetDate = new Date().toISOString().slice(0, 10);
-  try {
-    // Try to extract date from the user message or history
-    const dateMatch = state.userMessage.match(/\b(\d{4}-\d{2}-\d{2})\b/);
-    if (dateMatch) targetDate = dateMatch[1];
-
-    const slotsQuery = `
-      SELECT appointment_time FROM appointments
-      WHERE business_id = $1
-        AND DATE(appointment_time) = $2
-        AND status IN ('pending', 'confirmed')
-      ORDER BY appointment_time ASC
-    `;
-    const bookedRes = await pool.query(slotsQuery, [state.business.id, targetDate]);
-    const bookedTimes = new Set(
-      bookedRes.rows.map((r: any) => new Date(r.appointment_time).toTimeString().slice(0, 5))
-    );
-
-    const dayOfWeek = new Date(targetDate + 'T00:00:00').getDay();
-    const { workingHours, slotDurationMinutes } = state.business.appointmentSettings;
-    let hours = workingHours.weekday;
-    if (dayOfWeek === 6) hours = workingHours.saturday;
-    if (dayOfWeek === 0) hours = workingHours.sunday;
-
-    if (hours) {
-      const [sh, sm] = hours.start.split(':').map(Number);
-      const [eh, em] = hours.end.split(':').map(Number);
-      const cursor = new Date(targetDate + 'T00:00:00');
-      cursor.setHours(sh, sm, 0, 0);
-      const limit = new Date(targetDate + 'T00:00:00');
-      limit.setHours(eh, em, 0, 0);
-
-      while (cursor < limit) {
-        const slotStr = cursor.toTimeString().slice(0, 5);
-        if (!bookedTimes.has(slotStr)) {
-          availableSlots.push(slotStr);
-        }
-        cursor.setMinutes(cursor.getMinutes() + slotDurationMinutes);
-      }
-      availableSlots = availableSlots.slice(0, 10);
-    }
-  } catch {
-    // Non-fatal
+  // ── 1. Load or initialize workflow state ──────────────────────
+  let workflow = state.activeWorkflow;
+  if (!workflow) {
+    workflow = await workflowStateService.getOrCreateBookingWorkflow(state.conversation.id);
+  } else if (isWorkflowExpired(workflow)) {
+    workflow = await workflowStateService.getOrCreateBookingWorkflow(state.conversation.id);
   }
 
+  // ── 2. Direct-answer extraction (customer answered last asked field) ──
+  const directExtracted: CollectedData = {};
+  if (workflow.lastAskedField) {
+    const value = extractFieldValue(state.userMessage, workflow.lastAskedField, tz);
+    if (value) {
+      if (workflow.lastAskedField === 'date') directExtracted.date = value;
+      else if (workflow.lastAskedField === 'time') directExtracted.time = value;
+      else if (workflow.lastAskedField === 'customerName') directExtracted.customerName = value;
+      else if (workflow.lastAskedField === 'customerPhone') directExtracted.customerPhone = value;
+    }
+  }
+
+  // ── 3. Merge direct-extracted fields, clear lastAskedField (customer answered) ──
+  if (Object.keys(directExtracted).length > 0) {
+    workflow = await workflowStateService.updateBookingData(
+      workflow,
+      directExtracted,
+      null,
+      servicesCount,
+      state.customer,
+    );
+  }
+
+  // ── 4. Compute missing fields from updated state ──────────────
+  const missingFields = getMissingBookingFields(workflow.collectedData, servicesCount, state.customer);
+  const nextField = missingFields.length > 0 ? missingFields[0] : undefined;
+
+  // ── 5. Auto-query availability if all fields collected ────────
+  let availableSlots: string[] = [];
+  const workflowState = computeWorkflowState(workflow.collectedData, servicesCount, state.customer);
+
+  if (workflowState === 'CHECKING_AVAILABILITY' || workflowState === 'CONFIRMING') {
+    const cacheValid = workflow.slotsFetchedAt
+      && (Date.now() - new Date(workflow.slotsFetchedAt).getTime()) < 15 * 60 * 1000;
+
+    if (workflow.availableSlots && cacheValid && workflow.availableSlots.length > 0) {
+      availableSlots = workflow.availableSlots;
+    } else {
+      const { workingHours, slotDurationMinutes } = state.business.appointmentSettings;
+      try {
+        availableSlots = await workflowStateService.refreshAvailability(
+          workflow,
+          state.business.id,
+          slotDurationMinutes,
+          workingHours,
+          tz,
+        );
+      } catch {
+        // Non-fatal — LLM can still respond without slots
+      }
+    }
+  }
+
+  // ── 6. Build prompt with workflow context ─────────────────────
+  const isRecovery = state.metadata?.workflowRecovery === true;
   const systemPrompt = buildBookingPrompt(
     state.business,
     state.services,
     state.history,
     state.userMessage,
     availableSlots,
-    new Date().toISOString().slice(0, 10)
+    getBusinessDateStr(tz),
+    missingFields,
+    workflow.collectedData,
+    isRecovery,
   );
 
+  // ── 7. Call LLM ──────────────────────────────────────────────
   let rawOutput = '';
   let reply = "Let me help you with that! What date and time works best for you?";
   let appointmentId: string | undefined;
@@ -398,7 +481,7 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
     ], { temperature: 0.1, responseFormat: 'json' });
 
     interface BookingResult {
-      action: 'collect_info' | 'book';
+      action: 'collect_info' | 'confirm' | 'book';
       reply: string;
       serviceId?: string;
       date?: string;
@@ -410,6 +493,25 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
 
     const parsed = safeParseJson<BookingResult>(rawOutput);
     if (parsed?.reply) reply = parsed.reply;
+
+    // ── 8. Merge LLM-extracted entities, set lastAskedField = nextField ──
+    const llmExtracted: CollectedData = {};
+    if (parsed?.date) llmExtracted.date = parsed.date;
+    if (parsed?.time) llmExtracted.time = parsed.time;
+    if (parsed?.serviceId) llmExtracted.serviceId = parsed.serviceId;
+    if (parsed?.customerName) llmExtracted.customerName = parsed.customerName;
+    if (parsed?.customerEmail) llmExtracted.customerEmail = parsed.customerEmail;
+    if (parsed?.customerPhone) llmExtracted.customerPhone = parsed.customerPhone;
+
+    if (Object.keys(llmExtracted).length > 0 || nextField) {
+      workflow = await workflowStateService.updateBookingData(
+        workflow,
+        llmExtracted,
+        nextField,
+        servicesCount,
+        state.customer,
+      );
+    }
 
     // Save any customer info provided, regardless of action
     if (parsed?.customerName || parsed?.customerEmail || parsed?.customerPhone) {
@@ -425,9 +527,28 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
       }
     }
 
+    // ── 9. Handle confirm action (intermediate step before booking) ──
+    if (parsed?.action === 'confirm' && parsed.date && parsed.time) {
+      if (!isValidFutureDateTime(parsed.date, parsed.time, tz)) {
+        reply = "That date or time doesn't look valid. Could you please provide a different date and time?";
+        return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, validationFailed: true } };
+      }
+      workflow = await workflowStateService.updateBookingData(
+        workflow,
+        llmExtracted,
+        null,
+        servicesCount,
+        state.customer,
+      );
+      return {
+        reply: parsed.reply || `Just to confirm — I have you down for ${parsed.date} at ${parsed.time}. Shall I go ahead and book it?`,
+        metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, awaitingConfirmation: true },
+      };
+    }
+
+    // ── 10. Execute booking only on explicit 'book' action ───────
     if (parsed?.action === 'book' && parsed.date && parsed.time) {
-      // Validate LLM output before executing
-      if (!isValidFutureDateTime(parsed.date, parsed.time)) {
+      if (!isValidFutureDateTime(parsed.date, parsed.time, tz)) {
         reply = "That date or time doesn't look valid. Could you please provide a different date and time?";
         return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, validationFailed: true } };
       }
@@ -436,8 +557,19 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
         reply = "I'm sorry, that service doesn't appear to be available. Would you like to choose another?";
         return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, validationFailed: true } };
       }
-      const appointmentTime = new Date(`${parsed.date}T${parsed.time}:00`);
+      const appointmentTime = fromBusinessTimeToUtc(tz, parsed.date, parsed.time);
       if (!isNaN(appointmentTime.getTime()) && appointmentTime > new Date()) {
+        // Check availability before booking
+        const { slotDurationMinutes } = state.business.appointmentSettings;
+        const isAvailable = await appointmentRepository.checkAvailability(
+          state.business.id,
+          appointmentTime,
+          slotDurationMinutes || 30,
+        );
+        if (!isAvailable) {
+          reply = "I'm sorry, that time slot is no longer available. Would you like to choose a different time?";
+          return { reply, metadata: { handlerNode: 'bookingNode', handlerMs: Date.now() - t0, slotUnavailable: true } };
+        }
         try {
           const serviceId = parsed.serviceId || null;
           const appointment = await appointmentRepository.create({
@@ -447,11 +579,18 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
             appointmentTime,
           });
           appointmentId = appointment.id;
+          await workflowStateService.markBooked(workflow);
           await customerRepository.updateLifecycleState(state.customer.id, state.business.id, 'Booked', 'agent:booking');
           logger.info('✅ BookingNode: Appointment created', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, appointmentId });
         } catch (err) {
           logger.error('❌ BookingNode: Error creating appointment', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
-          reply = "I'm sorry, I wasn't able to book that slot. It may already be taken. Would you like to try a different time?";
+          // Check for unique constraint violation (double-booking prevention)
+          const msg = err instanceof Error ? err.message : String(err);
+          if (msg.includes('uq_appointment_active_slot') || msg.includes('duplicate key')) {
+            reply = "I'm sorry, that time slot was just taken. Would you like to try a different time?";
+          } else {
+            reply = "I'm sorry, I wasn't able to book that slot. Would you like to try a different time?";
+          }
         }
       }
     }
@@ -459,6 +598,12 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
     logger.error('❌ BookingNode LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
     reply = "Let me help you with that! What date and time works best for you?";
   }
+
+  const finalState = computeWorkflowState(
+    workflow.collectedData,
+    servicesCount,
+    state.customer,
+  );
 
   return {
     reply,
@@ -469,6 +614,9 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
       handlerMs: Date.now() - t0,
       availableSlotsCount: availableSlots.length,
       bookingCreated: !!appointmentId,
+      workflowState: finalState,
+      missingFields,
+      workflowId: workflow.id,
     },
   };
 }
@@ -480,12 +628,13 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
   const t0 = Date.now();
   const provider = LLMProviderFactory.getProvider();
 
+  const tz = state.business.timezone || 'UTC';
   const systemPrompt = buildReschedulePrompt(
     state.business,
     state.services,
     state.history,
     state.userMessage,
-    new Date().toISOString().slice(0, 10)
+    getBusinessDateStr(tz)
   );
 
   let rawOutput = '';
@@ -499,7 +648,7 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
     ], { temperature: 0.1, responseFormat: 'json' });
 
     interface RescheduleResult {
-      action: 'collect_info' | 'reschedule';
+      action: 'collect_info' | 'confirm' | 'reschedule';
       reply: string;
       newDate?: string;
       newTime?: string;
@@ -508,12 +657,25 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
     const parsed = safeParseJson<RescheduleResult>(rawOutput);
     if (parsed?.reply) reply = parsed.reply;
 
-    if (parsed?.action === 'reschedule' && parsed.newDate && parsed.newTime) {
-      if (!isValidFutureDateTime(parsed.newDate, parsed.newTime)) {
+    // Handle confirm action (ask customer to confirm before proceeding)
+    if (parsed?.action === 'confirm' && parsed.newDate && parsed.newTime) {
+      if (!isValidFutureDateTime(parsed.newDate, parsed.newTime, tz)) {
         reply = "That date or time doesn't look valid. Could you please provide a different date and time?";
         return { reply, metadata: { handlerNode: 'rescheduleNode', handlerMs: Date.now() - t0, validationFailed: true } };
       }
-      const newTime = new Date(`${parsed.newDate}T${parsed.newTime}:00`);
+      return {
+        reply: parsed.reply || `Just to confirm — reschedule to ${parsed.newDate} at ${parsed.newTime}?`,
+        metadata: { handlerNode: 'rescheduleNode', handlerMs: Date.now() - t0, awaitingConfirmation: true },
+      };
+    }
+
+    // Only execute reschedule on explicit 'reschedule' action (after customer confirmed)
+    if (parsed?.action === 'reschedule' && parsed.newDate && parsed.newTime) {
+      if (!isValidFutureDateTime(parsed.newDate, parsed.newTime, tz)) {
+        reply = "That date or time doesn't look valid. Could you please provide a different date and time?";
+        return { reply, metadata: { handlerNode: 'rescheduleNode', handlerMs: Date.now() - t0, validationFailed: true } };
+      }
+      const newTime = fromBusinessTimeToUtc(tz, parsed.newDate, parsed.newTime);
       if (!isNaN(newTime.getTime()) && newTime > new Date()) {
         try {
           // Find the customer's most recent active appointment
@@ -522,7 +684,7 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
           if (active) {
             const newAppointment = await appointmentRepository.reschedule(active.id, active.businessId, newTime);
             appointmentId = newAppointment.id;
-            logger.info('✅ RescheduleNode: Appointment rescheduled', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, oldAppointmentId: active.id, newAppointmentId: newAppointment.id });
+            logger.info('✅ RescheduleNode: Appointment rescheduled after customer confirmation', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, oldAppointmentId: active.id, newAppointmentId: newAppointment.id });
           } else {
             reply = "I couldn't find an active appointment to reschedule. Would you like to book a new one instead?";
           }
@@ -554,34 +716,53 @@ export async function cancellationNode(state: AgentState): Promise<Partial<Agent
   const t0 = Date.now();
   const provider = LLMProviderFactory.getProvider();
 
-  // Attempt to find the customer's most recent active appointment
-  let appointmentId: string | undefined;
-  try {
-    const appointments = await appointmentRepository.findByCustomer(state.customer.id, state.business.id);
-    const active = appointments.find(a => a.status === 'pending' || a.status === 'confirmed');
-    if (active) {
-      // Validate the appointment belongs to this customer (already filtered by findByCustomer)
-      appointmentId = active.id;
-      await appointmentRepository.updateStatus(active.id, 'cancelled', active.businessId);
-    }
-  } catch (err) {
-    logger.error('❌ Cancellation: Error fetching/cancelling appointment', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
-  }
-
   const systemPrompt = buildCancellationPrompt(
     state.business,
     state.history,
     state.userMessage
   );
 
-  const reply = await provider.chat([
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: state.userMessage },
-  ], { temperature: 0.3 });
+  let rawOutput = '';
+  let reply = "I understand you'd like to cancel. Are you sure you want to cancel your appointment? I can reschedule if that works better.";
+  let appointmentId: string | undefined;
+
+  try {
+    rawOutput = await provider.chat([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: state.userMessage },
+    ], { temperature: 0.1, responseFormat: 'json' });
+
+    interface CancellationResult {
+      action: 'collect_info' | 'confirm_cancel';
+      reply: string;
+    }
+
+    const parsed = safeParseJson<CancellationResult>(rawOutput);
+    if (parsed?.reply) reply = parsed.reply;
+
+    // Only cancel on explicit customer confirmation
+    if (parsed?.action === 'confirm_cancel') {
+      try {
+        const appointments = await appointmentRepository.findByCustomer(state.customer.id, state.business.id);
+        const active = appointments.find(a => a.status === 'pending' || a.status === 'confirmed');
+        if (active) {
+          appointmentId = active.id;
+          await appointmentRepository.updateStatus(active.id, 'cancelled', active.businessId);
+          logger.info('✅ Cancellation: Appointment cancelled after customer confirmation', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, appointmentId });
+        } else {
+          reply = "I couldn't find an active appointment to cancel. Would you like to book a new one instead?";
+        }
+      } catch (err) {
+        logger.error('❌ Cancellation: Error cancelling appointment', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+  } catch (err) {
+    logger.error('❌ CancellationNode LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
+  }
 
   return {
     reply,
-    updatedLifecycleState: 'Follow-Up Pending', // Match explicit cancel endpoint behavior
+    updatedLifecycleState: appointmentId ? 'Follow-Up Pending' : undefined,
     appointmentId,
     metadata: {
       handlerNode: 'cancellationNode',

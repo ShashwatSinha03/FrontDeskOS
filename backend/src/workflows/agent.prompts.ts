@@ -6,7 +6,8 @@
  * independently from the node logic.
  */
 
-import { Business, Service, Message, ConversationIntent } from '../types';
+import { Business, Service, Message, ConversationIntent, CollectedData } from '../types';
+import { formatMissingFieldsHint } from '../services/workflow-state.service';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
@@ -168,7 +169,8 @@ export function formatHistory(messages: Message[], limit: number = 20): string {
 export function buildIntentDetectionPrompt(
   business: Business,
   services: Service[],
-  history: Message[]
+  history: Message[],
+  currentDate?: string
 ): string {
   const escalationKeywords = business.escalationRules.autoEscalateKeywords?.join(', ') || 'none';
 
@@ -193,7 +195,7 @@ INTENT CATEGORIES:
 CONVERSATION HISTORY (for context only):
 ${formatHistory(history, 10)}
 
-CURRENT DATE: ${new Date().toISOString().slice(0, 10)}
+CURRENT DATE: ${currentDate || new Date().toISOString().slice(0, 10)}
 
 Respond ONLY with valid JSON. No explanations. No markdown. Example:
 {"intent": "booking", "confidence": 0.95, "reasoning": "Customer says 'I want to book an appointment'"}
@@ -261,7 +263,7 @@ Reply in 1–3 warm, natural sentences.
 
 export function buildGreetingPrompt(
   business: Business,
-  services: Service[]
+  services: Service[],
 ): string {
   const serviceNames = services.map(s => s.name).join(', ');
   return `
@@ -278,7 +280,7 @@ TASK: The customer just greeted you. Respond naturally like a warm receptionist 
 - Do NOT push booking immediately.
 
 Examples of good replies:
-  "Hi! Welcome to ${business.name}. 😊 What can I help you with today?"
+  "Hi! Welcome to ${business.name}. What can I help you with today?"
   "Good morning! Thanks for reaching out to ${business.name}. How can I help today?"
   "Hey there! You've reached ${business.name}. What can I do for you?"
 
@@ -292,15 +294,34 @@ export function buildBookingPrompt(
   history: Message[],
   userMessage: string,
   availableSlots: string[],
-  currentDate?: string
+  currentDate?: string,
+  missingFields?: string[],
+  collectedData?: CollectedData,
+  isRecovery?: boolean,
 ): string {
   const slotsText = availableSlots.length > 0
-    ? `Available slots today: ${availableSlots.join(', ')}`
-    : 'No slots provided — ask the customer for their preferred date.';
+    ? `Available slots: ${availableSlots.join(', ')}`
+    : '';
 
   const servicesList = services.map(s =>
     `  - id: "${s.id}", name: "${s.name}", durationMinutes: ${s.durationMinutes}`
   ).join('\n');
+
+  const collectedFields =
+    collectedData && Object.keys(collectedData).length > 0
+      ? `ALREADY PROVIDED:\n${Object.entries(collectedData)
+          .filter(([k, v]) => v && !['serviceId'].includes(k))
+          .map(([k, v]) => `  ${k}: ${v}`)
+          .join('\n')}`
+      : '';
+
+  const missingHint = missingFields && missingFields.length > 0
+    ? `MISSING INFORMATION (ask about these ONLY): ${formatMissingFieldsHint(missingFields)}`
+    : '';
+
+  const recoveryNote = isRecovery
+    ? 'NOTE: This is a continuation of a previous booking request. Acknowledge the existing workflow and continue from where you left off.'
+    : '';
 
   return `
 ${GLOBAL_GUARDRAILS}
@@ -313,8 +334,13 @@ ${formatHistory(history)}
 CURRENT CUSTOMER MESSAGE:
 ${wrapUserMessage(userMessage)}
 
-SLOT AVAILABILITY:
-${slotsText}
+${recoveryNote}
+
+${collectedFields}
+
+${missingHint}
+
+${slotsText ? `\nAVAILABLE SLOTS:\n${slotsText}\n` : ''}
 
 AVAILABLE SERVICE IDS (use these exact IDs):
 ${servicesList}
@@ -323,22 +349,22 @@ CURRENT DATE: ${currentDate || new Date().toISOString().slice(0, 10)} (use this 
 
 TASK: Collect booking details and help the customer book.
 
-Collect in this order: service, date, time, name, phone. Ask for email only if the customer volunteers it.
-Only ask for information not yet provided. Check conversation history before asking.
-Do not ask for information already provided.
+Ask only for MISSING INFORMATION listed above. NEVER ask for information that is already provided.
+Reference the ALREADY PROVIDED section above — those fields have been collected.
 
 Respond ONLY with valid JSON. No explanations. No markdown.
 
 Use this JSON structure:
-- If more info is needed: {"action": "collect_info", "reply": "your question to the customer", "customerName": "if provided", "customerEmail": "if provided", "customerPhone": "if provided"}
-- If customer has confirmed date, time, service, name, and phone: {"action": "book", "reply": "confirmation message", "serviceId": "exact-uuid-from-list", "date": "YYYY-MM-DD", "time": "HH:mm", "customerName": "full name", "customerEmail": "email if provided", "customerPhone": "phone"}
+- If more info is needed: {"action": "collect_info", "reply": "your question to the customer", "serviceId": "if provided", "date": "if provided", "time": "if provided", "customerName": "if provided", "customerEmail": "if provided", "customerPhone": "if provided"}
+- To ask the customer to confirm before booking: {"action": "confirm", "reply": "I have you down for [Service] on [Date] at [Time]. Shall I go ahead and book it?", "serviceId": "exact-uuid-from-list", "date": "YYYY-MM-DD", "time": "HH:mm", "customerName": "full name", "customerEmail": "if provided", "customerPhone": "phone"}
+- Only after the customer has explicitly confirmed: {"action": "book", "reply": "confirmation message", "serviceId": "exact-uuid-from-list", "date": "YYYY-MM-DD", "time": "HH:mm", "customerName": "full name", "customerEmail": "if provided", "customerPhone": "phone"}
 
 Rules:
-- The date must be in YYYY-MM-DD format, using the CURRENT DATE as reference. For example, "next Monday" from CURRENT DATE would be June 15, 2026.
+- The date must be in YYYY-MM-DD format, using the CURRENT DATE as reference.
 - The time must be in HH:mm format (24-hour).
-- Set action to "book" when ALL of: customer has specified a date AND time AND service, AND you have their name and phone. Email is optional. Do NOT wait for a separate confirmation message.
-- If the customer provided all required details in their message, go ahead and book directly.
-- Use "collect_info" to ask for whatever is still missing — one field at a time.
+- ALWAYS use "confirm" action when ALL required info is present. Ask the customer to confirm first.
+- NEVER go directly to "book" without an explicit "confirm" step first.
+- Only use "book" action when the customer has explicitly confirmed (said yes, sure, go ahead, please book, etc.).
 - When booking, confirm clearly: "Perfect, your [Service] appointment is booked for [Date] at [Time]."
 - NEVER confirm a booking without all required details.
 `.trim();
@@ -370,12 +396,14 @@ Respond ONLY with valid JSON. No explanations. No markdown.
 
 Use this JSON structure:
 - If more info is needed: {"action": "collect_info", "reply": "your clarifying question"}
-- If customer has stated their preferred new date and time: {"action": "reschedule", "reply": "confirmation message", "newDate": "YYYY-MM-DD", "newTime": "HH:mm"}
+- To ask the customer to confirm before rescheduling: {"action": "confirm", "reply": "I have you down to reschedule to [Date] at [Time]. Shall I go ahead and make the change?", "newDate": "YYYY-MM-DD", "newTime": "HH:mm"}
+- Only after the customer has explicitly confirmed: {"action": "reschedule", "reply": "confirmation message", "newDate": "YYYY-MM-DD", "newTime": "HH:mm"}
 
 Rules:
-- Only set action to "reschedule" when the customer has explicitly stated BOTH a new date AND time.
+- ALWAYS use "confirm" action when the customer has stated BOTH a new date AND time. Ask them to confirm first.
+- Only set action to "reschedule" when the customer has explicitly confirmed (said yes, sure, go ahead, please change, etc.).
 - Use "collect_info" to ask for whatever is still needed.
-- NEVER confirm a reschedule without an exact date and time.
+- NEVER confirm a reschedule without an exact date and time AND explicit customer confirmation.
 - Date must be YYYY-MM-DD format. Time must be HH:mm (24-hour).
 `.trim();
 }
@@ -396,13 +424,21 @@ ${formatHistory(history)}
 CURRENT CUSTOMER MESSAGE:
 ${wrapUserMessage(userMessage)}
 
-TASK: Process the customer's cancellation request.
-- Acknowledge their request: "No problem at all, I've cancelled that appointment for you."
-- Confirm the cancellation was processed.
-- Offer to rebook: "If you'd like to reschedule for another time, I'm happy to help!"
-- Do NOT ask them to justify their cancellation.
+TASK: Handle the customer's cancellation request.
 
-Reply in 1–2 warm sentences.
+First, ASK for explicit confirmation before cancelling. Do NOT cancel without confirmation.
+
+Respond ONLY with valid JSON. No explanations. No markdown.
+
+Use one of these JSON responses:
+- To ask for confirmation: {"action": "collect_info", "reply": "Are you sure you want to cancel your appointment? I can reschedule if needed."}
+- When customer explicitly confirms (yes, sure, please cancel, go ahead, etc.): {"action": "confirm_cancel", "reply": "No problem at all, I've cancelled that appointment for you. If you'd like to book a new time, I'm happy to help!"}
+
+Rules:
+- ALWAYS use collect_info to ask for confirmation first. Never skip this step.
+- Only use confirm_cancel when the customer's message explicitly confirms they want to cancel.
+- Do NOT ask them to justify their cancellation.
+- Keep reply in 1–2 warm sentences.
 `.trim();
 }
 
