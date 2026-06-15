@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { Reveal } from '@/components/design/reveal';
 import BorderGlow from '@/components/BorderGlow';
 import { HeroContent } from '@/lib/marketing-content';
 import { ArrowRight, MessageSquare, CalendarCheck, UserCheck } from 'lucide-react';
@@ -13,7 +14,7 @@ function FlowStep({ icon: Icon, label, visible, delay }: { icon: any; label: str
       className={`flex items-center gap-3 transition-all duration-500 ${
         visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
       }`}
-      style={{ transitionDelay: visible ? `${delay}ms` : '0ms' }}
+      style={{ transitionDelay: `${delay}ms`, transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
     >
       <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/50">
         <Icon className="h-5 w-5 text-blue-400" />
@@ -47,6 +48,7 @@ export function HomeHero({
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
   const glowProps = {
     edgeSensitivity: 30,
     glowColor: '40 80 80' as const,
@@ -113,16 +115,16 @@ export function HomeHero({
             className={`h-4 w-4 text-zinc-600 transition-all duration-500 ${
               visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
             }`}
-            style={{ transitionDelay: visible ? '0ms' : '0ms' }}
+            style={{ transitionDelay: '0ms', transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
           />
-          <FlowStep icon={CalendarCheck} label="Appointment" visible={visible} delay={750} />
+          <FlowStep icon={CalendarCheck} label="Appointment" visible={visible} delay={200} />
           <ArrowRight
             className={`h-4 w-4 text-zinc-600 transition-all duration-500 ${
               visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
             }`}
-            style={{ transitionDelay: visible ? '750ms' : '0ms' }}
+            style={{ transitionDelay: '200ms', transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
           />
-          <FlowStep icon={UserCheck} label="Customer" visible={visible} delay={1500} />
+          <FlowStep icon={UserCheck} label="Customer" visible={visible} delay={400} />
         </div>
       </div>
     </section>
