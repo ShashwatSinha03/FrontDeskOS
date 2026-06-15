@@ -105,7 +105,7 @@ export const defaultContent: MarketingContent = {
   hero: {
     headline: 'How Many Customers Did You Miss Today?',
     subheadline:
-      'Nuvora gives service businesses a custom website, an AI receptionist and an owner dashboard. Every enquiry answered. Every customer tracked. No opportunity disappear between business hours',
+      'Nuvora gives service businesses a custom website, an AI receptionist and an owner dashboard. Every enquiry answered. Every customer tracked. No opportunity disappears after business hours',
     primaryCta: { label: 'Book a Demo', href: 'https://calendly.com/sinhashashwat21/30min' },
     secondaryCta: { label: 'See It Live', href: '/brightsmile-dental' },
   },
@@ -189,7 +189,7 @@ export const defaultContent: MarketingContent = {
     name: 'Shashwat Sinha',
     title: 'Founder & CEO',
     story:
-      "The issue was never a lack of demand. Customers were already reaching out. The problem was what happened next. Missed calls. Delayed responses. Forgotten follow ups. Good businesses were losing customers they never even knew they had. Nuvora exists to close that gap. So every conversation gets answered, every lead gets tracked, and every opportunity has a chance to become revenue.",
+      "The issue was never a lack of demand. Customers were already reaching out. The problem was what happened next. No centralised platform to find services. Delayed responses. Forgotten follow ups. Good businesses were losing customers they never even knew they had. Nuvora exists to close that gap. So every conversation gets answered, every lead gets tracked, and every opportunity has a chance to become revenue.",
   },
 
   cta: {
