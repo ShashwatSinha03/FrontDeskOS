@@ -82,7 +82,7 @@ export function DemoSection({ headline, messages }: DemoContent) {
                             : 'rounded-br-sm bg-blue-600 text-white'
                         } ${visible ? 'translate-x-0 opacity-100' : `${isCustomer ? '-translate-x-4' : 'translate-x-4'} opacity-0`}`}
                         style={{
-                          transitionDelay: visible ? `${i * 200}ms` : '0ms',
+                          transitionDelay: visible ? `${i * 500}ms` : '0ms',
                           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
                         }}
                       >

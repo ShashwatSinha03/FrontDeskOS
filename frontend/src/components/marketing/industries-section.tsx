@@ -1,6 +1,7 @@
 'use client';
 
 import { Reveal } from '@/components/design/reveal';
+import { HighlightCard } from '@/components/ui/highlight-card';
 import { IndustriesContent } from '@/lib/marketing-content';
 import { Stethoscope, Scissors, Dumbbell, Sparkles, Heart, Building2 } from 'lucide-react';
 
@@ -18,18 +19,16 @@ export function IndustriesSection({ headline, industries }: IndustriesContent) {
           </div>
         </Reveal>
 
-        <div className="mx-auto mt-16 grid max-w-5xl gap-px overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-800 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {industries.map((industry, i) => {
             const Icon = industryIcons[i] || Building2;
             return (
               <Reveal key={i} delay={i * 80} y={8} duration={500}>
-                <div className="bg-zinc-900/90 p-6 transition hover:bg-zinc-900">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700/60 bg-zinc-800/50">
-                    <Icon className="h-5 w-5 text-zinc-400" />
-                  </div>
-                  <h3 className="mt-4 text-sm font-semibold text-white">{industry.name}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-zinc-500">{industry.description}</p>
-                </div>
+                <HighlightCard
+                  title={industry.name}
+                  description={[industry.description]}
+                  icon={<Icon className="h-6 w-6 text-zinc-300" />}
+                />
               </Reveal>
             );
           })}

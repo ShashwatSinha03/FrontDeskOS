@@ -1,10 +1,11 @@
 'use client';
 
 import { Reveal } from '@/components/design/reveal';
+import { HighlightCard } from '@/components/ui/highlight-card';
 import { ShowcaseContent } from '@/lib/marketing-content';
-import { MessageSquare, LayoutDashboard, CalendarCheck, AlertTriangle, Repeat } from 'lucide-react';
+import { MessageSquare, LayoutDashboard, CalendarCheck, Globe, Repeat, BarChart3 } from 'lucide-react';
 
-const icons = [MessageSquare, LayoutDashboard, CalendarCheck, AlertTriangle, Repeat];
+const icons = [MessageSquare, LayoutDashboard, CalendarCheck, Globe, Repeat, BarChart3];
 
 export function ProductShowcase({ headline, items }: ShowcaseContent) {
   return (
@@ -18,18 +19,16 @@ export function ProductShowcase({ headline, items }: ShowcaseContent) {
           </div>
         </Reveal>
 
-        <div className="mx-auto mt-16 grid max-w-5xl gap-px overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-800 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, i) => {
             const Icon = icons[i] || MessageSquare;
             return (
               <Reveal key={i} delay={i * 80} y={8} duration={500}>
-                <div className="h-full bg-zinc-900/90 p-6 transition hover:bg-zinc-900">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700/60 bg-zinc-800/50">
-                    <Icon className="h-5 w-5 text-zinc-400 transition-colors group-hover:text-blue-400" />
-                  </div>
-                  <h3 className="mt-4 text-sm font-semibold text-white">{item.label}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-zinc-500">{item.description}</p>
-                </div>
+                <HighlightCard
+                  title={item.label}
+                  description={[item.description]}
+                  icon={<Icon className="h-6 w-6 text-zinc-300" />}
+                />
               </Reveal>
             );
           })}

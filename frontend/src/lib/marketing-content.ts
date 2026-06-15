@@ -105,7 +105,7 @@ export const defaultContent: MarketingContent = {
   hero: {
     headline: 'How Many Customers Did You Miss Today?',
     subheadline:
-      'Nuvora handles enquiries, bookings, follow-ups, and customer questions 24/7 so opportunities don not disappear between business hours.',
+      'Nuvora gives service businesses a custom website, an AI receptionist and an owner dashboard. Every enquiry answered. Every customer tracked. No opportunity disappear between business hours',
     primaryCta: { label: 'Book a Demo', href: 'https://calendly.com/sinhashashwat21/30min' },
     secondaryCta: { label: 'See It Live', href: '/brightsmile-dental' },
   },
@@ -113,6 +113,7 @@ export const defaultContent: MarketingContent = {
   problem: {
     headline: 'Customers do not disappear by accident.',
     problems: [
+      { text: 'No dedicated website' },
       { text: 'Customer unattended at off times' },
       { text: 'Manual processes' },
       { text: 'Inconsistent follow-ups' },
@@ -124,6 +125,7 @@ export const defaultContent: MarketingContent = {
   solution: {
     headline: 'The work nobody has time for. Done automatically.',
     items: [
+      { label: 'Personalised Website', description: 'Not just another chatbot. A one stop website that puts everything the business has to offer, in front of you.' },
       { label: 'Lead Capture', description: 'No more forgotten messages, lost calls, or missing contact details.' },
       { label: 'Appointment Booking', description: 'Customers schedule instantly without waiting for a callback.' },
       { label: 'FAQ Responses', description: 'Pricing, services, availability, directions—handled instantly.' },
@@ -149,11 +151,12 @@ export const defaultContent: MarketingContent = {
   showcase: {
     headline: 'Built for the conversations that drive revenue.',
     items: [
+      { label: 'Website', description: 'A full business website with your services, pricing, and AI built in from the first visit.' },
       { label: 'Conversations', description: 'Manage enquiries from the first message onward.' },
       { label: 'Customers', description: 'Track relationships, not spreadsheets.' },
       { label: 'Bookings', description: 'Keep schedules organized automatically.' },
-      { label: 'Escalations', description: 'Handle critical situations before they become problems.' },
       { label: 'Follow-Ups', description: 'Stay top-of-mind automatically.' },
+      { label: 'Insights', description: 'Know what drives your revenue.' },
     ],
   },
 
