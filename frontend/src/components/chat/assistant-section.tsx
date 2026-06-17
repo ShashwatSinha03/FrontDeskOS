@@ -76,10 +76,6 @@ export function AiAssistant() {
     <section className="border-t py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
-            <Bot className="h-3.5 w-3.5" />
-            AI Assistant
-          </div>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Questions? Ask Away.
           </h2>

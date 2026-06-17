@@ -4,9 +4,7 @@ import { useParams } from 'next/navigation';
 import { useBusiness } from '@/hooks/use-business';
 import { HeroSection } from '@/components/home/hero';
 import { ServicesOverview } from '@/components/home/services-overview';
-import { AboutSection } from '@/components/home/about-section';
 import { FaqSection } from '@/components/home/faq-section';
-import { CtaBanner } from '@/components/home/cta-banner';
 import { AiAssistant } from '@/components/chat/assistant-section';
 import { Skeleton } from '@/components/design/skeleton';
 import { EmptyState } from '@/components/design/empty-state';
@@ -45,10 +43,8 @@ export default function HomePage() {
     <>
       <HeroSection businessName={business.name} slug={slug} description={business.description} />
       <ServicesOverview services={business.services} slug={slug} businessName={business.name} />
-      <AboutSection businessName={business.name} description={business.description} />
-      <FaqSection faqs={business.faqs} />
-      <CtaBanner slug={slug} businessName={business.name} />
       <AiAssistant />
+      <FaqSection faqs={business.faqs} />
     </>
   );
 }

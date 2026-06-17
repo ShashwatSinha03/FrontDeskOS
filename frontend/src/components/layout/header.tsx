@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { label: 'Contact', href: '/contact' },
 ];
 
-export function Header({ businessName, slug }: { businessName: string; slug: string }) {
+export function Header({ businessName, slug, description }: { businessName: string; slug: string; description?: string | null }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -43,8 +43,18 @@ export function Header({ businessName, slug }: { businessName: string; slug: str
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href={`/${slug}`} className="text-lg font-semibold tracking-tight">
-          {businessName}
+        <Link href={`/${slug}`} className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border bg-muted/50">
+            <span className="text-xs font-bold">{businessName.charAt(0)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold tracking-tight leading-tight">{businessName}</span>
+            {description && (
+              <span className="text-[10px] leading-tight text-muted-foreground truncate max-w-[180px] lg:max-w-[240px]">
+                {description}
+              </span>
+            )}
+          </div>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
