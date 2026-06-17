@@ -96,6 +96,18 @@ export class EscalationRepository {
   }
 
   /**
+   * Resolve all pending escalations for a conversation.
+   */
+  async resolveForConversation(conversationId: string, businessId: string): Promise<void> {
+    const query = `
+      UPDATE escalations
+      SET status = 'resolved', resolved_at = NOW(), updated_at = NOW()
+      WHERE conversation_id = $1 AND business_id = $2 AND status = 'pending'
+    `;
+    await pool.query(query, [conversationId, businessId]);
+  }
+
+  /**
    * Find all pending escalations for a business (Backward-compatible).
    */
   async findPendingByBusiness(businessId: string): Promise<Escalation[]> {

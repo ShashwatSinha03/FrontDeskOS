@@ -135,6 +135,51 @@ export class ChatService {
       input.content
     );
 
+    // ── 3b. Bypass AI if conversation is owned by a human ────────────────────
+    if (conversation.ownershipStatus === 'human_pending' || conversation.ownershipStatus === 'human_active') {
+      const business = await businessRepository.findById(input.businessId);
+      const history = await conversationRepository.getMessages(conversation.id, input.businessId).then(r => r.messages);
+      const updatedCustomer = (await customerRepository.findById(customer.id, input.businessId)) || customer;
+
+      const holdReply = "Your message has been received. A team member is reviewing the conversation and will respond shortly.";
+
+      const replyMessage = await conversationRepository.addMessage(
+        conversation.id,
+        'agent',
+        holdReply,
+        { intent: 'human_request', handlerNode: 'ownershipBypass' }
+      );
+
+      deliveryService.sendMessage({
+        businessId: input.businessId,
+        customerId: customer.id,
+        conversationId: conversation.id,
+        messageId: replyMessage.id,
+        channelType: conversation.channelType as ChannelType,
+        content: holdReply,
+        metadata: { intent: 'human_request', handlerNode: 'ownershipBypass' },
+      }).catch((err) => {
+        logger.error('Delivery service error (ownership bypass)', { route: 'ChatService', businessId: input.businessId, error: err instanceof Error ? err.message : String(err) });
+      });
+
+      const agentResult: AgentResult = {
+        reply: holdReply,
+        intent: 'human_request',
+        metadata: { handlerNode: 'ownershipBypass', ownershipStatus: conversation.ownershipStatus },
+      };
+
+      return {
+        conversation,
+        customer: updatedCustomer,
+        userMessage,
+        replyMessage,
+        agentResult,
+      };
+    }
+
+    // ── 3c. Set human_pending if agent output contains escalation ────────────
+    // (handled after agent invocation below)
+
     // ── 4. Cancel pending recovery (customer re-engaged) ────────────────────
     await recoveryService.cancelRecovery(customer.id, input.businessId);
 
@@ -187,7 +232,25 @@ export class ChatService {
 
     // ── 7. Apply side-effects from the agent ─────────────────────────────────
 
-    // 7a. Customer lifecycle state transition
+    // 7a. If escalation was created, set conversation ownership to human_pending
+    if (agentOutput.escalationId) {
+      await conversationRepository.updateOwnershipStatus(conversation.id, input.businessId, 'human_pending').catch((err) => {
+        logger.error('Failed to update ownership status to human_pending', { route: 'ChatService', businessId: input.businessId, escalationId: agentOutput.escalationId, error: err instanceof Error ? err.message : String(err) });
+      });
+
+      notificationService.create({
+        businessId: input.businessId,
+        type: 'escalation_required',
+        title: 'Escalation Required',
+        message: `A conversation requires human attention.`,
+        entityType: 'conversation',
+        entityId: conversation.id,
+      }).catch((err) => {
+        logger.error('Failed to create escalation notification', { route: 'ChatService', businessId: input.businessId, error: err instanceof Error ? err.message : String(err) });
+      });
+    }
+
+    // 7b. Customer lifecycle state transition
     if (agentOutput.updatedLifecycleState &&
         agentOutput.updatedLifecycleState !== customer.lifecycleState) {
       await customerRepository.updateLifecycleState(
@@ -198,7 +261,7 @@ export class ChatService {
       );
     }
 
-    // 7b. Schedule recovery sequence after any non-escalated, non-booked interaction
+    // 7c. Schedule recovery sequence after any non-escalated, non-booked interaction
     const skipRecoveryStates = ['Booked', 'Customer', 'Escalated', 'Lost'];
     const finalState = agentOutput.updatedLifecycleState ?? customer.lifecycleState;
 

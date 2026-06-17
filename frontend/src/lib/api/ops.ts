@@ -133,3 +133,39 @@ export async function getActivity(params?: { limit?: number }) {
   const qs = q.toString();
   return opsFetch(`/operate/activity${qs ? `?${qs}` : ''}`);
 }
+
+// ── Inbox API ──────────────────────────────────────────────────────────────────
+
+export async function getInboxConversations(params?: {
+  ownershipStatus?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const q = new URLSearchParams();
+  if (params?.ownershipStatus) q.set('ownershipStatus', params.ownershipStatus);
+  if (params?.search) q.set('search', params.search);
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const qs = q.toString();
+  return opsFetch(`/inbox/conversations${qs ? `?${qs}` : ''}`);
+}
+
+export async function getInboxCounts() {
+  return opsFetch('/inbox/counts');
+}
+
+export async function joinInboxConversation(conversationId: string) {
+  return opsFetch(`/inbox/conversations/${conversationId}/join`, { method: 'POST' });
+}
+
+export async function returnInboxToAI(conversationId: string) {
+  return opsFetch(`/inbox/conversations/${conversationId}/return-to-ai`, { method: 'POST' });
+}
+
+export async function sendInboxMessage(conversationId: string, content: string) {
+  return opsFetch(`/inbox/conversations/${conversationId}/message`, {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+  });
+}

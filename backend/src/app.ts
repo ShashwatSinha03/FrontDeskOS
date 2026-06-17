@@ -10,6 +10,7 @@ import { teamRouter } from './routes/team.routes';
 import { settingsRouter } from './routes/settings.routes';
 import { operationalRouter } from './routes/operational.routes';
 import { notificationRouter } from './routes/notification.routes';
+import { inboxRouter } from './routes/inbox.routes';
 import { analyticsRouter } from './routes/analytics.routes';
 import { webhookRouter } from './routes/webhook.routes';
 import { createRateLimiter, chatLimiter } from './middleware/rate-limit';
@@ -59,6 +60,7 @@ app.use('/api', operationalRouter);
 app.use('/api', notificationRouter);
 app.use('/api', analyticsRouter);
 app.use('/api', adminRouter);
+app.use('/api', inboxRouter);
 
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({

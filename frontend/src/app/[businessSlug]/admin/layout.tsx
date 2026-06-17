@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/sidebar';
+import { MobileSidebar } from '@/components/admin/mobile-sidebar';
 import { NotificationBell } from '@/components/admin/notification-bell';
 import { createClient } from '@/lib/supabase/server';
 
@@ -99,7 +100,8 @@ export default async function AdminLayout({
         slug={businessSlug}
       />
       <div className="flex flex-1 flex-col overflow-auto">
-        <header className="flex items-center justify-end border-b bg-card px-6 py-2.5">
+        <header className="flex items-center justify-between border-b bg-card px-4 py-2.5 md:justify-end md:px-6">
+          <MobileSidebar businessName={business.name} slug={businessSlug} />
           <NotificationBell />
         </header>
         <main className="flex-1 bg-secondary/20">

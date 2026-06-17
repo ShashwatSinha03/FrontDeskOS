@@ -1,5 +1,11 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { AuthProvider } from '@/lib/auth';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#0a0a0a',
+};
 import { Bungee_Outline, Bungee_Hairline } from 'next/font/google';
 import './globals.css';
 
@@ -19,6 +25,7 @@ const bungeeHairline = Bungee_Hairline({
 
 export const metadata: Metadata = {
   title: 'Nuvora — AI Receptionist for Service Businesses',
+  manifest: '/manifest.json',
   description:
     'Nuvora acts like a 24/7 AI receptionist that answers questions, captures leads, books appointments, follows up automatically, and escalates urgent issues to your team.',
   icons: {

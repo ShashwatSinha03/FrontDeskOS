@@ -441,11 +441,15 @@ export class OperationalController {
       const businessId = req.membership!.businessId;
 
       const convResult = await pool.query(`
-        SELECT c.id, c.customer_id, c.status, c.channel_type, c.created_at, c.updated_at,
+        SELECT c.id, c.customer_id, c.status, c.channel_type,
+          c.ownership_status, c.human_owner_id, c.escalated_at, c.assigned_at,
+          c.created_at, c.updated_at,
+          sp.full_name AS owner_name,
           cust.name AS customer_name, cust.phone AS customer_phone,
           cust.email AS customer_email, cust.lifecycle_state
         FROM conversations c
         LEFT JOIN customers cust ON cust.id = c.customer_id
+        LEFT JOIN staff_profiles sp ON sp.user_id = c.human_owner_id AND sp.business_id = c.business_id
         WHERE c.id = $1 AND c.business_id = $2
       `, [id, businessId]);
 

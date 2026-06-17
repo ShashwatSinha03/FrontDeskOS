@@ -28,6 +28,8 @@ export type KnowledgeRequestStatus = 'pending' | 'approved' | 'rejected';
 export type FollowUpStatus = 'pending' | 'sent' | 'cancelled';
 
 export type FollowUpType = 're_engagement' | 'day_1' | 'day_3' | 'missed_call';
+export type ConversationOwnershipStatus = 'ai_active' | 'human_pending' | 'human_active' | 'returned_to_ai';
+
 export type FollowUpChannel = 'web_chat' | 'whatsapp' | 'voice' | 'sms';
 export type FollowUpTriggerReason = 'inactivity' | 'missed_call' | 'booking_no_show' | 'manual';
 
@@ -227,6 +229,10 @@ export interface Conversation {
   businessId: string; // UUID
   status: 'active' | 'closed';
   channelType: ChannelType;
+  ownershipStatus: ConversationOwnershipStatus;
+  humanOwnerId: string | null;
+  escalatedAt: Date | null;
+  assignedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
