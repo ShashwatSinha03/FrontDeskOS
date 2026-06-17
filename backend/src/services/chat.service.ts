@@ -19,10 +19,12 @@ import {
   businessRepository,
   sessionRepository,
   conversationWorkflowRepository,
+  escalationRepository,
 } from '../repositories';
 import { recoveryService } from './recovery';
 import { notificationService } from './notification.service';
 import { deliveryService } from './channel/delivery.service';
+import { escalationDetectorService } from './escalation-detector.service';
 import { conversationAgent } from '../workflows/agent.graph';
 import { ChannelType, Customer, Conversation, Message, AgentResult, ConversationIntent, CustomerLifecycleState } from '../types';
 import pool from '../config/db';
@@ -141,7 +143,7 @@ export class ChatService {
       const history = await conversationRepository.getMessages(conversation.id, input.businessId).then(r => r.messages);
       const updatedCustomer = (await customerRepository.findById(customer.id, input.businessId)) || customer;
 
-      const holdReply = "Your message has been received. A team member is reviewing the conversation and will respond shortly.";
+      const holdReply = "I've notified the team. Someone will join the conversation shortly.";
 
       const replyMessage = await conversationRepository.addMessage(
         conversation.id,
@@ -177,8 +179,76 @@ export class ChatService {
       };
     }
 
-    // ── 3c. Set human_pending if agent output contains escalation ────────────
-    // (handled after agent invocation below)
+    // ── 3c. Pre-check for escalation intent before invoking agent ────────────
+    const businessForCheck = await businessRepository.findById(input.businessId);
+    if (businessForCheck) {
+      const history = await conversationRepository.getMessages(conversation.id, input.businessId).then(r => r.messages);
+      const detectionResult = await escalationDetectorService.detect({
+        businessId: input.businessId,
+        businessType: businessForCheck.businessType,
+        businessName: businessForCheck.name,
+        message: input.content,
+        history: history.map(m => ({ sender: m.sender, content: m.content })),
+      });
+
+      if (detectionResult.isEscalation) {
+        const escalation = await escalationRepository.create({
+          customerId: customer.id,
+          businessId: input.businessId,
+          conversationId: conversation.id,
+          reason: `Human escalation detected (${detectionResult.reason})`,
+        });
+
+        await conversationRepository.updateOwnershipStatus(conversation.id, input.businessId, 'human_pending');
+
+        notificationService.create({
+          businessId: input.businessId,
+          type: 'escalation_required',
+          title: 'Escalation Required',
+          message: `A conversation requires human attention.`,
+          entityType: 'conversation',
+          entityId: conversation.id,
+        }).catch((err) => {
+          logger.error('Failed to create escalation notification', { route: 'ChatService', businessId: input.businessId, error: err instanceof Error ? err.message : String(err) });
+        });
+
+        const holdReply = "I've notified the team. Someone will join the conversation shortly.";
+
+        const replyMessage = await conversationRepository.addMessage(
+          conversation.id,
+          'agent',
+          holdReply,
+          { intent: 'human_request', handlerNode: 'escalationDetector', confidence: detectionResult.confidence, reason: detectionResult.reason }
+        );
+
+        deliveryService.sendMessage({
+          businessId: input.businessId,
+          customerId: customer.id,
+          conversationId: conversation.id,
+          messageId: replyMessage.id,
+          channelType: conversation.channelType as ChannelType,
+          content: holdReply,
+          metadata: { intent: 'human_request', handlerNode: 'escalationDetector' },
+        }).catch((err) => {
+          logger.error('Delivery service error (escalation detector)', { route: 'ChatService', businessId: input.businessId, error: err instanceof Error ? err.message : String(err) });
+        });
+
+        const updatedCustomer = (await customerRepository.findById(customer.id, input.businessId)) || customer;
+
+        return {
+          conversation,
+          customer: updatedCustomer,
+          userMessage,
+          replyMessage,
+          agentResult: {
+            reply: holdReply,
+            intent: 'human_request',
+            escalationId: escalation.id,
+            metadata: { handlerNode: 'escalationDetector', confidence: detectionResult.confidence },
+          },
+        };
+      }
+    }
 
     // ── 4. Cancel pending recovery (customer re-engaged) ────────────────────
     await recoveryService.cancelRecovery(customer.id, input.businessId);

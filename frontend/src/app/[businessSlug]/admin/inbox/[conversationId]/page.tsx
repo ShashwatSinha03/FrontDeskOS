@@ -10,6 +10,29 @@ import {
 } from '@/lib/api/ops';
 import { PageHeader } from '@/components/design/page-header';
 
+function waitingDuration(date: Date | string | null): string {
+  if (!date) return '';
+  const ms = Date.now() - new Date(date).getTime();
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return '< 1 min';
+  if (mins < 60) return `${mins} min`;
+  const hours = Math.floor(mins / 60);
+  const remainingMins = mins % 60;
+  return `${hours}h ${remainingMins}m`;
+}
+
+function timeAgo(date: Date | string | null): string {
+  if (!date) return '';
+  const ms = Date.now() - new Date(date).getTime();
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 export default function InboxConversationPage() {
   const params = useParams();
   const router = useRouter();
@@ -98,123 +121,253 @@ export default function InboxConversationPage() {
     );
   }
 
-  const conversation = detail?.conversation;
+  const conv = detail?.conversation;
   const messages = detail?.messages || [];
-  const ownershipStatus = conversation?.ownership_status;
+  const workflow = detail?.workflow;
+  const appointments = detail?.appointments || [];
+  const ownershipStatus = conv?.ownership_status;
   const isHumanActive = ownershipStatus === 'human_active';
   const isHumanPending = ownershipStatus === 'human_pending';
   const isReturnedToAI = ownershipStatus === 'returned_to_ai';
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="flex items-center justify-between shrink-0">
-        <div>
-          <PageHeader
-            title={conversation?.customer_name || 'Conversation'}
-            description={`${conversation?.customer_phone || ''} ${conversation?.channel_type ? `via ${conversation.channel_type}` : ''}`}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          {ownershipStatus && (
-            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              isHumanPending ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-              isHumanActive ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-              'bg-muted text-muted-foreground'
-            }`}>
-              {ownershipStatus.replace(/_/g, ' ')}
-            </span>
-          )}
-          {isHumanPending && (
-            <button
-              onClick={handleJoin}
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              Join
-            </button>
-          )}
-          {isHumanActive && (
-            <button
-              onClick={handleReturnToAI}
-              className="rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
-            >
-              Return to AI
-            </button>
-          )}
-          {isReturnedToAI && (
-            <button
-              onClick={handleJoin}
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              Take Over
-            </button>
-          )}
-        </div>
-      </div>
-
-      {msg && (
-        <div className="mt-2 rounded-md border border-green-200 bg-green-50 p-2 text-xs text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400">
-          {msg}
-        </div>
-      )}
-      {error && (
-        <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-600">{error}</div>
-      )}
-
-      <div className="mt-4 flex-1 overflow-y-auto rounded-lg border bg-card">
-        {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            No messages yet.
+    <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-8rem)]">
+      {/* Main Chat Area */}
+      <div className="flex flex-col flex-1 min-w-0">
+        {/* Header */}
+        <div className="flex items-center justify-between shrink-0 mb-3">
+          <div className="min-w-0">
+            <PageHeader
+              title={conv?.customer_name || 'Conversation'}
+              description={`${conv?.customer_phone || ''} ${conv?.channel_type ? `via ${conv.channel_type.replace('_', ' ')}` : ''}`}
+            />
           </div>
-        ) : (
-          <div className="space-y-3 p-4">
-            {messages.map((m: any) => (
-              <div
-                key={m.id}
-                className={`flex ${m.sender === 'customer' ? 'justify-start' : 'justify-end'}`}
+          <div className="flex items-center gap-2 shrink-0 ml-2">
+            {ownershipStatus && (
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ${
+                isHumanPending ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                isHumanActive ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                isReturnedToAI ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+              }`}>
+                {(ownershipStatus || '').replace(/_/g, ' ')}
+              </span>
+            )}
+            {isHumanPending && (
+              <button
+                onClick={handleJoin}
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 whitespace-nowrap"
               >
+                Join Conversation
+              </button>
+            )}
+            {isHumanActive && (
+              <button
+                onClick={handleReturnToAI}
+                className="rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted whitespace-nowrap"
+              >
+                Return to AI
+              </button>
+            )}
+            {isReturnedToAI && (
+              <button
+                onClick={handleJoin}
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 whitespace-nowrap"
+              >
+                Take Over
+              </button>
+            )}
+          </div>
+        </div>
+
+        {msg && (
+          <div className="mb-2 rounded-md border border-green-200 bg-green-50 p-2 text-xs text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400">
+            {msg}
+          </div>
+        )}
+        {error && (
+          <div className="mb-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-600">{error}</div>
+        )}
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto rounded-lg border bg-card mb-3">
+          {messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+              No messages yet.
+            </div>
+          ) : (
+            <div className="space-y-3 p-4">
+              {messages.map((m: any) => (
                 <div
-                  className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${
-                    m.sender === 'customer'
-                      ? 'bg-muted text-foreground'
-                      : m.sender === 'human_owner'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-primary text-primary-foreground'
-                  }`}
+                  key={m.id}
+                  className={`flex ${m.sender === 'customer' ? 'justify-start' : 'justify-end'}`}
                 >
-                  <div className="whitespace-pre-wrap break-words">{m.content}</div>
-                  <div className={`mt-1 text-[10px] ${m.sender === 'customer' ? 'text-muted-foreground' : 'text-white/70'}`}>
-                    {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    {m.sender === 'human_owner' && ' · You'}
-                    {m.sender === 'agent' && ' · AI'}
+                  <div
+                    className={`max-w-[85%] sm:max-w-[75%] rounded-lg px-3 py-2 text-sm ${
+                      m.sender === 'customer'
+                        ? 'bg-muted text-foreground'
+                        : m.sender === 'human_owner'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-primary text-primary-foreground'
+                    }`}
+                  >
+                    <div className="whitespace-pre-wrap break-words">{m.content}</div>
+                    <div className={`mt-1 text-[10px] ${m.sender === 'customer' ? 'text-muted-foreground' : 'text-white/70'}`}>
+                      {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {m.sender === 'human_owner' && ' · You'}
+                      {m.sender === 'agent' && ' · AI'}
+                      {m.sender === 'customer' && ' · Customer'}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+
+        {/* Message Input */}
+        {(isHumanActive || isHumanPending) && (
+          <div className="flex gap-2 shrink-0">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              placeholder={isHumanPending ? 'Join the conversation to reply...' : 'Type a message...'}
+              disabled={!isHumanActive || sending}
+              className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm disabled:opacity-50"
+            />
+            <button
+              onClick={handleSend}
+              disabled={!isHumanActive || sending || !input.trim()}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              {sending ? 'Sending...' : 'Send'}
+            </button>
           </div>
         )}
       </div>
 
-      {(isHumanActive || isHumanPending) && (
-        <div className="mt-3 flex gap-2 shrink-0">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-            placeholder={isHumanPending ? 'Join the conversation to reply...' : 'Type a message...'}
-            disabled={!isHumanActive || sending}
-            className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm disabled:opacity-50"
-          />
-          <button
-            onClick={handleSend}
-            disabled={!isHumanActive || sending || !input.trim()}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {sending ? 'Sending...' : 'Send'}
-          </button>
+      {/* Info Sidebar (collapses below on mobile) */}
+      <div className="w-full lg:w-72 shrink-0 space-y-3">
+        {/* Customer Info */}
+        <div className="rounded-lg border bg-card p-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Customer</h3>
+          <div className="space-y-1.5 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Name</span>
+              <span className="font-medium truncate ml-2">{conv?.customer_name || 'Unknown'}</span>
+            </div>
+            {conv?.customer_phone && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Phone</span>
+                <span className="font-medium">{conv.customer_phone}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Channel</span>
+              <span className="font-medium capitalize">{(conv?.channel_type || '').replace('_', ' ')}</span>
+            </div>
+            {conv?.lifecycle_state && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">State</span>
+                <span className="font-medium text-xs">{conv.lifecycle_state}</span>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Escalation Details */}
+        <div className="rounded-lg border bg-card p-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Escalation</h3>
+          <div className="space-y-1.5 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Status</span>
+              <span className={`font-medium text-xs ${isHumanPending ? 'text-red-600' : isHumanActive ? 'text-blue-600' : 'text-muted-foreground'}`}>
+                {(ownershipStatus || 'ai_active').replace(/_/g, ' ')}
+              </span>
+            </div>
+            {conv?.escalated_at && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Waiting</span>
+                  <span className="font-medium">{waitingDuration(conv.escalated_at)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Since</span>
+                  <span className="font-medium text-xs">{timeAgo(conv.escalated_at)}</span>
+                </div>
+              </>
+            )}
+            {conv?.owner_name && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Owner</span>
+                <span className="font-medium text-xs">{conv.owner_name}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Workflow Info */}
+        {workflow && (
+          <div className="rounded-lg border bg-card p-3">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Workflow</h3>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Type</span>
+                <span className="font-medium text-xs">{(workflow.workflow_type || '').replace(/_/g, ' ')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">State</span>
+                <span className="font-medium text-xs">{workflow.workflow_state || '—'}</span>
+              </div>
+              {workflow.last_asked_field && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Last Asked</span>
+                  <span className="font-medium text-xs truncate ml-2">{workflow.last_asked_field}</span>
+                </div>
+              )}
+              {workflow.collected_data && Object.keys(workflow.collected_data).length > 0 && (
+                <div className="mt-1 pt-1 border-t">
+                  <span className="text-xs text-muted-foreground block mb-1">Collected Data</span>
+                  <pre className="text-[10px] text-muted-foreground/70 whitespace-pre-wrap">
+                    {JSON.stringify(workflow.collected_data, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Appointments */}
+        {appointments.length > 0 && (
+          <div className="rounded-lg border bg-card p-3">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Appointments</h3>
+            <div className="space-y-2">
+              {appointments.map((apt: any) => (
+                <div key={apt.id} className="text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      {new Date(apt.appointment_time).toLocaleDateString()}
+                    </span>
+                    <span className={`text-xs font-medium ${
+                      apt.status === 'confirmed' ? 'text-green-600' :
+                      apt.status === 'completed' ? 'text-blue-600' :
+                      apt.status === 'cancelled' ? 'text-red-600' : 'text-muted-foreground'
+                    }`}>
+                      {apt.status}
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(apt.appointment_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

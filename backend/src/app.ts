@@ -15,6 +15,7 @@ import { analyticsRouter } from './routes/analytics.routes';
 import { webhookRouter } from './routes/webhook.routes';
 import { createRateLimiter, chatLimiter } from './middleware/rate-limit';
 import { logger } from './lib/logger';
+import { escalationReminderService } from './services/escalation-reminder.service';
 
 const app = express();
 
@@ -70,6 +71,12 @@ app.get('/health', (req: Request, res: Response) => {
     provider: config.LLM_PROVIDER
   });
 });
+
+try {
+  escalationReminderService.start();
+} catch (err) {
+  logger.error('Failed to start escalation reminder service', { error: err instanceof Error ? err.message : String(err) });
+}
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({ success: false, error: 'Endpoint not found' });

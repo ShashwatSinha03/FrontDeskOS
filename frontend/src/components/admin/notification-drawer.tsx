@@ -21,6 +21,10 @@ const TYPE_ICONS: Record<string, string> = {
   appointment_rescheduled: '●',
   escalation_raised: '●',
   escalation_resolved: '●',
+  escalation_required: '●',
+  escalation_reminder_5min: '●',
+  escalation_reminder_15min: '●',
+  escalation_reminder_30min: '●',
   staff_invited: '●',
   staff_promoted: '●',
   staff_removed: '●',
@@ -38,6 +42,10 @@ const TYPE_COLORS: Record<string, string> = {
   appointment_rescheduled: 'text-yellow-500',
   escalation_raised: 'text-red-500',
   escalation_resolved: 'text-green-500',
+  escalation_required: 'text-red-500',
+  escalation_reminder_5min: 'text-orange-500',
+  escalation_reminder_15min: 'text-orange-500',
+  escalation_reminder_30min: 'text-yellow-500',
   staff_invited: 'text-blue-500',
   staff_promoted: 'text-purple-500',
   staff_removed: 'text-orange-500',
@@ -45,7 +53,7 @@ const TYPE_COLORS: Record<string, string> = {
 
 function timeAgo(date: Date) {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return '< 1m ago';
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);
@@ -132,6 +140,9 @@ export function NotificationDrawer({ open, onClose, onMarked }: Props) {
                       <p className="text-[11px] text-muted-foreground mt-1">
                         {timeAgo(new Date(n.createdAt))}
                       </p>
+                      {n.type.startsWith('escalation') && (
+                        <p className="text-[11px] text-primary mt-0.5 font-medium">→ View in Inbox</p>
+                      )}
                     </div>
                     {!n.isRead && (
                       <button

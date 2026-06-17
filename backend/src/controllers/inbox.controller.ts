@@ -10,8 +10,11 @@ export class InboxController {
     try {
       const businessId = req.membership!.businessId;
       const schema = z.object({
-        ownershipStatus: z.enum(['human_pending', 'human_active', 'returned_to_ai']).optional(),
+        ownershipStatus: z.enum(['human_pending', 'human_active', 'returned_to_ai', 'closed']).optional(),
         search: z.string().optional(),
+        channelType: z.string().optional(),
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
         page: z.coerce.number().int().min(1).default(1),
         limit: z.coerce.number().int().min(1).max(100).default(25),
       });
@@ -19,7 +22,13 @@ export class InboxController {
 
       const result = await conversationRepository.getInboxConversations(
         businessId,
-        { ownershipStatus: params.ownershipStatus, search: params.search },
+        {
+          ownershipStatus: params.ownershipStatus,
+          search: params.search,
+          channelType: params.channelType,
+          dateFrom: params.dateFrom,
+          dateTo: params.dateTo,
+        },
         { page: params.page, limit: params.limit }
       );
 
@@ -80,7 +89,7 @@ export class InboxController {
       const updated = await conversationRepository.updateOwnershipStatus(
         conversationId,
         businessId,
-        'returned_to_ai'
+        'ai_active'
       );
 
       await escalationRepository.resolveForConversation(conversationId, businessId);

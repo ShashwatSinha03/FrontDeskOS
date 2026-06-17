@@ -244,7 +244,7 @@ export class ConversationRepository {
 
   async getInboxConversations(
     businessId: string,
-    filters?: { ownershipStatus?: ConversationOwnershipStatus; search?: string },
+    filters?: { ownershipStatus?: ConversationOwnershipStatus; search?: string; channelType?: string; dateFrom?: string; dateTo?: string },
     pagination?: { page?: number; limit?: number }
   ): Promise<{ conversations: any[]; totalCount: number }> {
     const page = pagination?.page || 1;
@@ -259,12 +259,30 @@ export class ConversationRepository {
       params.push(filters.ownershipStatus);
       paramIdx++;
     } else {
-      conditions.push(`c.ownership_status IN ('human_pending', 'human_active', 'returned_to_ai')`);
+      conditions.push(`c.ownership_status IN ('human_pending', 'human_active', 'returned_to_ai', 'closed')`);
     }
 
     if (filters?.search) {
       conditions.push(`(cust.name ILIKE $${paramIdx} OR cust.phone ILIKE $${paramIdx})`);
       params.push(`%${filters.search}%`);
+      paramIdx++;
+    }
+
+    if (filters?.channelType) {
+      conditions.push(`c.channel_type = $${paramIdx}`);
+      params.push(filters.channelType);
+      paramIdx++;
+    }
+
+    if (filters?.dateFrom) {
+      conditions.push(`c.created_at >= $${paramIdx}::timestamp`);
+      params.push(filters.dateFrom);
+      paramIdx++;
+    }
+
+    if (filters?.dateTo) {
+      conditions.push(`c.created_at <= $${paramIdx}::timestamp`);
+      params.push(filters.dateTo);
       paramIdx++;
     }
 
@@ -295,6 +313,7 @@ export class ConversationRepository {
           WHEN 'human_pending' THEN 0
           WHEN 'human_active' THEN 1
           WHEN 'returned_to_ai' THEN 2
+          WHEN 'closed' THEN 3
         END,
         c.escalated_at DESC NULLS LAST,
         lm.last_message_at DESC NULLS LAST
@@ -333,11 +352,12 @@ export class ConversationRepository {
     return { conversations, totalCount };
   }
 
-  async getInboxCounts(businessId: string): Promise<{ humanPending: number; humanActive: number }> {
+  async getInboxCounts(businessId: string): Promise<{ humanPending: number; humanActive: number; closed: number }> {
     const query = `
       SELECT
         COUNT(*) FILTER (WHERE ownership_status = 'human_pending')::int AS human_pending,
-        COUNT(*) FILTER (WHERE ownership_status = 'human_active')::int AS human_active
+        COUNT(*) FILTER (WHERE ownership_status = 'human_active')::int AS human_active,
+        COUNT(*) FILTER (WHERE ownership_status = 'closed')::int AS closed
       FROM conversations
       WHERE business_id = $1 AND status = 'active'
     `;
@@ -345,6 +365,7 @@ export class ConversationRepository {
     return {
       humanPending: res.rows[0].human_pending,
       humanActive: res.rows[0].human_active,
+      closed: res.rows[0].closed,
     };
   }
 

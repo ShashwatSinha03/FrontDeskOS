@@ -139,12 +139,18 @@ export async function getActivity(params?: { limit?: number }) {
 export async function getInboxConversations(params?: {
   ownershipStatus?: string;
   search?: string;
+  channelType?: string;
+  dateFrom?: string;
+  dateTo?: string;
   page?: number;
   limit?: number;
 }) {
   const q = new URLSearchParams();
   if (params?.ownershipStatus) q.set('ownershipStatus', params.ownershipStatus);
   if (params?.search) q.set('search', params.search);
+  if (params?.channelType) q.set('channelType', params.channelType);
+  if (params?.dateFrom) q.set('dateFrom', params.dateFrom);
+  if (params?.dateTo) q.set('dateTo', params.dateTo);
   if (params?.page) q.set('page', String(params.page));
   if (params?.limit) q.set('limit', String(params.limit));
   const qs = q.toString();
