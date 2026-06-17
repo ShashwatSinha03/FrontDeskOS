@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
+import pool from '../config/db';
 import { conversationRepository, escalationRepository } from '../repositories';
 import { deliveryService } from '../services/channel/delivery.service';
 import { notificationService } from '../services/notification.service';
@@ -74,6 +75,11 @@ export class InboxController {
 
       await escalationRepository.resolveForConversation(conversationId, businessId);
 
+      await pool.query(
+        `UPDATE escalations SET first_response_at = NOW() WHERE conversation_id = $1 AND business_id = $2 AND first_response_at IS NULL`,
+        [conversationId, businessId]
+      );
+
       res.json({ success: true, data: updated });
     } catch (error: any) {
       logger.error('Failed to join conversation', { route: 'Inbox', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
@@ -93,6 +99,11 @@ export class InboxController {
       );
 
       await escalationRepository.resolveForConversation(conversationId, businessId);
+
+      await pool.query(
+        `UPDATE escalations SET returned_to_ai_count = returned_to_ai_count + 1 WHERE conversation_id = $1 AND business_id = $2`,
+        [conversationId, businessId]
+      );
 
       res.json({ success: true, data: updated });
     } catch (error: any) {
@@ -142,6 +153,29 @@ export class InboxController {
       }
       logger.error('Failed to send owner message', { route: 'Inbox', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
       res.status(500).json({ success: false, error: 'Failed to send owner message' });
+    }
+  }
+
+  async getMetrics(req: Request, res: Response): Promise<void> {
+    try {
+      const businessId = req.membership!.businessId;
+
+      const result = await pool.query(`
+        SELECT
+          COUNT(*)::int AS total_escalations,
+          COUNT(*) FILTER (WHERE status = 'resolved')::int AS resolved_escalations,
+          COUNT(*) FILTER (WHERE status = 'pending')::int AS unresolved_escalations,
+          COALESCE(SUM(returned_to_ai_count), 0)::int AS total_returned_to_ai,
+          ROUND(AVG(EXTRACT(EPOCH FROM (first_response_at - created_at)) / 60)::numeric, 1) AS avg_first_response_minutes,
+          ROUND(AVG(EXTRACT(EPOCH FROM (resolved_at - created_at)) / 60)::numeric, 1) AS avg_resolution_minutes
+        FROM escalations
+        WHERE business_id = $1
+      `, [businessId]);
+
+      res.json({ success: true, data: result.rows[0] });
+    } catch (error: any) {
+      logger.error('Failed to get escalation metrics', { route: 'Inbox', businessId: req.membership?.businessId, error: error instanceof Error ? error.message : String(error) });
+      res.status(500).json({ success: false, error: 'Failed to get escalation metrics' });
     }
   }
 }

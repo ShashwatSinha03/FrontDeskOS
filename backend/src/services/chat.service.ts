@@ -201,11 +201,15 @@ export class ChatService {
 
         await conversationRepository.updateOwnershipStatus(conversation.id, input.businessId, 'human_pending');
 
+        const customerName = customer.name || 'Unknown';
+        const customerPhone = customer.phone || '—';
+        const channelLabel = conversation.channelType.replace('_', ' ');
+
         notificationService.create({
           businessId: input.businessId,
           type: 'escalation_required',
           title: 'Escalation Required',
-          message: `A conversation requires human attention.`,
+          message: `${customerName} (${customerPhone}) via ${channelLabel} is requesting human assistance.`,
           entityType: 'conversation',
           entityId: conversation.id,
         }).catch((err) => {
@@ -308,11 +312,15 @@ export class ChatService {
         logger.error('Failed to update ownership status to human_pending', { route: 'ChatService', businessId: input.businessId, escalationId: agentOutput.escalationId, error: err instanceof Error ? err.message : String(err) });
       });
 
+      const customerName = customer.name || 'Unknown';
+      const customerPhone = customer.phone || '—';
+      const channelLabel = conversation.channelType.replace('_', ' ');
+
       notificationService.create({
         businessId: input.businessId,
         type: 'escalation_required',
         title: 'Escalation Required',
-        message: `A conversation requires human attention.`,
+        message: `${customerName} (${customerPhone}) via ${channelLabel} is requesting human assistance.`,
         entityType: 'conversation',
         entityId: conversation.id,
       }).catch((err) => {

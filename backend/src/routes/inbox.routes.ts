@@ -13,5 +13,6 @@ router.get('/inbox/counts', (req, res) => inboxController.getInboxCounts(req, re
 router.post('/inbox/conversations/:conversationId/join', (req, res) => inboxController.joinConversation(req, res));
 router.post('/inbox/conversations/:conversationId/return-to-ai', (req, res) => inboxController.returnToAI(req, res));
 router.post('/inbox/conversations/:conversationId/message', (req, res) => inboxController.sendOwnerMessage(req, res));
+router.get('/inbox/metrics', (req, res) => inboxController.getMetrics(req, res));
 
 export { router as inboxRouter };

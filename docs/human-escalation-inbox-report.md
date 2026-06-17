@@ -24,6 +24,8 @@ ESCALATION READY
 | `frontend/src/components/admin/mobile-sidebar.tsx` | Sheet-based mobile navigation drawer |
 | `frontend/public/icon-512.svg` | PWA 512x512 icon |
 | `frontend/src/app/manifest.json/route.ts` | PWA web app manifest route handler |
+| `backend/migrations/1733000000000_add-closed-ownership-state.ts` | Adds `closed` to ownership enum |
+| `backend/migrations/1734000000000_add-escalation-metrics.ts` | Adds `first_response_at`, `returned_to_ai_count` to escalations |
 | `docs/pilot-experience-sprint-report.md` | Sprint 1 report |
 | `docs/human-escalation-inbox-report.md` | This report |
 
@@ -53,6 +55,10 @@ ESCALATION READY
 ### Migration 1733000000000
 - Added `closed` to `conversation_ownership` enum
 
+### Migration 1734000000000
+- Added `first_response_at` (timestamptz) to `escalations`
+- Added `returned_to_ai_count` (integer, default 0) to `escalations`
+
 ## 4. Routes Added
 
 `backend/src/routes/inbox.routes.ts` — all mounted at `/api`:
@@ -64,6 +70,7 @@ ESCALATION READY
 | `/api/inbox/conversations/:conversationId/join` | POST | `inboxController.joinConversation` | Staff/Owner |
 | `/api/inbox/conversations/:conversationId/return-to-ai` | POST | `inboxController.returnToAI` | Staff/Owner |
 | `/api/inbox/conversations/:conversationId/message` | POST | `inboxController.sendOwnerMessage` | Staff/Owner |
+| `/api/inbox/metrics` | GET | `inboxController.getMetrics` | Staff/Owner |
 
 ## 5. Escalation Architecture
 
@@ -265,7 +272,23 @@ All inbox routes pass through: `authenticate` → `loadMembership` → `requireS
 
 **Note**: Tests A-F require actual LLM inference for the escalation detector. Code paths are verified. The specific LLM behavior (whether it correctly classifies each phrase) should be validated with real test messages against the deployed system.
 
-## 11. Remaining Pilot Risks
+## 11. Escalation Metrics
+
+### Tracked Data
+
+| Metric | Source | Query |
+|--------|--------|-------|
+| Total escalations created | `escalations` table | `COUNT(*)` |
+| Resolved escalations | `escalations.status = 'resolved'` | `COUNT(*) FILTER (WHERE status = 'resolved')` |
+| Unresolved escalations | `escalations.status = 'pending'` | `COUNT(*) FILTER (WHERE status = 'pending')` |
+| Average first response time | `escalations.first_response_at - created_at` | `AVG(EXTRACT(EPOCH FROM ...))` |
+| Average resolution time | `escalations.resolved_at - created_at` | `AVG(EXTRACT(EPOCH FROM ...))` |
+| Returned-to-AI count | `escalations.returned_to_ai_count` | `SUM(returned_to_ai_count)` |
+
+### Endpoint
+`GET /api/inbox/metrics` — returns all metrics for the authenticated business, auth-gated.
+
+## 12. Remaining Pilot Risks
 
 | Risk | Severity | Mitigation |
 |------|----------|------------|

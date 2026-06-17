@@ -53,7 +53,9 @@ export class EscalationRepository {
     }
   ): Promise<{ escalations: any[]; totalCount: number }> {
     let query = `
-      SELECT e.id, e.customer_id, e.business_id, e.conversation_id, e.reason, e.status, e.resolved_at, e.created_at, e.updated_at,
+      SELECT e.id, e.customer_id, e.business_id, e.conversation_id, e.reason, e.status,
+             e.first_response_at, e.returned_to_ai_count, e.resolved_by, e.resolution_note,
+             e.resolved_at, e.created_at, e.updated_at,
              c.name as customer_name, c.email as customer_email, c.phone as customer_phone,
              COUNT(*) OVER() as total_count
       FROM escalations e
@@ -117,7 +119,10 @@ export class EscalationRepository {
 
   async findByCustomer(customerId: string, businessId: string): Promise<any[]> {
     const query = `
-      SELECT e.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone
+      SELECT e.id, e.customer_id, e.business_id, e.conversation_id, e.reason, e.status,
+             e.first_response_at, e.returned_to_ai_count, e.resolved_by, e.resolution_note,
+             e.resolved_at, e.created_at, e.updated_at,
+             c.name as customer_name, c.email as customer_email, c.phone as customer_phone
       FROM escalations e
       LEFT JOIN customers c ON c.id = e.customer_id
       WHERE e.customer_id = $1 AND e.business_id = $2
@@ -140,6 +145,10 @@ export class EscalationRepository {
       conversationId: row.conversation_id,
       reason: row.reason,
       status: row.status as EscalationStatus,
+      firstResponseAt: row.first_response_at ? new Date(row.first_response_at) : null,
+      returnedToAICount: row.returned_to_ai_count || 0,
+      resolvedBy: row.resolved_by || null,
+      resolutionNote: row.resolution_note || null,
       resolvedAt: row.resolved_at ? new Date(row.resolved_at) : null,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),

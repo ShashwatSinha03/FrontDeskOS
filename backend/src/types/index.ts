@@ -267,6 +267,10 @@ export interface Escalation {
   conversationId: string; // UUID
   reason: string;
   status: EscalationStatus;
+  firstResponseAt: Date | null;
+  returnedToAICount: number;
+  resolvedBy: string | null;
+  resolutionNote: string | null;
   resolvedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
