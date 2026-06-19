@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { defaultContent } from '@/lib/marketing-content';
-import { MarketingHeader } from '@/components/marketing/marketing-header';
+import { PillNav } from '@/components/marketing/pill-nav';
 import { HomeHero } from '@/components/marketing/hero';
 import { ProblemSection } from '@/components/marketing/problem-section';
 import { SolutionSection } from '@/components/marketing/solution-section';
@@ -19,13 +19,45 @@ export const metadata: Metadata = {
     'Nuvora acts as your 24/7 AI receptionist — answering questions, capturing leads, booking appointments, following up automatically, and escalating urgent issues to your team.',
 };
 
+const NAV_ITEMS = [
+  { label: 'How It Works', href: '#how-it-works' },
+  { label: 'Features', href: '#features' },
+  { label: 'Industries', href: '#industries' },
+  { label: 'Contact', href: '#cta' },
+];
+
 export default function MarketingPage() {
   const { hero, problem, solution, howItWorks, showcase, industries, demo, founder, cta } =
     defaultContent;
 
   return (
     <>
-      <MarketingHeader />
+      <PillNav
+        logo=""
+        logoAlt="Nuvora"
+        items={NAV_ITEMS}
+        activeHref="/"
+        pillColor="#3b85ff"
+        hoveredPillTextColor="#ffffff"
+        pillTextColor="#ffffff"
+        initialLoadAnimation
+        logoElement={
+          <span className="pill-logo-text">
+            <span
+              className="logo-n"
+              style={{ fontFamily: 'var(--font-bungee-outline)', fontWeight: 900, fontSize: 20, lineHeight: 1 }}
+            >
+              N
+            </span>
+            <span
+              className="logo-rest"
+              style={{ fontFamily: 'var(--font-bungee-hairline)', fontWeight: 700, fontSize: 14, lineHeight: 1, marginTop: 1 }}
+            >
+              uvora
+            </span>
+          </span>
+        }
+      />
       <HomeHero {...hero} />
       <ProblemSection {...problem} />
       <SolutionSection {...solution} />
