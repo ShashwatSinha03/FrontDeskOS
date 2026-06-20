@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Logo } from '@/components/ui/logo';
+import { isSafeRedirect } from '@/lib/redirect';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirectTo') || '/ops';
+  const rawRedirect = searchParams.get('redirectTo');
+  const redirectTo = rawRedirect && isSafeRedirect(rawRedirect) ? rawRedirect : '/ops';
   const supabase = createClient();
 
   const [email, setEmail] = useState('');

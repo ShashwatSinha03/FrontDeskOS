@@ -44,7 +44,19 @@ const configSchema = z.object({
 
   // Turnstile Bot Protection
   TURNSTILE_SECRET_KEY: z.string().optional(),
+
+  // Twilio / WhatsApp Configuration
+  TWILIO_AUTH_TOKEN: z.string().optional(),
+  TWILIO_ACCOUNT_SID: z.string().optional(),
+  META_VERIFY_TOKEN: z.string().optional(),
 }).refine((data) => {
+  // In production, require Twilio auth token for webhook security
+  if (data.NODE_ENV === 'production' && !data.TWILIO_AUTH_TOKEN) {
+    return false;
+  }
+  if (data.NODE_ENV === 'production' && !data.TURNSTILE_SECRET_KEY) {
+    return false;
+  }
   // Enforce that active provider has its respective API key
   if (data.LLM_PROVIDER === 'groq' && !data.GROQ_API_KEY) {
     return false;
@@ -57,7 +69,7 @@ const configSchema = z.object({
   }
   return true;
 }, {
-  message: 'The API key for the selected LLM_PROVIDER must be provided.',
+  message: 'Required security configuration is missing. Check TWILIO_AUTH_TOKEN, TURNSTILE_SECRET_KEY, or LLM provider key.',
 });
 
 // Run parsing

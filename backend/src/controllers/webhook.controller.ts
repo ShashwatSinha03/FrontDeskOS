@@ -1,30 +1,48 @@
 import { Request, Response } from 'express';
 import twilio from 'twilio';
+import config from '../config';
 import { whatsappWebhookHandler } from '../services/channel/whatsapp-webhook.handler';
 import { logger } from '../lib/logger';
 
 export class WebhookController {
-  async handleWhatsAppInbound(req: Request, res: Response): Promise<void> {
-    const twilioSignature = req.headers['x-twilio-signature'] as string || '';
-    const authToken = process.env.TWILIO_AUTH_TOKEN || '';
+  private validateTwilioRequest(req: Request, res: Response): boolean {
+    const authToken = config.TWILIO_AUTH_TOKEN;
 
-    if (authToken && twilioSignature && typeof twilio.validateRequest === 'function') {
-      const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-      const isValid = twilio.validateRequest(
-        authToken,
-        twilioSignature,
-        url,
-        req.body
-      );
-      if (!isValid) {
-        logger.warn('Invalid Twilio webhook signature', {
-          url,
-          path: req.originalUrl,
-        });
-        res.status(403).send('Invalid signature');
-        return;
-      }
+    if (!authToken) {
+      logger.error('Webhook disabled: TWILIO_AUTH_TOKEN is not configured');
+      res.status(500).send('Webhook disabled');
+      return false;
     }
+
+    const twilioSignature = req.headers['x-twilio-signature'] as string | undefined;
+
+    if (!twilioSignature) {
+      logger.warn('Missing Twilio signature header');
+      res.status(403).send('Forbidden');
+      return false;
+    }
+
+    const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+
+    if (typeof twilio.validateRequest !== 'function') {
+      logger.error('Webhook disabled: twilio.validateRequest is not available');
+      res.status(500).send('Webhook disabled');
+      return false;
+    }
+
+    const isValid = twilio.validateRequest(authToken, twilioSignature, url, req.body);
+
+    if (!isValid) {
+      logger.warn('Invalid Twilio webhook signature', { url, path: req.originalUrl });
+      res.status(403).send('Forbidden');
+      return false;
+    }
+
+    return true;
+  }
+
+  async handleWhatsAppInbound(req: Request, res: Response): Promise<void> {
+    if (!this.validateTwilioRequest(req, res)) return;
 
     try {
       await whatsappWebhookHandler.handleInbound(req);
@@ -38,27 +56,7 @@ export class WebhookController {
   }
 
   async handleWhatsAppStatus(req: Request, res: Response): Promise<void> {
-    // Validate Twilio signature on status callbacks (same defense as inbound)
-    const twilioSignature = req.headers['x-twilio-signature'] as string || '';
-    const authToken = process.env.TWILIO_AUTH_TOKEN || '';
-
-    if (authToken && twilioSignature && typeof twilio.validateRequest === 'function') {
-      const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-      const isValid = twilio.validateRequest(
-        authToken,
-        twilioSignature,
-        url,
-        req.body
-      );
-      if (!isValid) {
-        logger.warn('Invalid Twilio status callback signature', {
-          url,
-          path: req.originalUrl,
-        });
-        res.status(403).send('Invalid signature');
-        return;
-      }
-    }
+    if (!this.validateTwilioRequest(req, res)) return;
 
     try {
       await whatsappWebhookHandler.handleStatusCallback(req);
@@ -74,7 +72,7 @@ export class WebhookController {
   async handleWhatsAppVerification(req: Request, res: Response): Promise<void> {
     const challenge = req.query['hub.challenge'] as string | undefined;
     const verifyToken = req.query['hub.verify_token'] as string | undefined;
-    const expectedToken = process.env.META_VERIFY_TOKEN || '';
+    const expectedToken = config.META_VERIFY_TOKEN || '';
 
     logger.info('Meta webhook verification request', {
       query: req.query,

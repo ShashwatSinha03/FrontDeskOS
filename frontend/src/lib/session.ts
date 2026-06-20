@@ -12,7 +12,9 @@ export function getSessionId(): string | null {
 }
 
 export function setSessionId(id: string): void {
-  document.cookie = `${SESSION_COOKIE}=${encodeURIComponent(id)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+  const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+  const secureFlag = isSecure ? '; Secure' : '';
+  document.cookie = `${SESSION_COOKIE}=${encodeURIComponent(id)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax${secureFlag}`;
 }
 
 export async function ensureSession(businessId: string): Promise<string> {
