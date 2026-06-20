@@ -45,7 +45,7 @@ export default function SupportSearchPage() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && doSearch()}
           placeholder="Search by name, phone, email, conversation ID, appointment ID..."
-          className="block w-full max-w-2xl rounded-lg border border-border bg-background px-4 py-3 text-base shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="block w-full max-w-2xl rounded-lg bg-card border-border bg-background px-4 py-3 text-base shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
         <button onClick={doSearch} disabled={loading || !query.trim()}
           className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
@@ -89,7 +89,7 @@ export default function SupportSearchPage() {
             <Section title="Businesses" icon={Building2}>
               {results.businesses.map((b: any, i: number) => (
                 <Link key={i} href={`/ops/businesses/${b.id}`}
-                  className="block rounded-lg border bg-card p-4 hover:bg-muted/30 transition-colors">
+                  className="block rounded-lg bg-card p-4 hover:bg-muted/30 transition-colors">
                   <div className="font-medium">{b.name}</div>
                   <div className="text-xs text-muted-foreground">{b.slug}</div>
                 </Link>
@@ -101,7 +101,7 @@ export default function SupportSearchPage() {
             <Section title="Leads" icon={User}>
               {results.leads.map((l: any, i: number) => (
                 <Link key={i} href={`/${l.businessSlug || l.slug}/admin/leads/${l.id}`}
-                  className="block rounded-lg border bg-card p-4 hover:bg-muted/30 transition-colors">
+                  className="block rounded-lg bg-card p-4 hover:bg-muted/30 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{l.name || 'Unknown'}</div>
                     {l.lifecycle_state && <StatusBadge level="info">{l.lifecycle_state}</StatusBadge>}
@@ -120,7 +120,7 @@ export default function SupportSearchPage() {
             <Section title="Conversations" icon={MessageSquare}>
               {results.conversations.map((c: any, i: number) => (
                 <Link key={i} href={`/${c.businessSlug || c.slug}/admin/conversations/${c.id}`}
-                  className="block rounded-lg border bg-card p-4 hover:bg-muted/30 transition-colors">
+                  className="block rounded-lg bg-card p-4 hover:bg-muted/30 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{c.customer_name || 'Unknown'}</div>
                     <StatusBadge level={c.channel_type?.toLowerCase() === 'whatsapp' ? 'success' : 'info'}>{c.channel_type || '—'}</StatusBadge>
@@ -137,7 +137,7 @@ export default function SupportSearchPage() {
             <Section title="Appointments" icon={Calendar}>
               {results.appointments.map((a: any, i: number) => (
                 <Link key={i} href={`/${a.businessSlug || a.slug}/admin/appointments`}
-                  className="block rounded-lg border bg-card p-4 hover:bg-muted/30 transition-colors">
+                  className="block rounded-lg bg-card p-4 hover:bg-muted/30 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{a.appointment_time ? new Date(a.appointment_time).toLocaleString() : '—'}</div>
                     <StatusBadge level={statusLevel(a.status)}>{a.status || '—'}</StatusBadge>

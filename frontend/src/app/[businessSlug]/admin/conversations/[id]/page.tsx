@@ -79,7 +79,7 @@ export default function ConversationDetailPage() {
         <ArrowLeft className="h-4 w-4" /> Back to Conversations
       </Link>
 
-      <div className="rounded-xl border bg-card p-6">
+      <div className="rounded-xl bg-card p-6">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-lg font-semibold">{conversation.customer_name || 'Unknown'}</h2>
@@ -108,7 +108,7 @@ export default function ConversationDetailPage() {
         {conversation.messages && conversation.messages.length > 0 ? (
           <div className="space-y-2">
             {(conversation.messages as any[]).sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()).map((msg: any, i: number) => (
-              <div key={i} className="rounded-lg border bg-card p-4">
+              <div key={i} className="rounded-lg bg-card p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <StatusBadge level={msg.role === 'assistant' || msg.sender === 'agent' ? 'success' : msg.role === 'system' || msg.sender === 'system' ? 'neutral' : 'info'}>
                     {msg.role || msg.sender || 'Unknown'}
@@ -129,7 +129,7 @@ export default function ConversationDetailPage() {
           <Workflow className="h-4 w-4 text-muted-foreground" /> Workflow State
         </h3>
         {workflow ? (
-          <div className="rounded-xl border bg-card p-5 space-y-3">
+          <div className="rounded-xl bg-card p-5 space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Type:</span>
               <span className="text-sm font-medium">{workflow.workflow_type || '—'}</span>
@@ -163,7 +163,7 @@ export default function ConversationDetailPage() {
           <User className="h-4 w-4 text-muted-foreground" /> Linked Lead
         </h3>
         {lead ? (
-          <div className="rounded-xl border bg-card p-5 space-y-3">
+          <div className="rounded-xl bg-card p-5 space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Customer ID:</span>
               <span className="text-sm font-mono text-xs">{lead.customer_id || lead.id}</span>
@@ -204,7 +204,7 @@ export default function ConversationDetailPage() {
         {appointments && appointments.length > 0 ? (
           <div className="space-y-2">
             {appointments.map((apt: any, i: number) => (
-              <div key={i} className="rounded-lg border bg-card p-4 flex items-center justify-between">
+              <div key={i} className="rounded-lg bg-card p-4 flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{apt.service_name || 'Service'}</p>
                   <p className="text-xs text-muted-foreground">{formatDate(apt.appointment_time)}</p>

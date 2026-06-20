@@ -64,7 +64,7 @@ export function CustomerProfileEditor({
   }
 
   return (
-    <div className="space-y-2 p-3 rounded-lg border bg-muted/30">
+    <div className="space-y-2 p-3 rounded-lg bg-card bg-muted/30">
       <div className="grid gap-2 sm:grid-cols-3">
         <Input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Name *" className="h-8 px-2 py-1 text-xs" />
         <Input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="Email" type="email" className="h-8 px-2 py-1 text-xs" />

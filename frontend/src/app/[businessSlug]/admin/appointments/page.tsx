@@ -74,7 +74,7 @@ export default function AppointmentsPage() {
       ) : data.length === 0 ? (
         <p className="text-sm text-muted-foreground">No appointments found.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">

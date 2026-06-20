@@ -190,7 +190,7 @@ export default function InboxConversationPage() {
         )}
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto rounded-lg border bg-card mb-3">
+        <div className="flex-1 overflow-y-auto rounded-lg bg-card mb-3">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
               No messages yet.
@@ -236,7 +236,7 @@ export default function InboxConversationPage() {
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               placeholder={isHumanPending ? 'Join the conversation to reply...' : 'Type a message...'}
               disabled={!isHumanActive || sending}
-              className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm disabled:opacity-50"
+              className="flex-1 rounded-lg bg-card bg-background px-3 py-2 text-sm disabled:opacity-50"
             />
             <button
               onClick={handleSend}
@@ -252,7 +252,7 @@ export default function InboxConversationPage() {
       {/* Info Sidebar (collapses below on mobile) */}
       <div className="w-full lg:w-72 shrink-0 space-y-3">
         {/* Customer Info */}
-        <div className="rounded-lg border bg-card p-3">
+        <div className="rounded-lg bg-card p-3">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Customer</h3>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
@@ -279,7 +279,7 @@ export default function InboxConversationPage() {
         </div>
 
         {/* Escalation Details */}
-        <div className="rounded-lg border bg-card p-3">
+        <div className="rounded-lg bg-card p-3">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Escalation</h3>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
@@ -311,7 +311,7 @@ export default function InboxConversationPage() {
 
         {/* Workflow Info */}
         {workflow && (
-          <div className="rounded-lg border bg-card p-3">
+          <div className="rounded-lg bg-card p-3">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Workflow</h3>
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between">
@@ -342,7 +342,7 @@ export default function InboxConversationPage() {
 
         {/* Appointments */}
         {appointments.length > 0 && (
-          <div className="rounded-lg border bg-card p-3">
+          <div className="rounded-lg bg-card p-3">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Appointments</h3>
             <div className="space-y-2">
               {appointments.map((apt: any) => (

@@ -119,8 +119,8 @@ export default function EditBusinessPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="rounded-lg border bg-card">
-        <div className="border-b px-5 py-3">
+      <form onSubmit={handleSave} className="rounded-lg bg-card">
+        <div className="px-5 py-3">
           <h2 className="text-sm font-medium">Business Details</h2>
         </div>
         <div className="space-y-4 p-5">
@@ -194,8 +194,8 @@ export default function EditBusinessPage({ params }: { params: Promise<{ id: str
         </div>
       </form>
 
-      <div className="rounded-lg border bg-card">
-        <div className="border-b px-5 py-3">
+      <div className="rounded-lg bg-card">
+        <div className="px-5 py-3">
           <h2 className="text-sm font-medium">
             Assign Owner {biz.owner_name ? `(Current: ${biz.owner_name})` : ''}
           </h2>

@@ -97,7 +97,7 @@ export default function ActivityPage() {
             const colorClasses = eventColor(item.event_type);
             return (
               <div key={i} className="flex items-start gap-4 py-4 border-b last:border-0">
-                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${colorClasses}`}>
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card ${colorClasses}`}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">

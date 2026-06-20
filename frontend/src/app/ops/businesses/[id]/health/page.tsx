@@ -97,7 +97,7 @@ export default function BusinessHealthPage() {
 
       <PageHeader title={business?.name || 'Business Health'} description={`Operational health for ${business?.slug || id}`} />
 
-      <div className="rounded-xl border bg-card p-6">
+      <div className="rounded-xl bg-card p-6">
         <h3 className="text-sm font-semibold mb-4">Business Information</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm">
           <div><span className="text-muted-foreground">Name:</span> <span className="font-medium">{business?.name || '—'}</span></div>
@@ -123,7 +123,7 @@ export default function BusinessHealthPage() {
       </div>
 
       {deliveryHealth && (
-        <div className="rounded-xl border bg-card p-6">
+        <div className="rounded-xl bg-card p-6">
           <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold">
             <Truck className="h-4 w-4 text-muted-foreground" /> Delivery Health (7 days)
           </h3>
@@ -139,7 +139,7 @@ export default function BusinessHealthPage() {
         </div>
       )}
 
-      <div className="rounded-xl border bg-card p-6">
+      <div className="rounded-xl bg-card p-6">
         <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold">
           <Activity className="h-4 w-4 text-muted-foreground" /> Recent Activity
         </h3>

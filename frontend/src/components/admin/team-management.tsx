@@ -135,7 +135,7 @@ export function TeamManagement({ readOnly }: { readOnly: boolean }) {
       )}
 
       {!readOnly && (
-        <form onSubmit={handleInvite} className="flex items-end gap-2 rounded-lg border p-4">
+        <form onSubmit={handleInvite} className="flex items-end gap-2 rounded-lg bg-card p-4">
           <div className="flex-1">
             <label className="block text-xs font-medium mb-1">Email</label>
             <input
@@ -176,7 +176,7 @@ export function TeamManagement({ readOnly }: { readOnly: boolean }) {
       ) : staff.length === 0 ? (
         <p className="text-sm text-muted-foreground">No team members yet.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">

@@ -104,7 +104,7 @@ export default async function AdminLayout({
           <MobileSidebar businessName={business.name} slug={businessSlug} />
           <NotificationBell />
         </header>
-        <main className="flex-1 bg-secondary/20">
+        <main className="flex-1">
           <div className="mx-auto max-w-7xl px-6 py-8">
             {children}
           </div>

@@ -348,7 +348,7 @@ function ServicesTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }
       )}
 
       {showCreate && (
-        <form onSubmit={handleCreate} className="grid grid-cols-2 gap-3 rounded-lg border p-4">
+        <form onSubmit={handleCreate} className="grid grid-cols-2 gap-3 rounded-lg bg-card p-4">
           <div className="col-span-2">
             <label className="block text-xs font-medium mb-1">Name *</label>
             <input type="text" value={newSvc.name} onChange={(e) => setNewSvc({ ...newSvc, name: e.target.value })}
@@ -381,7 +381,7 @@ function ServicesTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }
       {services.length === 0 ? (
         <p className="text-sm text-muted-foreground">No services yet.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
@@ -500,7 +500,7 @@ function HoursTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: a
       {DAYS.map((day) => {
         const d = week[day] || { open: false, start: '09:00', end: '17:00' };
         return (
-          <div key={day} className="flex items-center gap-3 rounded-lg border p-3">
+          <div key={day} className="flex items-center gap-3 rounded-lg bg-card p-3">
             <span className="w-28 text-sm font-medium">{day}</span>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={d.open}
@@ -619,7 +619,7 @@ function FaqsTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: an
       )}
 
       {showAdd && (
-        <form onSubmit={handleAdd} className="space-y-2 rounded-lg border p-4">
+        <form onSubmit={handleAdd} className="space-y-2 rounded-lg bg-card p-4">
           <input type="text" value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="Question"
             required className="w-full rounded-md border px-2 py-1.5 text-sm" />
           <textarea value={newA} onChange={(e) => setNewA(e.target.value)} placeholder="Answer" rows={2}
@@ -636,7 +636,7 @@ function FaqsTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: an
       ) : (
         <div className="space-y-2">
           {faqs.map((faq, idx) => (
-            <div key={idx} className="rounded-lg border p-3">
+            <div key={idx} className="rounded-lg bg-card p-3">
               {editIdx === idx ? (
                 <div className="space-y-2">
                   <input type="text" value={editQ} onChange={(e) => setEditQ(e.target.value)}
@@ -796,7 +796,7 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
             return (
               <div
                 key={ch.channelType}
-                className={`rounded-lg border p-4 transition-opacity ${!ch.enabled ? 'opacity-60' : ''}`}
+                className={`rounded-lg bg-card p-4 transition-opacity ${!ch.enabled ? 'opacity-60' : ''}`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -979,7 +979,7 @@ function AiTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: any)
       </div>
 
       {showPreview && form.greeting && (
-        <div className="rounded-lg border bg-muted/30 p-4">
+        <div className="rounded-lg bg-card bg-muted/30 p-4">
           <p className="text-xs text-muted-foreground mb-2">Visitor preview:</p>
           <div className="rounded-lg bg-primary/10 p-3 text-sm">
             {form.greeting}
@@ -988,7 +988,7 @@ function AiTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: any)
       )}
 
       <div className="space-y-3">
-        <label className="flex items-center gap-3 rounded-lg border p-3">
+        <label className="flex items-center gap-3 rounded-lg bg-card p-3">
           <input type="checkbox" checked={form.leadCaptureEnabled}
             onChange={(e) => setForm({ ...form, leadCaptureEnabled: e.target.checked })}
             disabled={!isOwner}
@@ -999,7 +999,7 @@ function AiTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: any)
           </div>
         </label>
 
-        <label className="flex items-center gap-3 rounded-lg border p-3">
+        <label className="flex items-center gap-3 rounded-lg bg-card p-3">
           <input type="checkbox" checked={form.bookingEnabled}
             onChange={(e) => setForm({ ...form, bookingEnabled: e.target.checked })}
             disabled={!isOwner}

@@ -6,7 +6,7 @@ import { founderFetcher, founderUrl } from '@/lib/api/founder';
 
 function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-lg border bg-card p-5">
+    <div className="rounded-lg bg-card p-5">
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
     </div>
@@ -53,8 +53,8 @@ export default function OpsOverviewPage() {
       )}
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <div className="rounded-lg border bg-card">
-          <div className="border-b px-5 py-3">
+        <div className="rounded-lg bg-card">
+          <div className="px-5 py-3">
             <h2 className="text-sm font-medium">Recent Businesses</h2>
           </div>
           <div className="divide-y">
@@ -78,8 +78,8 @@ export default function OpsOverviewPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border bg-card">
-          <div className="border-b px-5 py-3">
+        <div className="rounded-lg bg-card">
+          <div className="px-5 py-3">
             <h2 className="text-sm font-medium">Quick Actions</h2>
           </div>
           <div className="space-y-1 p-5">

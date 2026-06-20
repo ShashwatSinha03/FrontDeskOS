@@ -62,7 +62,7 @@ export default function OpsUsersPage() {
       ) : users.length === 0 ? (
         <p className="text-sm text-muted-foreground">No users found.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-x-auto rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">

@@ -120,7 +120,7 @@ export default function DeliveriesPage() {
           <h3 className="mb-3 text-sm font-semibold">Channel Breakdown</h3>
           <div className="space-y-2">
             {channelBreakdown.map((ch: any, i: number) => (
-              <div key={i} className="rounded-lg border bg-card p-4 flex items-center justify-between">
+              <div key={i} className="rounded-lg bg-card p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <StatusBadge level={ch.channel?.toLowerCase() === 'whatsapp' ? 'success' : 'info'}>
                     {ch.channel || ch.channel_type || 'Unknown'}

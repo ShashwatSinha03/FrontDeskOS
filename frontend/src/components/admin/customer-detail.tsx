@@ -27,7 +27,7 @@ function ConversationMessages({ conversationId }: { conversationId: string | nul
   );
   const convMessages = msgsData?.success ? (msgsData.data as any[]) || [] : [];
 
-  if (isLoading) return <div className="h-32 rounded-lg border bg-muted/30 animate-pulse" />;
+  if (isLoading) return <div className="h-32 rounded-lg bg-card bg-muted/30 animate-pulse" />;
   if (error) return <p className="text-sm text-red-500">Failed to load messages.</p>;
 
   return <ConversationViewer messages={convMessages as any} />;
@@ -134,7 +134,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
         <div className="h-8 w-48 rounded-md bg-muted animate-pulse" />
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl border bg-card p-5">
+            <div key={i} className="rounded-xl bg-card p-5">
               <div className="h-4 w-24 rounded bg-muted animate-pulse mb-3" />
               <div className="h-8 w-16 rounded bg-muted animate-pulse" />
             </div>

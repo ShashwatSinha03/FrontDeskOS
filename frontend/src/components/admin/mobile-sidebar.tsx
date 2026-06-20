@@ -64,8 +64,8 @@ export function MobileSidebar({ businessName, slug }: { businessName: string; sl
           <Menu className="h-5 w-5" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-56 p-0">
-        <div className="flex h-14 items-center border-b px-5">
+        <SheetContent side="left" className="w-56 p-0">
+          <div className="flex h-14 items-center px-5">
           <Link href={`/${slug}`} className="text-sm font-semibold tracking-tight text-foreground/80">
             {businessName}
           </Link>

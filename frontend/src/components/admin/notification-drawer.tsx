@@ -98,7 +98,7 @@ export function NotificationDrawer({ open, onClose, onMarked }: Props) {
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between border-b px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-3">
           <h2 className="text-sm font-semibold">Notifications</h2>
           <div className="flex items-center gap-2">
             <button onClick={handleMarkAll}

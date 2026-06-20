@@ -64,27 +64,27 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg bg-card p-4">
           <p className="text-xs text-muted-foreground">Leads</p>
           <p className="mt-1 text-2xl font-semibold">{o?.leads?.total ?? 0}</p>
         </div>
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg bg-card p-4">
           <p className="text-xs text-muted-foreground">Appointments</p>
           <p className="mt-1 text-2xl font-semibold">{o?.appointments?.total ?? 0}</p>
         </div>
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg bg-card p-4">
           <p className="text-xs text-muted-foreground">Conversion Rate</p>
           <p className="mt-1 text-2xl font-semibold">{o?.leads?.conversionRate ?? 0}%</p>
         </div>
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg bg-card p-4">
           <p className="text-xs text-muted-foreground">Completion Rate</p>
           <p className="mt-1 text-2xl font-semibold">{o?.appointments?.completionRate ?? 0}%</p>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg border">
-          <div className="border-b px-4 py-3">
+        <div className="rounded-lg bg-card">
+          <div className="px-4 py-3">
             <h2 className="text-sm font-semibold">Lead Funnel</h2>
           </div>
           <div className="p-4 space-y-3">
@@ -108,8 +108,8 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border">
-          <div className="border-b px-4 py-3">
+        <div className="rounded-lg bg-card">
+          <div className="px-4 py-3">
             <h2 className="text-sm font-semibold">Service Leaderboard</h2>
           </div>
           <div className="p-4">
@@ -137,8 +137,8 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg border">
-          <div className="border-b px-4 py-3">
+        <div className="rounded-lg bg-card">
+          <div className="px-4 py-3">
             <h2 className="text-sm font-semibold">Trends (30 days)</h2>
           </div>
           <div className="p-4">
@@ -151,8 +151,8 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border">
-          <div className="border-b px-4 py-3">
+        <div className="rounded-lg bg-card">
+          <div className="px-4 py-3">
             <h2 className="text-sm font-semibold">Escalation Health</h2>
           </div>
           <div className="p-4 space-y-4">

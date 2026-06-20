@@ -116,7 +116,7 @@ export default function InboxPage() {
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 rounded-lg border p-1 bg-muted/30 overflow-x-auto">
+        <div className="flex gap-1 rounded-lg bg-card p-1 bg-muted/30 overflow-x-auto">
           {TABS.map((t) => {
             const count = t.key ? tabCount(t.key) : 0;
             return (
@@ -195,7 +195,7 @@ export default function InboxPage() {
             <button
               key={conv.id}
               onClick={() => router.push(`/${slug}/admin/inbox/${conv.id}`)}
-              className="w-full rounded-lg border bg-card px-4 py-3 text-left transition-colors hover:bg-accent/50"
+              className="w-full rounded-lg bg-card px-4 py-3 text-left transition-colors hover:bg-accent/50"
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                 <div className="flex-1 min-w-0">

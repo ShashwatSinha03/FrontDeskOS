@@ -80,7 +80,7 @@ export function LearningInboxDetail({ request, onClose, onAction }: Props) {
 
   return (
     <div className="border-l bg-card w-full lg:w-[480px] shrink-0 overflow-y-auto">
-      <div className="sticky top-0 bg-card border-b px-4 py-3 flex items-center justify-between z-10">
+      <div className="sticky top-0 bg-card px-4 py-3 flex items-center justify-between z-10">
         <h3 className="font-semibold text-sm">Request Details</h3>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="h-4 w-4" />

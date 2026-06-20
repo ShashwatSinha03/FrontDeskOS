@@ -55,8 +55,8 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
   }, [fetchInboxCount]);
 
   return (
-    <aside className="w-56 border-r bg-card shrink-0 hidden md:flex flex-col">
-      <div className="flex h-14 items-center border-b px-5">
+    <aside className="w-56 bg-card shrink-0 hidden md:flex flex-col border-r border-border/50">
+      <div className="flex h-14 items-center px-5">
         <Link href={`/${slug}`} className="text-sm font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors">
           {businessName}
         </Link>

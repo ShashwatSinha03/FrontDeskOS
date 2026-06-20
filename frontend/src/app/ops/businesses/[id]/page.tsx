@@ -65,8 +65,8 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
       ) : (
         <>
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="rounded-lg border bg-card">
-              <div className="border-b px-5 py-3">
+            <div className="rounded-lg bg-card">
+              <div className="px-5 py-3">
                 <h2 className="text-sm font-medium">Business Information</h2>
               </div>
               <div className="space-y-3 p-5 text-sm">
@@ -101,8 +101,8 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
               </div>
             </div>
 
-            <div className="rounded-lg border bg-card">
-              <div className="border-b px-5 py-3">
+            <div className="rounded-lg bg-card">
+              <div className="px-5 py-3">
                 <h2 className="text-sm font-medium">Owner Information</h2>
               </div>
               <div className="space-y-3 p-5 text-sm">
@@ -119,8 +119,8 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="rounded-lg border bg-card">
-              <div className="border-b px-5 py-3">
+            <div className="rounded-lg bg-card">
+              <div className="px-5 py-3">
                 <h2 className="text-sm font-medium">Platform Information</h2>
               </div>
               <div className="space-y-3 p-5 text-sm">
@@ -135,8 +135,8 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
               </div>
             </div>
 
-            <div className="rounded-lg border bg-card">
-              <div className="border-b px-5 py-3">
+            <div className="rounded-lg bg-card">
+              <div className="px-5 py-3">
                 <h2 className="text-sm font-medium">Recent Activity</h2>
               </div>
               <div className="space-y-3 p-5 text-sm">

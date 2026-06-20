@@ -109,7 +109,7 @@ export default function OpsUserDetailPage({
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg bg-card p-4">
           <h2 className="mb-3 text-sm font-semibold">Details</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
@@ -133,7 +133,7 @@ export default function OpsUserDetailPage({
           </dl>
         </div>
 
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg bg-card p-4">
           <h2 className="mb-3 text-sm font-semibold">Actions</h2>
           <div className="flex flex-wrap gap-2">
             <button
@@ -158,8 +158,8 @@ export default function OpsUserDetailPage({
         </div>
       </div>
 
-      <div className="rounded-lg border">
-        <div className="border-b px-4 py-3">
+      <div className="rounded-lg bg-card">
+        <div className="px-4 py-3">
           <h2 className="text-sm font-semibold">Memberships ({data.memberships?.length || 0})</h2>
         </div>
         {data.memberships?.length > 0 ? (
@@ -208,7 +208,7 @@ export default function OpsUserDetailPage({
         )}
       </div>
 
-      <div className="rounded-lg border p-4">
+      <div className="rounded-lg bg-card p-4">
         <h2 className="mb-3 text-sm font-semibold">Danger Zone</h2>
         <div className="flex flex-wrap gap-2">
           <button

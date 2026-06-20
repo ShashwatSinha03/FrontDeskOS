@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
                 { label: 'Qualified', value: funnel.qualified, color: 'bg-purple-100 text-purple-700' },
                 { label: 'Won', value: funnel.won, color: 'bg-green-100 text-green-700' },
               ].map((item) => (
-                <div key={item.label} className="rounded-lg border p-3">
+                <div key={item.label} className="rounded-lg bg-card p-3">
                   <p className="text-xs text-muted-foreground">{item.label}</p>
                   <p className={`mt-1 text-2xl font-semibold inline-block rounded px-2 ${item.color}`}>
                     {item.value}
@@ -102,8 +102,8 @@ export default function AdminDashboardPage() {
               <AttentionRequired />
             </div>
             <div className="md:col-span-2 space-y-4">
-            <div className="rounded-lg border">
-              <div className="border-b px-4 py-3 flex items-center justify-between">
+            <div className="rounded-lg bg-card">
+              <div className="px-4 py-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Today&apos;s Appointments</h2>
                 <Link href={`/${slug}/admin/appointments`} className="text-xs text-primary hover:underline">View all</Link>
               </div>
@@ -152,8 +152,8 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border">
-              <div className="border-b px-4 py-3 flex items-center justify-between">
+            <div className="rounded-lg bg-card">
+              <div className="px-4 py-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Open Leads</h2>
                 <Link href={`/${slug}/admin/leads`} className="text-xs text-primary hover:underline">View all</Link>
               </div>
@@ -188,8 +188,8 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border">
-              <div className="border-b px-4 py-3 flex items-center justify-between">
+            <div className="rounded-lg bg-card">
+              <div className="px-4 py-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Pending Escalations</h2>
                 <Link href={`/${slug}/admin/escalations`} className="text-xs text-primary hover:underline">View all</Link>
               </div>
@@ -224,8 +224,8 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border">
-              <div className="border-b px-4 py-3">
+            <div className="rounded-lg bg-card">
+              <div className="px-4 py-3">
                 <h2 className="text-sm font-semibold">Recent Activity</h2>
               </div>
               <div className="p-4">
