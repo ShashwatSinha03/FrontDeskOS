@@ -1,10 +1,49 @@
-@import "https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap";
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'Expose';
+  src: url('/fonts/expose/Expose-Variable.woff2') format('woff2');
+  font-weight: 400 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Expose';
+  src: url('/fonts/expose/Expose-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Expose';
+  src: url('/fonts/expose/Expose-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Expose';
+  src: url('/fonts/expose/Expose-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Expose';
+  src: url('/fonts/expose/Expose-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+  font-style: normal;
+}
+
 @theme inline {
-  --font-sans: 'Switzer', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Expose', system-ui, -apple-system, sans-serif;
   --color-background: oklch(0.145 0 0);
   --color-foreground: oklch(0.985 0 0);
   --color-card: oklch(0.18 0 0);
