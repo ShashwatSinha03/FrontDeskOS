@@ -39,7 +39,7 @@ export class EscalationReminderService {
               SELECT 1 FROM notifications n
               WHERE n.business_id = c.business_id
                 AND n.type = $2
-                AND n.entity_id = c.id::text
+                AND n.entity_id::text = c.id::text
             )
         `, [threshold.minutes, threshold.type]);
 
