@@ -1,10 +1,11 @@
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/sidebar';
 import { MobileSidebar } from '@/components/admin/mobile-sidebar';
 import { NotificationBell } from '@/components/admin/notification-bell';
 import { createClient } from '@/lib/supabase/server';
 
-async function getBusiness(slug: string) {
+const getBusiness = cache(async (slug: string) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
   try {
     const res = await fetch(`${apiUrl}/public/businesses/${slug}`, { next: { revalidate: 60 } });
@@ -14,7 +15,7 @@ async function getBusiness(slug: string) {
   } catch {
     return null;
   }
-}
+});
 
 async function getMembership(accessToken: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';

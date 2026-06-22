@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   getConversationDetail,
   joinInboxConversation,
@@ -46,6 +47,21 @@ export default function InboxConversationPage() {
   const [sending, setSending] = useState(false);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const messages = detail?.messages || [];
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 80,
+    overscan: 10,
+  });
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      virtualizer.scrollToIndex(messages.length - 1, { align: 'end', behavior: 'smooth' });
+    }
+  }, [messages.length]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,10 +77,6 @@ export default function InboxConversationPage() {
   }, [conversationId]);
 
   useEffect(() => { load(); }, [load]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [detail?.messages]);
 
   async function handleJoin() {
     setError('');
@@ -122,7 +134,6 @@ export default function InboxConversationPage() {
   }
 
   const conv = detail?.conversation;
-  const messages = detail?.messages || [];
   const workflow = detail?.workflow;
   const appointments = detail?.appointments || [];
   const ownershipStatus = conv?.ownership_status;
@@ -190,38 +201,47 @@ export default function InboxConversationPage() {
         )}
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto rounded-lg bg-card mb-3">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-lg bg-card mb-3">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
               No messages yet.
             </div>
           ) : (
-            <div className="space-y-3 p-4">
-              {messages.map((m: any) => (
-                <div
-                  key={m.id}
-                  className={`flex ${m.sender === 'customer' ? 'justify-start' : 'justify-end'}`}
-                >
+            <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
+              {virtualizer.getVirtualItems().map((virtualItem) => {
+                const m = messages[virtualItem.index];
+                return (
                   <div
-                    className={`max-w-[85%] sm:max-w-[75%] rounded-lg px-3 py-2 text-sm ${
-                      m.sender === 'customer'
-                        ? 'bg-muted text-foreground'
-                        : m.sender === 'human_owner'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-primary text-primary-foreground'
-                    }`}
+                    key={m.id}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualItem.start}px)`,
+                    }}
+                    className={`flex p-4 ${m.sender === 'customer' ? 'justify-start' : 'justify-end'}`}
                   >
-                    <div className="whitespace-pre-wrap break-words">{m.content}</div>
-                    <div className={`mt-1 text-[10px] ${m.sender === 'customer' ? 'text-muted-foreground' : 'text-white/70'}`}>
-                      {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      {m.sender === 'human_owner' && ' · You'}
-                      {m.sender === 'agent' && ' · AI'}
-                      {m.sender === 'customer' && ' · Customer'}
+                    <div
+                      className={`max-w-[85%] sm:max-w-[75%] rounded-lg px-3 py-2 text-sm ${
+                        m.sender === 'customer'
+                          ? 'bg-muted text-foreground'
+                          : m.sender === 'human_owner'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-primary text-primary-foreground'
+                      }`}
+                    >
+                      <div className="whitespace-pre-wrap break-words">{m.content}</div>
+                      <div className={`mt-1 text-[10px] ${m.sender === 'customer' ? 'text-muted-foreground' : 'text-white/70'}`}>
+                        {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {m.sender === 'human_owner' && ' · You'}
+                        {m.sender === 'agent' && ' · AI'}
+                        {m.sender === 'customer' && ' · Customer'}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
+                );
+              })}
             </div>
           )}
         </div>

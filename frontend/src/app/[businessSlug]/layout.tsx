@@ -1,9 +1,10 @@
+import { cache } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ChatWidget } from '@/components/chat/chat-widget';
 import { ChatProvider } from '@/contexts/chat-context';
 
-async function getBusiness(slug: string) {
+const getBusiness = cache(async (slug: string) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
   try {
     const res = await fetch(`${apiUrl}/public/businesses/${slug}`, { next: { revalidate: 60 } });
@@ -13,7 +14,7 @@ async function getBusiness(slug: string) {
   } catch {
     return null;
   }
-}
+});
 
 export default async function BusinessLayout({
   children,

@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
 import { defaultContent } from '@/lib/marketing-content';
-import { PillNav } from '@/components/marketing/pill-nav';
+import dynamic from 'next/dynamic';
 import { HomeHero } from '@/components/marketing/hero';
-import { ProblemSection } from '@/components/marketing/problem-section';
 import { SolutionSection } from '@/components/marketing/solution-section';
 import { HowItWorks } from '@/components/marketing/how-it-works';
 import { ProductShowcase } from '@/components/marketing/product-showcase';
 import { ProductScreenshots } from '@/components/marketing/product-screenshots';
 import { IndustriesSection } from '@/components/marketing/industries-section';
-import { DemoSection } from '@/components/marketing/demo-section';
 import { FounderSection } from '@/components/marketing/founder-section';
 import { FinalCta } from '@/components/marketing/final-cta';
 import { MarketingFooter } from '@/components/marketing/marketing-footer';
+
+const PillNav = dynamic(() => import('@/components/marketing/pill-nav').then(m => ({ default: m.PillNav })));
+const ProblemSection = dynamic(() => import('@/components/marketing/problem-section').then(m => ({ default: m.ProblemSection })));
+const DemoSection = dynamic(() => import('@/components/marketing/demo-section').then(m => ({ default: m.DemoSection })));
 
 export const metadata: Metadata = {
   title: 'Nuvora — 24/7 AI Receptionist for Service Businesses',

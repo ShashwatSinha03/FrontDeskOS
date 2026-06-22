@@ -47,8 +47,9 @@ export default function DeliveriesPage() {
     setFailedLoading(false);
   }, [failedPage]);
 
-  useEffect(() => { loadHealth(); }, [loadHealth]);
-  useEffect(() => { loadFailed(); }, [loadFailed]);
+  useEffect(() => {
+    Promise.all([loadHealth(), loadFailed()]);
+  }, []);
 
   const summary = health?.summary || health?.data?.summary || {};
   const channelBreakdown = health?.channelBreakdown || health?.data?.channelBreakdown || [];

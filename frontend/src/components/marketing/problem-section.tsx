@@ -1,6 +1,10 @@
+'use client';
+
 import { ProblemContent } from '@/lib/marketing-content';
 import { XCircle, ArrowDown } from 'lucide-react';
-import MagicRings from '@/components/MagicRings';
+import dynamic from 'next/dynamic';
+
+const MagicRings = dynamic(() => import('@/components/MagicRings'), { ssr: false });
 
 export function ProblemSection({ headline, problems, result }: ProblemContent) {
   return (

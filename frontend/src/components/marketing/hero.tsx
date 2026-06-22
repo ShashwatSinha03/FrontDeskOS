@@ -6,7 +6,9 @@ import { Reveal } from '@/components/design/reveal';
 import BorderGlow from '@/components/BorderGlow';
 import { HeroContent } from '@/lib/marketing-content';
 import { ArrowRight, MessageSquare, CalendarCheck, UserCheck } from 'lucide-react';
-import LightRays from '@/components/LightRays';
+import dynamic from 'next/dynamic';
+
+const LightRays = dynamic(() => import('@/components/LightRays'), { ssr: false });
 
 function FlowStep({ icon: Icon, label, visible, delay }: { icon: any; label: string; visible: boolean; delay: number }) {
   return (

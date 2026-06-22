@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Reveal } from '@/components/design/reveal';
-import DotGrid from '@/components/DotGrid';
+import dynamic from 'next/dynamic';
 import { DemoContent } from '@/lib/marketing-content';
+
+const DotGrid = dynamic(() => import('@/components/DotGrid'), { ssr: false });
 
 export function DemoSection({ headline, messages }: DemoContent) {
   const ref = useRef<HTMLDivElement>(null);
