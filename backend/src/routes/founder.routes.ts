@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authenticate, requireSuperAdmin } from '../middleware';
 import { founderController } from '../controllers/founder.controller';
+import { usageController } from '../controllers/usage.controller';
 
 const founderRouter = Router();
 
@@ -27,5 +28,12 @@ founderRouter.get('/support/search', (req, res) => founderController.supportSear
 founderRouter.get('/businesses/:id/health', (req, res) => founderController.getBusinessHealth(req, res));
 
 founderRouter.get('/onboarding', (req, res) => founderController.getOnboarding(req, res));
+
+founderRouter.get('/costs/llm', (req, res) => usageController.getLLMCosts(req, res));
+founderRouter.get('/costs/channels', (req, res) => usageController.getChannelCosts(req, res));
+founderRouter.get('/costs/summary', (req, res) => usageController.getCostSummary(req, res));
+founderRouter.get('/costs/llm/:businessId', (req, res) => usageController.getLLMUsageDetail(req, res));
+founderRouter.get('/costs/simulate', (req, res) => usageController.simulatePricing(req, res));
+founderRouter.get('/costs/analytics', (req, res) => usageController.getFounderAnalytics(req, res));
 
 export { founderRouter };

@@ -17,6 +17,7 @@
  */
 
 import { LLMProviderFactory } from '../services/llm/provider.factory';
+import { persistLLMUsage } from '../services/llm/usage-persistence.service';
 import {
   businessRepository,
   customerRepository,
@@ -282,10 +283,26 @@ export async function detectIntentNode(state: AgentState): Promise<Partial<Agent
 
   let rawOutput = '';
   try {
-    rawOutput = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.0, responseFormat: 'json' });
+
+    rawOutput = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'intent_detection',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist intent detection LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
   } catch (err) {
     logger.error('❌ Intent detection LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
     return {
@@ -341,10 +358,26 @@ export async function informationNode(state: AgentState): Promise<Partial<AgentS
 
   let reply = "Let me find that information for you. Could you please give me a moment?";
   try {
-    reply = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.2 });
+
+    reply = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'information',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist information node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
   } catch (err) {
     logger.error('❌ Information node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
@@ -371,10 +404,26 @@ export async function pricingNode(state: AgentState): Promise<Partial<AgentState
 
   let reply = "Let me look up our pricing for you. One moment please.";
   try {
-    reply = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.1 });
+
+    reply = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'pricing',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist pricing node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
   } catch (err) {
     logger.error('❌ Pricing node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
@@ -475,10 +524,26 @@ export async function bookingNode(state: AgentState): Promise<Partial<AgentState
   let appointmentId: string | undefined;
 
   try {
-    rawOutput = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.1, responseFormat: 'json' });
+
+    rawOutput = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'booking',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist booking node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
 
     interface BookingResult {
       action: 'collect_info' | 'confirm' | 'book';
@@ -642,10 +707,26 @@ export async function rescheduleNode(state: AgentState): Promise<Partial<AgentSt
   let appointmentId: string | undefined;
 
   try {
-    rawOutput = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.1, responseFormat: 'json' });
+
+    rawOutput = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'reschedule',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist reschedule node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
 
     interface RescheduleResult {
       action: 'collect_info' | 'confirm' | 'reschedule';
@@ -727,10 +808,26 @@ export async function cancellationNode(state: AgentState): Promise<Partial<Agent
   let appointmentId: string | undefined;
 
   try {
-    rawOutput = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.1, responseFormat: 'json' });
+
+    rawOutput = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'cancellation',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist cancellation node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
 
     interface CancellationResult {
       action: 'collect_info' | 'confirm_cancel';
@@ -816,10 +913,26 @@ export async function escalationNode(state: AgentState): Promise<Partial<AgentSt
 
   let reply = "I understand this is important. I've flagged this for our team and someone will follow up shortly.";
   try {
-    reply = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.2 });
+
+    reply = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'escalation',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist escalation node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
   } catch (err) {
     logger.error('❌ Escalation node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
@@ -848,13 +961,29 @@ export async function greetingNode(state: AgentState): Promise<Partial<AgentStat
     state.services
   );
 
-  let reply = `Hi! 👋 Welcome to ${state.business.name}. How can I help you today?`;
+  let reply = `Hi! Welcome to ${state.business.name}. How can I help you today?`;
 
   try {
-    reply = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.4 });
+
+    reply = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'greeting',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist greeting node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
   } catch (err) {
     logger.error('❌ Greeting node LLM error', { route: 'AgentNodes', businessId: state.business?.id, customerId: state.customer?.id, error: err instanceof Error ? err.message : String(err) });
   }
@@ -888,10 +1017,26 @@ export async function unknownNode(state: AgentState): Promise<Partial<AgentState
   let suggestedAnswer: string | null = null;
 
   try {
-    rawOutput = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.4, responseFormat: 'json' });
+
+    rawOutput = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'unknown',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist unknown node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
 
     const parsed = safeParseJson<UnknownResult>(rawOutput);
     if (parsed?.reply) reply = parsed.reply;
@@ -963,10 +1108,26 @@ export async function leadCaptureNode(state: AgentState): Promise<Partial<AgentS
   let updatedPhone: string | undefined;
 
   try {
-    const rawOutput = await provider.chat([
+    const response = await provider.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: state.userMessage },
     ], { temperature: 0.3, responseFormat: 'json' });
+
+    const rawOutput = response.content;
+
+    persistLLMUsage({
+      businessId: state.business.id,
+      provider: provider.name,
+      model: response.model,
+      inputTokens: response.usage.inputTokens,
+      outputTokens: response.usage.outputTokens,
+      totalTokens: response.usage.totalTokens,
+      context: 'lead_capture',
+      conversationId: state.conversation?.id,
+      customerId: state.customer?.id,
+    }).catch((err) => {
+      logger.error('Failed to persist lead capture node LLM usage', { route: 'AgentNodes', businessId: state.business?.id, error: err instanceof Error ? err.message : String(err) });
+    });
 
     interface LeadCaptureResult {
       reply: string;

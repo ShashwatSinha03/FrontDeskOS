@@ -1,7 +1,8 @@
-import { messageDeliveryRepository, businessChannelRepository } from '../../repositories';
+import { messageDeliveryRepository, businessChannelRepository, channelUsageRepository } from '../../repositories';
 import { channelRegistry } from './channel-registry';
 import { SendResult } from './channel-adapter.interface';
 import { ChannelType, MessageDelivery } from '../../types';
+import { estimateChannelCost } from '../llm/cost-estimator.service';
 import { logger } from '../../lib/logger';
 
 export class DeliveryService {
@@ -43,6 +44,24 @@ export class DeliveryService {
         } else {
           await messageDeliveryRepository.markSent(deliveryRecord.id, params.businessId, 'internal');
         }
+
+        channelUsageRepository.create({
+          businessId: params.businessId,
+          channelType: params.channelType,
+          direction: 'outbound',
+          conversationId: params.conversationId,
+          customerId: params.customerId,
+          messageId: params.messageId,
+          estimatedCostUsd: estimateChannelCost(params.channelType),
+          metadata: { deliveryId: deliveryRecord.id, externalId: result.externalId },
+        }).catch((err) => {
+          logger.error('Failed to persist channel usage', {
+            route: 'DeliveryService',
+            businessId: params.businessId,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
+
         logger.info('Message delivered successfully', {
           route: 'DeliveryService',
           businessId: params.businessId,

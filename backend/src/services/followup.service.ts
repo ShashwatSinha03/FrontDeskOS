@@ -4,6 +4,7 @@ import {
   conversationRepository 
 } from '../repositories';
 import { LLMProviderFactory } from './llm/provider.factory';
+import { persistLLMUsage } from './llm/usage-persistence.service';
 import { FollowUp, FollowUpType } from '../types';
 import { logger } from '../lib/logger';
 
@@ -90,10 +91,26 @@ Do NOT give medical advice. If they had scheduling concerns, offer to find a slo
 Keep it casual, supportive, and matching the business tone.
 Response:`;
 
-      const followUpText = await provider.chat([
+      const llmResponse = await provider.chat([
         { role: 'system', content: 'You are an AI follow-up dispatcher.' },
         { role: 'user', content: prompt }
       ]);
+
+      const followUpText = llmResponse.content;
+
+      persistLLMUsage({
+        businessId: followUp.businessId,
+        provider: provider.name,
+        model: llmResponse.model,
+        inputTokens: llmResponse.usage.inputTokens,
+        outputTokens: llmResponse.usage.outputTokens,
+        totalTokens: llmResponse.usage.totalTokens,
+        context: 'followup',
+        conversationId: conversation?.id,
+        customerId: followUp.customerId,
+      }).catch((err) => {
+        logger.error('Failed to persist follow-up LLM usage', { route: 'FollowUpService', businessId: followUp.businessId, error: err instanceof Error ? err.message : String(err) });
+      });
 
       // 4. Log the follow-up message in conversation history
       await conversationRepository.addMessage(

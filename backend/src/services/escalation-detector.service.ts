@@ -1,4 +1,5 @@
 import { LLMProviderFactory } from './llm/provider.factory';
+import { persistLLMUsage } from './llm/usage-persistence.service';
 import { logger } from '../lib/logger';
 
 interface EscalationDetectorInput {
@@ -95,10 +96,24 @@ export class EscalationDetectorService {
     );
 
     try {
-      const rawOutput = await provider.chat([
+      const response = await provider.chat([
         { role: 'system', content: systemPrompt },
         { role: 'user', content: input.message },
       ], { temperature: 0.0, responseFormat: 'json' });
+
+      const rawOutput = response.content;
+
+      persistLLMUsage({
+        businessId: input.businessId,
+        provider: provider.name,
+        model: response.model,
+        inputTokens: response.usage.inputTokens,
+        outputTokens: response.usage.outputTokens,
+        totalTokens: response.usage.totalTokens,
+        context: 'escalation_detector',
+      }).catch((err) => {
+        logger.error('Failed to persist escalation detector LLM usage', { route: 'EscalationDetector', businessId: input.businessId, error: err instanceof Error ? err.message : String(err) });
+      });
 
       const parsed = safeParseJson<LLMResult>(rawOutput);
 

@@ -12,6 +12,8 @@ import { SessionRepository } from './session.repository';
 import { LifecycleEventRepository } from './lifecycle-event.repository';
 import { NotificationRepository } from './notification.repository';
 import { ConversationWorkflowRepository } from './conversation-workflow.repository';
+import { LLMUsageRepository } from './llm-usage.repository';
+import { ChannelUsageRepository } from './channel-usage.repository';
 
 // Export instantiated singleton repository instances for runtime dependency injection
 export const businessChannelRepository = new BusinessChannelRepository();
@@ -28,6 +30,8 @@ export const sessionRepository = new SessionRepository();
 export const lifecycleEventRepository = new LifecycleEventRepository();
 export const notificationRepository = new NotificationRepository();
 export const conversationWorkflowRepository = new ConversationWorkflowRepository();
+export const llmUsageRepository = new LLMUsageRepository();
+export const channelUsageRepository = new ChannelUsageRepository();
 
 // Export classes for typing and custom initialization in testing environments
 export {
@@ -45,4 +49,6 @@ export {
   LifecycleEventRepository,
   NotificationRepository,
   ConversationWorkflowRepository,
+  LLMUsageRepository,
+  ChannelUsageRepository,
 };

@@ -5,6 +5,7 @@ import {
   businessRepository,
 } from '../../repositories';
 import { LLMProviderFactory } from '../llm/provider.factory';
+import { persistLLMUsage } from '../llm/usage-persistence.service';
 import { RecoveryChannel } from './channel.interface';
 import { WebChatChannel } from './webchat.channel';
 import { WhatsAppChannel } from './whatsapp.channel';
@@ -136,10 +137,26 @@ ${history ? `Chat history:\n${history}\n` : 'No prior chat history.'}
 Follow-up type: ${followUp.type} (re_engagement = 15 min, day_1 = 24 hr, day_3 = 72 hr)
 Write a short, professional 1-2 sentence re-engagement message. Keep it casual and supportive.`;
 
-    return await provider.chat([
+    const llmResponse = await provider.chat([
       { role: 'system', content: 'You are an AI recovery dispatcher.' },
       { role: 'user', content: prompt },
     ]);
+
+    persistLLMUsage({
+      businessId: followUp.businessId,
+      provider: provider.name,
+      model: llmResponse.model,
+      inputTokens: llmResponse.usage.inputTokens,
+      outputTokens: llmResponse.usage.outputTokens,
+      totalTokens: llmResponse.usage.totalTokens,
+      context: 'recovery',
+      conversationId: conversation?.id,
+      customerId: followUp.customerId,
+    }).catch((err) => {
+      logger.error('Failed to persist recovery LLM usage', { route: 'RecoveryService', businessId: followUp.businessId, error: err instanceof Error ? err.message : String(err) });
+    });
+
+    return llmResponse.content;
   }
 
   private defaultSequence(): RecoveryStep[] {

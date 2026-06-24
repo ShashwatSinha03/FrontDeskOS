@@ -11,12 +11,14 @@ import {
   Rocket,
   Heart,
   Search,
+  DollarSign,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Overview', href: '/ops', icon: LayoutDashboard, exact: true },
   { label: 'Businesses', href: '/ops/businesses', icon: Building2 },
   { label: 'Users', href: '/ops/users', icon: Users },
+  { label: 'Costs', href: '/ops/costs', icon: DollarSign },
   { label: 'Onboarding', href: '/ops/onboarding', icon: Rocket },
   { label: 'Pilot Health', href: '/ops/pilot', icon: Heart },
   { label: 'Support', href: '/ops/support', icon: Search },
