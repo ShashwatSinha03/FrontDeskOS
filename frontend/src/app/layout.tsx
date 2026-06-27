@@ -28,8 +28,6 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   description:
     'Nuvora acts like a 24/7 AI receptionist that answers questions, captures leads, books appointments, follows up automatically, and escalates urgent issues to your team.',
-  metadataBase: new URL('https://nuvoraos.app'),
-  robots: { index: true, follow: true },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -46,14 +44,12 @@ export const metadata: Metadata = {
       'Never miss another customer. Nuvora handles inquiries, bookings, and follow-ups while your team focuses on delivering great service.',
     siteName: 'Nuvora',
     type: 'website',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Nuvora — AI Receptionist for Service Businesses',
     description:
       'Never miss another customer. Nuvora handles inquiries, bookings, and follow-ups while your team focuses on delivering great service.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
 };
 

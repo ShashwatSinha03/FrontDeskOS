@@ -4,9 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getInboxConversations, getInboxCounts } from '@/lib/api/ops';
 import { PageHeader } from '@/components/design/page-header';
-import { EmptyState } from '@/components/design/empty-state';
 import { cn } from '@/lib/utils';
-import { Inbox } from 'lucide-react';
 
 type OwnershipStatus = 'human_pending' | 'human_active' | 'returned_to_ai' | 'closed';
 
@@ -188,7 +186,9 @@ export default function InboxPage() {
           ))}
         </div>
       ) : data.length === 0 ? (
-        <EmptyState icon={Inbox} title="No conversations" description="No conversations in this section." />
+        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <p className="text-sm">No conversations in this section.</p>
+        </div>
       ) : (
         <div className="space-y-2">
           {data.map((conv) => (

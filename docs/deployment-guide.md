@@ -45,7 +45,7 @@ Multi-tenant routing (via Vercel + Next.js middleware):
 ### Step 1.1 — Create Supabase Project
 
 1. Go to [supabase.com](https://supabase.com) → **New project**
-2. Name: `nuvora`
+2. Name: `frontdeskos`
 3. Database password: **save this securely** — needed for `DATABASE_URL`
 4. Region: choose closest to your users (e.g., `us-west-1`)
 5. Wait for provisioning (~2 minutes)
@@ -428,7 +428,7 @@ Before announcing launch, run through every item:
 # Dashboard → nuvoraos-api → Deploys → Activate last known good deploy
 
 # Frontend: Vercel immediately
-# Dashboard → nuvora → Deployments → [...] → Promote to Production
+# Dashboard → frontdeskos → Deployments → [...] → Promote to Production
 
 # Database: Restore from backup
 # Supabase Dashboard → Database → Backups → Restore

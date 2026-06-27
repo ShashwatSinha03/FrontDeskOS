@@ -10,8 +10,6 @@ import {
   sendInboxMessage,
 } from '@/lib/api/ops';
 import { PageHeader } from '@/components/design/page-header';
-import { EmptyState } from '@/components/design/empty-state';
-import { MessageSquare } from 'lucide-react';
 
 function waitingDuration(date: Date | string | null): string {
   if (!date) return '';
@@ -205,7 +203,9 @@ export default function InboxConversationPage() {
         {/* Messages */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-lg bg-card mb-3">
           {messages.length === 0 ? (
-            <EmptyState icon={MessageSquare} title="No messages" description="No messages in this conversation yet." />
+            <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+              No messages yet.
+            </div>
           ) : (
             <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
               {virtualizer.getVirtualItems().map((virtualItem) => {

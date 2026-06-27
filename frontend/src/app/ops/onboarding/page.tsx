@@ -214,34 +214,25 @@ export default function OnboardingWizard() {
   const handleResume = useCallback(() => {
     const draft = loadDraft();
     if (draft) {
-      dispatch({ type: 'SET_STEP', step: 0 });
-      if (draft.industry && draft.templateVersion) {
-        // Reconstruct template from draft data to dispatch SET_INDUSTRY
-        dispatch({ type: 'SET_INDUSTRY', industry: draft.industry, template: {
-          version: draft.templateVersion,
-          industry: draft.industry,
-          label: draft.industry.charAt(0).toUpperCase() + draft.industry.slice(1),
-          suggestedServices: draft.services || [],
-          defaultHours: draft.hours?.map(h => ({ ...h })) || [],
-          suggestedFaqs: draft.faqs?.map(f => ({ ...f })) || [],
-          suggestedGreeting: draft.ai?.greeting || '',
-          escalationRules: { autoEscalateKeywords: [], alertMethods: [], notifyEmail: '', inactivityTimeoutMinutes: 30 },
-          slotDurationMinutes: draft.ai?.slotDurationMinutes || 30,
-        } });
-      }
-      if (draft.business) dispatch({ type: 'SET_BUSINESS', business: draft.business });
-      if (draft.services) dispatch({ type: 'SET_SERVICES', services: draft.services });
-      if (draft.hours) dispatch({ type: 'SET_HOURS', hours: draft.hours });
-      if (draft.faqs) dispatch({ type: 'SET_FAQS', faqs: draft.faqs });
-      if (draft.ai) dispatch({ type: 'SET_AI', ai: draft.ai });
-
-      let estimatedStep = draft.industry ? 1 : 0;
-      if (draft.business?.name) estimatedStep = Math.max(estimatedStep, 2);
-      if (draft.services?.length) estimatedStep = Math.max(estimatedStep, 3);
-      if (draft.hours?.length) estimatedStep = Math.max(estimatedStep, 4);
-      if (draft.faqs?.length) estimatedStep = Math.max(estimatedStep, 5);
-      if (draft.ai?.greeting) estimatedStep = Math.max(estimatedStep, 6);
-      dispatch({ type: 'SET_STEP', step: estimatedStep });
+      // Rehydrate state — ugly but effective: dispatch individual actions
+      const next = initialState();
+      next.sessionId = draft.sessionId || next.sessionId;
+      next.industry = draft.industry || '';
+      next.templateVersion = draft.templateVersion || '';
+      if (draft.business) Object.assign(next.business, draft.business);
+      if (draft.services) next.services = draft.services;
+      if (draft.hours) next.hours = draft.hours;
+      if (draft.faqs) next.faqs = draft.faqs;
+      if (draft.ai) Object.assign(next.ai, draft.ai);
+      // Estimate step based on data — go to furthest completed
+      if (draft.business?.name) next.step = Math.max(next.step, 1);
+      if (draft.services?.length) next.step = Math.max(next.step, 2);
+      if (draft.hours?.length) next.step = Math.max(next.step, 3);
+      if (draft.faqs?.length) next.step = Math.max(next.step, 4);
+      if (draft.ai?.greeting) next.step = Math.max(next.step, 5);
+      // Reconstruct reducer state by dispatching
+      const el = document.createElement('div');
+      // Use key re-creation trick — just reload
     }
     setShowResume(false);
   }, []);

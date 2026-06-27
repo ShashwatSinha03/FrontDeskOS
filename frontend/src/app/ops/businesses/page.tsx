@@ -91,10 +91,13 @@ export default function OpsBusinessesPage() {
                         <Eye className="h-3 w-3" />
                         View
                       </Link>
-                      <span className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                      <Link
+                        href={`/ops/businesses/${biz.id}/edit`}
+                        className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-muted"
+                      >
                         <Pencil className="h-3 w-3" />
                         Edit
-                      </span>
+                      </Link>
                       <Link
                         href={`/${biz.slug}/admin`}
                         className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-muted"

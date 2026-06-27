@@ -8,7 +8,7 @@
 **Services:**
 - Frontend: Vercel (`nuvoraos.app`, `brightsmile.nuvoraos.app`, `*.nuvoraos.app`)
 - Backend: Render (`api.nuvoraos.app` → `nuvoraos-api`)
-- Database: Supabase Postgres (`nuvora` project, ref `dndbfkhrndrcwoknivxt`)
+- Database: Supabase Postgres (`frontdeskos` project, ref `dndbfkhrndrcwoknivxt`)
 
 ---
 
@@ -62,8 +62,8 @@ Use when all infrastructure (local dev, CI, or deployment environments) needs to
 
 1. **Clone the repository**
    ```bash
-   git clone git@github.com:your-org/nuvora.git
-   cd nuvora
+   git clone git@github.com:your-org/frontdeskos.git
+   cd frontdeskos
    ```
 
 2. **Install dependencies**
@@ -129,7 +129,7 @@ Use when all infrastructure (local dev, CI, or deployment environments) needs to
 
 1. **Navigate to Vercel Dashboard**
    - Go to [vercel.com](https://vercel.com)
-   - Select the project (frontend, likely named `nuvora` or `nuvoraos`)
+   - Select the project (frontend, likely named `frontdeskos` or `nuvoraos`)
 
 2. **Find the last known good deployment**
    - Click **Deployments** in the top navigation

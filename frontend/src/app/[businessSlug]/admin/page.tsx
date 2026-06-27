@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
             <div className="rounded-lg bg-card">
               <div className="px-4 py-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Today&apos;s Appointments</h2>
-                <span className="text-xs text-muted-foreground">View all</span>
+                <Link href={`/${slug}/admin/appointments`} className="text-xs text-primary hover:underline">View all</Link>
               </div>
               <div className="p-4">
                 {data?.todayAppointments?.length === 0 ? (
@@ -155,7 +155,7 @@ export default function AdminDashboardPage() {
             <div className="rounded-lg bg-card">
               <div className="px-4 py-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Open Leads</h2>
-                <span className="text-xs text-muted-foreground">View all</span>
+                <Link href={`/${slug}/admin/leads`} className="text-xs text-primary hover:underline">View all</Link>
               </div>
               <div className="p-4">
                 {data?.openLeads?.length === 0 ? (
@@ -166,9 +166,9 @@ export default function AdminDashboardPage() {
                       <div key={l.id} className="rounded-md border p-2.5 text-sm">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <span className="font-medium truncate block">
+                            <Link href={`/${slug}/admin/leads/${l.id}`} className="font-medium hover:underline truncate block">
                               {l.name || 'Unknown'}
-                            </span>
+                            </Link>
                             <p className="text-xs text-muted-foreground">{l.phone || l.email || ''}</p>
                           </div>
                           <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
@@ -191,7 +191,7 @@ export default function AdminDashboardPage() {
             <div className="rounded-lg bg-card">
               <div className="px-4 py-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">Pending Escalations</h2>
-                <span className="text-xs text-muted-foreground">View all</span>
+                <Link href={`/${slug}/admin/escalations`} className="text-xs text-primary hover:underline">View all</Link>
               </div>
               <div className="p-4">
                 {data?.pendingEscalations?.length === 0 ? (
