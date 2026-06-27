@@ -11,9 +11,9 @@ export default function NotFound() {
         <Link href="/">
           <Button>Go Home</Button>
         </Link>
-        <button onClick={() => window.history.back()} className="rounded-lg border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted">
+        <a href="/" className="rounded-lg border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted">
           Go Back
-        </button>
+        </a>
       </div>
     </div>
   );
