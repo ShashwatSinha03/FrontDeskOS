@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import useSWR from 'swr';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
 
@@ -107,12 +106,9 @@ export default function OpsUsersPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`/ops/users/${u.id}`}
-                      className="text-xs font-medium text-primary hover:underline"
-                    >
+                    <span className="text-xs font-medium text-muted-foreground">
                       View
-                    </Link>
+                    </span>
                   </td>
                 </tr>
               ))}
