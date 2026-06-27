@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { demoAnalytics } from '@/lib/demo/analytics/demo-analytics';
 
 export function EntryModal() {
   const [show, setShow] = useState(false);
@@ -29,7 +30,7 @@ export function EntryModal() {
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
             href="/demo/apex-dental"
-            onClick={dismiss}
+            onClick={() => { demoAnalytics.track('demo_started'); dismiss(); }}
             className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500"
           >
             Explore Demo

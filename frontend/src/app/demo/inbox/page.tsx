@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useDemo, useDemoStore } from '@/lib/demo/stores/demo-provider';
+import { demoAnalytics } from '@/lib/demo/analytics/demo-analytics';
 import { MessageSquare, AlertTriangle, Phone, Globe, Smartphone } from 'lucide-react';
 
 function ChannelIcon({ channel }: { channel: string }) {
@@ -23,6 +25,7 @@ function TimeAgo({ timestamp }: { timestamp: number }) {
 
 export default function DemoInboxPage() {
   const { conversations } = useDemo();
+  useEffect(() => { demoAnalytics.track('inbox_viewed'); }, []);
   const convs = useDemoStore(conversations, () => conversations.conversations);
 
   return (

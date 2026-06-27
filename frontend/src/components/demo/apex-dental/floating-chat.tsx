@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useDemo } from '@/lib/demo/stores/demo-provider';
+import { demoAnalytics } from '@/lib/demo/analytics/demo-analytics';
 import { ConversationEngine } from '@/lib/demo/engine/conversation-engine';
 import type { ConversationState } from '@/lib/demo/engine/conversation-engine';
 import { MessageSquare, X } from 'lucide-react';
@@ -11,16 +12,18 @@ export function FloatingChat() {
   const [state, setState] = useState<ConversationState | null>(null);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [chatTracked, setChatTracked] = useState(false);
   const { bus } = useDemo();
   const [engine] = useState(() => new ConversationEngine(bus));
 
   const handleOpen = useCallback(() => {
     setOpen(true);
+    if (!chatTracked) { demoAnalytics.track('chat_opened'); setChatTracked(true); }
     if (!state) {
       const initial = engine.start();
       setState(initial);
     }
-  }, [engine, state]);
+  }, [engine, state, chatTracked]);
 
   const handleSend = useCallback(async () => {
     if (!input.trim() || sending) return;

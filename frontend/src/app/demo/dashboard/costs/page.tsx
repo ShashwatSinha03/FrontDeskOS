@@ -1,10 +1,13 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useDemo, useDemoStore } from '@/lib/demo/stores/demo-provider';
+import { demoAnalytics } from '@/lib/demo/analytics/demo-analytics';
 import { DollarSign, TrendingUp, MessageSquare } from 'lucide-react';
 
 export default function DemoCostsPage() {
   const { costs } = useDemo();
+  useEffect(() => { demoAnalytics.track('cost_dashboard_viewed'); }, []);
   const total = useDemoStore(costs, () => costs.totalCost);
   const llm = useDemoStore(costs, () => costs.llmCost);
   const channel = useDemoStore(costs, () => costs.channelCost);

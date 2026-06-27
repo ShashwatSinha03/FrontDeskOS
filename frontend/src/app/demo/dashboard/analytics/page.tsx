@@ -1,10 +1,13 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useDemo, useDemoStore } from '@/lib/demo/stores/demo-provider';
+import { demoAnalytics } from '@/lib/demo/analytics/demo-analytics';
 import { MessageSquare, TrendingUp, Users, CalendarCheck } from 'lucide-react';
 
 export default function DemoAnalyticsPage() {
   const { analytics } = useDemo();
+  useEffect(() => { demoAnalytics.track('analytics_viewed'); }, []);
   const metrics = useDemoStore(analytics, () => analytics.metrics);
 
   return (

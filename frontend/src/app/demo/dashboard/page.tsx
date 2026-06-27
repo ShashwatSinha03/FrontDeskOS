@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useDemo, useDemoStore } from '@/lib/demo/stores/demo-provider';
+import { demoAnalytics } from '@/lib/demo/analytics/demo-analytics';
 
 export default function DemoDashboardPage() {
   const { dashboard, appointments, conversations, costs } = useDemo();
+  useEffect(() => { demoAnalytics.track('dashboard_viewed'); }, []);
   const metrics = useDemoStore(dashboard, () => dashboard.metrics);
   const totalCost = useDemoStore(costs, () => costs.totalCost);
 
