@@ -6,4 +6,7 @@ export default defineConfig({
     environment: 'happy-dom',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
   },
+  oxc: {
+    jsx: 'react-jsx',
+  },
 });
