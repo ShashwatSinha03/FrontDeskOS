@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { getAppointments, updateAppointmentStatus, rescheduleAppointment } from '@/lib/api/ops';
+import { EmptyState } from '@/components/design/empty-state';
+import { CalendarCheck } from 'lucide-react';
 
 export default function AppointmentsPage() {
   const params = useParams();
@@ -72,7 +74,7 @@ export default function AppointmentsPage() {
       {loading ? (
         <div className="space-y-2">{[1,2,3].map(i => <div key={i} className="h-12 animate-pulse rounded bg-muted" />)}</div>
       ) : data.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No appointments found.</p>
+        <EmptyState icon={CalendarCheck} title="No appointments" description="No appointments found for the selected filters." />
       ) : (
         <div className="overflow-x-auto rounded-lg border bg-card">
           <table className="w-full text-sm">
