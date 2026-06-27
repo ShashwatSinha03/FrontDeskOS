@@ -1,4 +1,5 @@
 import { DemoDashboardSidebar } from '@/components/demo/demo-sidebar';
+import { CTAFooter } from '@/components/demo/cta-footer';
 
 export default function DemoInboxLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,6 +9,7 @@ export default function DemoInboxLayout({ children }: { children: React.ReactNod
         <div className="mx-auto max-w-7xl px-6 py-8">
           {children}
         </div>
+        <CTAFooter />
       </main>
     </div>
   );

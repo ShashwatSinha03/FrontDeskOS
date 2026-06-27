@@ -107,7 +107,7 @@ export const defaultContent: MarketingContent = {
     subheadline:
       'Nuvora gives service businesses a custom website, an AI receptionist and an owner dashboard. Every enquiry answered. Every customer tracked. No opportunity disappears after business hours',
     primaryCta: { label: 'Book a Demo', href: 'https://calendly.com/sinhashashwat21/30min' },
-    secondaryCta: { label: 'See It Live', href: '/brightsmile-dental' },
+    secondaryCta: { label: 'Explore Interactive Demo', href: '/demo' },
   },
 
   problem: {
