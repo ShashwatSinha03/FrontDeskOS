@@ -74,7 +74,7 @@ export function StepBusiness({ data, onChange, onNext, onBack }: StepBusinessPro
         <p className="mt-1 text-sm text-muted-foreground">Tell us about the business you're onboarding.</p>
       </div>
 
-      <Card className="product-card">
+      <Card>
         <CardContent className="space-y-4 p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">

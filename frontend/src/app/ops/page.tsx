@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
-import { Loader } from '@/components/ui/loader';
 
 function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
@@ -40,8 +39,10 @@ export default function OpsOverviewPage() {
       )}
 
       {isLoading ? (
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader size={40} color="#a3a3a3" />
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
+          ))}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-3">
@@ -58,7 +59,7 @@ export default function OpsOverviewPage() {
           </div>
           <div className="divide-y">
             {isLoading ? (
-              <div className="flex justify-center p-5"><Loader size={24} color="#a3a3a3" /></div>
+              <div className="p-5 text-sm text-muted-foreground">Loading...</div>
             ) : overview?.recentBusinesses?.length > 0 ? (
               overview.recentBusinesses.map((biz: any) => (
                 <div key={biz.id} className="flex items-center justify-between px-5 py-3">
@@ -84,7 +85,7 @@ export default function OpsOverviewPage() {
           <div className="space-y-1 p-5">
             <button
               onClick={() => router.push('/ops/onboarding')}
-              className="w-full rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700/80 text-left"
+              className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 text-left"
             >
               Launch Onboarding Wizard
             </button>

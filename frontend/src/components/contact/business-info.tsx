@@ -27,12 +27,12 @@ export function BusinessInfo({ business }: { business: PublicBusinessData }) {
   return (
     <div className="space-y-4">
       {details.map((item) => (
-        <Card key={item.label} className="product-card">
+        <Card key={item.label}>
           <CardContent className="flex items-start gap-4 pt-6">
-            <item.icon className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
+            <item.icon className="h-5 w-5 text-primary mt-0.5 shrink-0" />
             <div>
-              <h3 className="font-medium text-sm text-zinc-400">{item.label}</h3>
-              <p className="mt-1 text-sm text-white whitespace-pre-line">{item.value}</p>
+              <h3 className="font-medium text-sm text-muted-foreground">{item.label}</h3>
+              <p className="mt-1 text-sm whitespace-pre-line">{item.value}</p>
             </div>
           </CardContent>
         </Card>

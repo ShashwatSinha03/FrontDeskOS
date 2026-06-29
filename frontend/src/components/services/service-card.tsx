@@ -22,28 +22,28 @@ function formatPrice(min: number, max: number) {
 
 export function ServiceCard({ service, slug }: { service: ServiceItem; slug: string }) {
   return (
-    <Card className="flex flex-col product-card p-6 transition-all duration-200">
-      <CardHeader className="pb-3 px-0 pt-0">
-        <CardTitle className="text-base font-semibold text-white">{service.name}</CardTitle>
+    <Card className="flex flex-col transition-all duration-200 hover:shadow-sm hover:border-muted-foreground/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-semibold">{service.name}</CardTitle>
         {service.description && (
-          <CardDescription className="text-sm leading-relaxed text-zinc-400">{service.description}</CardDescription>
+          <CardDescription className="text-sm leading-relaxed">{service.description}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className="flex-1 pb-4 px-0">
+      <CardContent className="flex-1 pb-4">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs text-blue-400 font-normal gap-1.5">
+          <Badge variant="secondary" className="font-normal gap-1.5 px-2.5 py-1">
             <Clock className="h-3 w-3" />
             {service.durationMinutes} min
           </Badge>
-          <Badge variant="outline" className="rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs text-blue-400 font-normal gap-1.5">
+          <Badge variant="outline" className="font-normal gap-1.5 px-2.5 py-1">
             <DollarSign className="h-3 w-3" />
             {formatPrice(service.priceMin, service.priceMax)}
           </Badge>
         </div>
       </CardContent>
-      <CardFooter className="pt-0 px-0">
+      <CardFooter className="pt-0">
         <Link href={`/${slug}/book?service=${service.id}`} className="w-full">
-          <Button className="w-full bg-blue-600/80 text-white hover:bg-blue-500/80" size="sm">
+          <Button className="w-full" size="sm">
             Book This Service
           </Button>
         </Link>

@@ -95,13 +95,13 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="dark flex min-h-screen bg-black">
+    <div className="flex min-h-screen bg-background">
       <AdminSidebar
         businessName={business.name}
         slug={businessSlug}
       />
       <div className="flex flex-1 flex-col overflow-auto">
-        <header className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-4 py-2.5 md:justify-end md:px-6">
+        <header className="flex items-center justify-between border-b bg-card px-4 py-2.5 md:justify-end md:px-6">
           <MobileSidebar businessName={business.name} slug={businessSlug} />
           <NotificationBell />
         </header>

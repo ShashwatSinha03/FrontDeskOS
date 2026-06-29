@@ -21,12 +21,12 @@ function eventIcon(eventType: string) {
 
 function eventColor(eventType: string) {
   switch (eventType) {
-    case 'lead_created': return 'text-blue-400 bg-blue-500/10 border-blue-500/20';
-    case 'appointment_booked': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
-    case 'escalation_raised': return 'text-red-400 bg-red-500/10 border-red-500/20';
-    case 'escalation_resolved': return 'text-green-400 bg-green-500/10 border-green-500/20';
-    case 'staff_invited': return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
-    default: return 'text-zinc-400 bg-zinc-800/50 border-zinc-700';
+    case 'lead_created': return 'text-blue-600 bg-blue-50 border-blue-200';
+    case 'appointment_booked': return 'text-emerald-600 bg-emerald-50 border-emerald-200';
+    case 'escalation_raised': return 'text-red-600 bg-red-50 border-red-200';
+    case 'escalation_resolved': return 'text-green-600 bg-green-50 border-green-200';
+    case 'staff_invited': return 'text-purple-600 bg-purple-50 border-purple-200';
+    default: return 'text-zinc-600 bg-zinc-50 border-zinc-200';
   }
 }
 
@@ -70,9 +70,9 @@ export default function ActivityPage() {
       <PageHeader title="Activity Log" description="Recent system activity" />
 
       {error && !loading && (
-        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400 flex items-center justify-between">
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600 flex items-center justify-between">
           <span>{error}</span>
-          <button onClick={load} className="rounded border border-red-500/30 px-3 py-1 text-xs font-medium text-red-400 hover:bg-red-500/10">Retry</button>
+          <button onClick={load} className="rounded border border-red-300 px-3 py-1 text-xs font-medium hover:bg-red-100">Retry</button>
         </div>
       )}
 
@@ -97,16 +97,16 @@ export default function ActivityPage() {
             const colorClasses = eventColor(item.event_type);
             return (
               <div key={i} className="flex items-start gap-4 py-4 border-b last:border-0">
-                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-900/30 ${colorClasses}`}>
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card ${colorClasses}`}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-zinc-300">{item.description || item.event_type || 'Activity'}</p>
-                  <div className="mt-0.5 flex items-center gap-2 text-xs text-zinc-500">
+                  <p className="text-sm">{item.description || item.event_type || 'Activity'}</p>
+                  <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{formatRelativeTime(item.occurred_at || item.created_at)}</span>
                     {item.customerId && (
                       <button onClick={() => router.push(`/${slug}/admin/leads/${item.customerId}`)}
-                        className="text-blue-400 hover:underline">
+                        className="text-blue-600 hover:underline">
                         View lead &rarr;
                       </button>
                     )}

@@ -7,7 +7,6 @@ import { fetchPublicBusiness, createLead } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Loader } from '@/components/ui/loader';
 
 export function AddLeadDialog({ open, onClose, onSuccess }: { open: boolean; onClose: () => void; onSuccess: () => void }) {
   const params = useParams();
@@ -67,7 +66,7 @@ export function AddLeadDialog({ open, onClose, onSuccess }: { open: boolean; onC
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={onClose}>Cancel</Button>
             <Button type="submit" size="sm" disabled={saving || !name.trim()}>
-              {saving ? <Loader size={16} color="currentColor" /> : 'Create Lead'}
+              {saving ? 'Creating...' : 'Create Lead'}
             </Button>
           </DialogFooter>
         </form>

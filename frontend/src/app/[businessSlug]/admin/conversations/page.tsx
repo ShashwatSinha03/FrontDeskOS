@@ -44,7 +44,7 @@ const columns = [
     render: (_: any, row: any) => (
       <div>
         <div className="font-medium">{row.customer_name || 'Unknown'}</div>
-        <div className="text-xs text-zinc-400">{row.phone || '—'}</div>
+        <div className="text-xs text-muted-foreground">{row.phone || '—'}</div>
       </div>
     ),
   },
@@ -57,7 +57,7 @@ const columns = [
     key: 'last_message',
     label: 'Last Message',
     render: (v: string | null) => (
-      <span className="text-zinc-400 text-xs">
+      <span className="text-muted-foreground text-xs">
         {v ? (v.length > 80 ? v.slice(0, 80) + '...' : v) : '—'}
       </span>
     ),
@@ -66,13 +66,13 @@ const columns = [
     key: 'last_message_at',
     label: 'Last Activity',
     render: (_: any, row: any) => (
-      <span className="text-xs text-zinc-400">{formatDate(row.last_message_at || row.updated_at)}</span>
+      <span className="text-xs text-muted-foreground">{formatDate(row.last_message_at || row.updated_at)}</span>
     ),
   },
   {
     key: 'workflow_state',
     label: 'Workflow State',
-    render: (v: string | null) => v ? <StatusBadge level={workflowLevel(v)}>{v}</StatusBadge> : <span className="text-zinc-400">—</span>,
+    render: (v: string | null) => v ? <StatusBadge level={workflowLevel(v)}>{v}</StatusBadge> : <span className="text-muted-foreground">—</span>,
   },
   {
     key: 'has_pending_escalation',
@@ -120,7 +120,7 @@ export default function ConversationsPage() {
       <PageHeader title="Conversations" description="Customer conversations and workflow states" />
 
       {error && !loading && (
-        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>
       )}
 
       <div className="flex flex-wrap items-center gap-3">
@@ -129,23 +129,23 @@ export default function ConversationsPage() {
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           placeholder="Search by name, phone, or ID..."
-          className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500 w-64"
+          className="rounded-md border px-3 py-1.5 text-sm w-64"
         />
         <select value={channel} onChange={(e) => { setChannel(e.target.value); setPage(1); }}
-          className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white">
+          className="rounded-md border px-3 py-1.5 text-sm">
           <option value="">All Channels</option>
           <option value="Web Chat">Web Chat</option>
           <option value="WhatsApp">WhatsApp</option>
         </select>
         <select value={workflowState} onChange={(e) => { setWorkflowState(e.target.value); setPage(1); }}
-          className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white">
+          className="rounded-md border px-3 py-1.5 text-sm">
           <option value="">All Workflow States</option>
           <option value="booking">Booking</option>
           <option value="idle">Idle</option>
           <option value="completed">Completed</option>
         </select>
         <select value={escalated} onChange={(e) => { setEscalated(e.target.value); setPage(1); }}
-          className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white">
+          className="rounded-md border px-3 py-1.5 text-sm">
           <option value="">All Escalations</option>
           <option value="yes">Escalated</option>
           <option value="no">Not Escalated</option>

@@ -4,7 +4,6 @@ import { useReducer, useEffect, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { WizardShell } from '@/components/onboarding/wizard-shell';
 import { ResumeDraftModal } from '@/components/onboarding/resume-draft-modal';
-import { Loader } from '@/components/ui/loader';
 import { StepIndustry } from '@/components/onboarding/step-industry';
 import { StepBusiness } from '@/components/onboarding/step-business';
 import { StepServices } from '@/components/onboarding/step-services';
@@ -341,8 +340,8 @@ export default function OnboardingWizard() {
 
   if (!initialized) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader size={40} color="#a3a3a3" />
+      <div className="flex items-center justify-center py-24">
+        <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
       </div>
     );
   }

@@ -65,7 +65,7 @@ export function StepServices({ services, onChange, onNext, onBack }: StepService
 
       <div className="space-y-3">
         {services.map((svc, i) => (
-          <Card key={i} className="product-card">
+          <Card key={i}>
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 space-y-3">

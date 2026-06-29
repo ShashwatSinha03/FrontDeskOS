@@ -41,7 +41,7 @@ export function StepFaqs({ faqs, onChange, onNext, onBack }: StepFaqsProps) {
 
       <div className="space-y-3">
         {faqs.map((faq, i) => (
-          <Card key={i} className="product-card">
+          <Card key={i}>
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 space-y-3">

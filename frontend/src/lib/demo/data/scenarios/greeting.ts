@@ -10,10 +10,6 @@ export const greetingScenario: Scenario = {
       id: 'welcome',
       aiMessage: "Welcome to Apex Dental Care! I'm your virtual assistant. How can I help you today? You can ask about our services, book an appointment, or check pricing.",
       quickReplies: ['Book an Appointment', 'View Services', 'Pricing Info', 'Talk to a Human'],
-      effects: [{
-        type: 'lead_captured',
-        payload: { lead: { name: 'Demo Visitor', source: 'web', id: 'lead-demo', phone: '', status: 'new', createdAt: Date.now() } },
-      }],
     },
   },
 };

@@ -19,7 +19,7 @@ interface ResumeDraftModalProps {
 export function ResumeDraftModal({ businessName, onResume, onStartFresh }: ResumeDraftModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <Card className="product-card mx-auto w-full max-w-md">
+      <Card className="mx-auto w-full max-w-md">
         <CardHeader>
           <CardTitle>Resume onboarding?</CardTitle>
           <CardDescription>

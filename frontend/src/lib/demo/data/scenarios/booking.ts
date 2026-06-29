@@ -44,17 +44,7 @@ export const bookingScenario: Scenario = {
       quickReplies: ['No, thanks!', 'I have another question'],
       effects: [{
         type: 'appointment_created',
-        payload: {
-          appointment: {
-            id: `apt-${Date.now()}`,
-            service: '{selected_service}',
-            date: '{selected_date}',
-            time: '{selected_time}',
-            customerName: 'Demo Visitor',
-            status: 'confirmed',
-            createdAt: Date.now(),
-          },
-        },
+        payload: { service: '{selected_service}', date: '{selected_date}', time: '{selected_time}', customerName: 'Demo Visitor' },
       }],
     },
   },

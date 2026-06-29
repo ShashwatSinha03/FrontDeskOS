@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge, lifecycleLevel } from '@/components/design/status-badge';
 import { Select } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Loader } from '@/components/ui/loader';
 import { CustomerLifecycleState } from '@/types';
 
 const ALLOWED_STATES: CustomerLifecycleState[] = [
@@ -101,7 +100,7 @@ export function LifecycleEditor({
           onClick={() => setShowConfirm(true)}
           disabled={selectedState === currentState || saving}
         >
-          {saving ? <Loader size={16} color="currentColor" /> : 'Save'}
+          {saving ? 'Saving...' : 'Save'}
         </Button>
         <Button
           variant="ghost" size="sm"

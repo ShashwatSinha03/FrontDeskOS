@@ -3,7 +3,6 @@
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { Loader } from '@/components/ui/loader';
 
 export default function ForgotPasswordPage() {
   const supabase = createClient();
@@ -85,9 +84,9 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            {loading ? <Loader size={16} color="currentColor" /> : 'Send reset link'}
+            {loading ? 'Sending...' : 'Send reset link'}
           </button>
         </form>
 

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Loader } from '@/components/ui/loader';
 
 export function BookAppointmentDialog({
   customerId, open, onClose, onSuccess,
@@ -105,7 +104,7 @@ export function BookAppointmentDialog({
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={onClose}>Cancel</Button>
             <Button type="submit" size="sm" disabled={saving || !date || !time}>
-              {saving ? <Loader size={16} color="currentColor" /> : 'Book Appointment'}
+              {saving ? 'Booking...' : 'Book Appointment'}
             </Button>
           </DialogFooter>
         </form>

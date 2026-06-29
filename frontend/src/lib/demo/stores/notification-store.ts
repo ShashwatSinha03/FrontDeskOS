@@ -29,9 +29,7 @@ export class NotificationStore extends DemoStore {
       });
       this.notify();
     });
-    this.bus.on('lead_captured', (data) => {
-      const lead = data?.lead;
-      if (!lead) return;
+    this.bus.on('lead_captured', ({ lead }) => {
       this.notifications.unshift({
         id: `notif-${Date.now()}`,
         type: 'lead',

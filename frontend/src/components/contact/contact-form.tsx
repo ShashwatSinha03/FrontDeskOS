@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { LegalConsent } from '@/components/legal/legal-consent';
 import { ensureSession } from '@/lib/session';
 import { TurnstileWidget } from '@/components/ui/turnstile-widget';
-import { Loader } from '@/components/ui/loader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -55,7 +54,7 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
 
   if (submitted) {
     return (
-      <Card className="product-card">
+      <Card>
         <CardHeader>
           <CardTitle>Message Sent!</CardTitle>
           <CardDescription>
@@ -67,7 +66,7 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
   }
 
   return (
-    <Card className="product-card">
+    <Card>
       <CardHeader>
         <CardTitle>Send Us a Message</CardTitle>
         <CardDescription>
@@ -102,7 +101,7 @@ export function ContactForm({ slug, businessId }: { slug: string; businessId: st
           <LegalConsent checked={consent} onChange={setConsent} id="contact-consent" />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" disabled={sending || !consent}>
-            {sending ? <Loader size={16} color="currentColor" /> : 'Send Message'}
+            {sending ? 'Sending...' : 'Send Message'}
           </Button>
         </form>
       </CardContent>

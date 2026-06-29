@@ -46,7 +46,7 @@ export function StepAi({ data, onChange, onNext, onBack }: StepAiProps) {
         </p>
       </div>
 
-      <Card className="product-card">
+      <Card>
         <CardContent className="space-y-4 p-6">
           <div className="space-y-2">
             <label className="text-sm font-medium">Greeting Message</label>
@@ -97,7 +97,7 @@ export function StepAi({ data, onChange, onNext, onBack }: StepAiProps) {
             </div>
           </div>
 
-          <div className="mt-4 product-card border-primary/20 p-4">
+          <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
             <p className="text-xs font-medium text-muted-foreground">Preview</p>
             <p className="mt-1 text-sm italic text-foreground">
               &ldquo;{data.greeting || 'Welcome! How can I help you today?'}&rdquo;

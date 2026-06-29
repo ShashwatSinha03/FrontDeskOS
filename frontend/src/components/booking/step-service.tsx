@@ -27,25 +27,23 @@ export function StepService({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white">Select a Service</h2>
-        <p className="text-sm text-zinc-400 mt-1">Choose the service you'd like to book.</p>
+        <h2 className="text-xl font-semibold">Select a Service</h2>
+        <p className="text-sm text-muted-foreground mt-1">Choose the service you'd like to book.</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {services.map((service) => (
           <Card
             key={service.id}
-            className={"product-card "+`cursor-pointer rounded-xl border-2 p-4 transition-colors hover:border-blue-500/50 ${
-              selected === service.id
-                ? 'border-blue-500 bg-blue-500/10 rounded-xl'
-                : 'border-zinc-800/60 bg-zinc-900/30'
+            className={`cursor-pointer border-2 p-4 transition-colors hover:border-primary ${
+              selected === service.id ? 'border-primary bg-primary/5' : 'border-border'
             }`}
             onClick={() => onSelect(service.id)}
           >
-            <h3 className="font-medium text-white">{service.name}</h3>
+            <h3 className="font-medium">{service.name}</h3>
             {service.description && (
-              <p className="text-sm text-zinc-400 mt-1 line-clamp-2">{service.description}</p>
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
             )}
-            <div className="flex items-center gap-4 mt-3 text-sm text-zinc-400">
+            <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 {service.durationMinutes} min
@@ -59,7 +57,7 @@ export function StepService({
         ))}
       </div>
       <div className="flex justify-end">
-        <Button onClick={onNext} disabled={!selected} className="bg-blue-600/80 text-white hover:bg-blue-500/80">
+        <Button onClick={onNext} disabled={!selected}>
           Next
         </Button>
       </div>

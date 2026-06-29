@@ -25,12 +25,12 @@ export default function DemoDashboardPage() {
     <div>
       <h1 className="text-2xl font-bold tracking-tight text-white">Dashboard Overview</h1>
       <p className="mt-1 text-sm text-zinc-500">Apex Dental Care — Demo Mode</p>
-      <div data-tour="tour-dashboard-metrics" className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
           <div
             key={card.label}
-            className={`product-card p-5 ${
-              card.highlight ? 'border-amber-500/30' : ''
+            className={`rounded-xl border p-5 ${
+              card.highlight ? 'border-amber-500/30 bg-amber-950/20' : 'border-zinc-800 bg-zinc-900/50'
             }`}
           >
             <p className="text-sm text-zinc-500">{card.label}</p>

@@ -7,7 +7,6 @@ import { fetchPublicBusiness, updateCustomerProfile } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pencil } from 'lucide-react';
-import { Loader } from '@/components/ui/loader';
 
 export function CustomerProfileEditor({
   customerId, name, email, phone, onSave,
@@ -75,7 +74,7 @@ export function CustomerProfileEditor({
       <div className="flex gap-2 justify-end">
         <Button variant="outline" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
         <Button size="sm" onClick={handleSave} disabled={saving || !editName.trim()}>
-          {saving ? <Loader size={16} color="currentColor" /> : 'Save'}
+          {saving ? 'Saving...' : 'Save'}
         </Button>
       </div>
     </div>

@@ -7,12 +7,7 @@ export type DemoEventName =
   | 'inbox_viewed'
   | 'analytics_viewed'
   | 'cost_dashboard_viewed'
-  | 'tour_started'
   | 'tour_completed'
-  | 'tour_skipped'
-  | 'tour_all_skipped'
-  | 'step_viewed'
-  | 'step_completed'
   | 'cta_clicked';
 
 export interface DemoAnalyticsEvent {

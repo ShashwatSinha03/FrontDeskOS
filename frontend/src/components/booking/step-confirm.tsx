@@ -8,7 +8,6 @@ import { bookAppointment } from '@/lib/api';
 import { ensureSession } from '@/lib/session';
 import { TurnstileWidget } from '@/components/ui/turnstile-widget';
 import { LegalConsent } from '@/components/legal/legal-consent';
-import { Loader } from '@/components/ui/loader';
 import { CheckCircle, Calendar, Clock, User } from 'lucide-react';
 
 interface ServiceItem {
@@ -101,11 +100,11 @@ export function StepConfirm({
     return (
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <CheckCircle className="h-16 w-16 text-green-500" />
-        <h2 className="text-2xl font-semibold text-white">Appointment Confirmed!</h2>
-        <p className="text-zinc-400 text-center max-w-md">
+        <h2 className="text-2xl font-semibold">Appointment Confirmed!</h2>
+        <p className="text-muted-foreground text-center max-w-md">
           Your appointment has been booked successfully. We&apos;ll send a confirmation to {customerEmail}.
         </p>
-        <p className="text-sm text-zinc-500">Redirecting to confirmation page...</p>
+        <p className="text-sm text-muted-foreground">Redirecting to confirmation page...</p>
       </div>
     );
   }
@@ -113,42 +112,42 @@ export function StepConfirm({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white">Confirm Your Appointment</h2>
-        <p className="text-sm text-zinc-400 mt-1">Please review your details before confirming.</p>
+        <h2 className="text-xl font-semibold">Confirm Your Appointment</h2>
+        <p className="text-sm text-muted-foreground mt-1">Please review your details before confirming.</p>
       </div>
 
-      <Card className="product-card border border-zinc-800/60 bg-zinc-900/30">
+      <Card>
         <CardContent className="space-y-4 pt-6">
           {service && (
             <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-zinc-400" />
+              <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium text-white">{service.name}</p>
-                <p className="text-sm text-zinc-400">{service.durationMinutes} minutes</p>
+                <p className="font-medium">{service.name}</p>
+                <p className="text-sm text-muted-foreground">{service.durationMinutes} minutes</p>
               </div>
             </div>
           )}
           <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-zinc-400" />
+            <Calendar className="h-5 w-5 text-muted-foreground" />
             <div>
-              <p className="font-medium text-white">
+              <p className="font-medium">
                 {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Clock className="h-5 w-5 text-zinc-400" />
+            <Clock className="h-5 w-5 text-muted-foreground" />
             <div>
-              <p className="font-medium text-white">
+              <p className="font-medium">
                 {new Date(time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <User className="h-5 w-5 text-zinc-400" />
+            <User className="h-5 w-5 text-muted-foreground" />
             <div>
-              <p className="font-medium text-white">{customerName}</p>
-              <p className="text-sm text-zinc-400">{customerEmail} · {customerPhone}</p>
+              <p className="font-medium">{customerName}</p>
+              <p className="text-sm text-muted-foreground">{customerEmail} · {customerPhone}</p>
             </div>
           </div>
         </CardContent>
@@ -168,13 +167,13 @@ export function StepConfirm({
       <LegalConsent checked={consent} onChange={setConsent} id="booking-consent" />
 
       {!consent && booking !== 'loading' && (
-        <p className="text-xs text-zinc-400">You must agree to the terms to continue.</p>
+        <p className="text-xs text-muted-foreground">You must agree to the terms to continue.</p>
       )}
 
       <div className="flex justify-between">
-        <Button variant="outline" onClick={onBack} disabled={booking === 'loading'} className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white">Back</Button>
-        <Button onClick={handleConfirm} disabled={booking === 'loading' || !consent} className="bg-blue-600/80 text-white hover:bg-blue-500/80">
-          {booking === 'loading' ? <Loader size={16} color="currentColor" /> : 'Confirm Booking'}
+        <Button variant="outline" onClick={onBack} disabled={booking === 'loading'}>Back</Button>
+        <Button onClick={handleConfirm} disabled={booking === 'loading' || !consent}>
+          {booking === 'loading' ? 'Booking...' : 'Confirm Booking'}
         </Button>
       </div>
     </div>

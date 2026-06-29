@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { ShimmerButton } from '@/components/ui/shimmer-button';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { LogoWithName } from '@/components/ui/logo';
 
@@ -55,16 +55,16 @@ export function MarketingHeader() {
             </button>
           ))}
           <div className="ml-4">
-            <ShimmerButton href="https://calendly.com/sinhashashwat21/30min" size="sm">
-              Book a Demo
-            </ShimmerButton>
+            <a href="https://calendly.com/sinhashashwat21/30min" target="_blank" rel="noopener noreferrer">
+              <Button size="sm">Book a Demo</Button>
+            </a>
           </div>
         </nav>
 
         <div className="flex items-center gap-3 md:hidden">
-          <ShimmerButton href="https://calendly.com/sinhashashwat21/30min" size="sm">
-            Book a Demo
-          </ShimmerButton>
+          <a href="https://calendly.com/sinhashashwat21/30min" target="_blank" rel="noopener noreferrer">
+            <Button size="sm">Book a Demo</Button>
+          </a>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="relative h-9 w-9 flex items-center justify-center rounded-md hover:bg-zinc-900 transition-colors"

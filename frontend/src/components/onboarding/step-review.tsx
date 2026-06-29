@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Loader } from '@/components/ui/loader';
 
 interface ReviewData {
   business: { name: string; slug: string; email: string; phone: string; address: string };
@@ -167,7 +166,7 @@ export function StepReview({ data, onEdit, onPublish, publishing }: StepReviewPr
 
       {/* Validation summary */}
       {issues.length > 0 && (
-        <Card className="product-card border-destructive/30">
+        <Card className="border-destructive/30">
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm text-destructive">
               {issues.length} issue{issues.length !== 1 ? 's' : ''} to fix
@@ -184,7 +183,7 @@ export function StepReview({ data, onEdit, onPublish, publishing }: StepReviewPr
       )}
 
       {issues.length === 0 && (
-        <Card className="product-card border-emerald-500/30 bg-emerald-500/5">
+        <Card className="border-emerald-500/30 bg-emerald-500/5">
           <CardContent className="p-4">
             <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
               All checks passed. Ready to publish.
@@ -200,7 +199,7 @@ export function StepReview({ data, onEdit, onPublish, publishing }: StepReviewPr
           disabled={issues.length > 0 || publishing}
           onClick={onPublish}
         >
-          {publishing ? <Loader size={16} color="currentColor" /> : 'Publish Tenant'}
+          {publishing ? 'Publishing...' : 'Publish Tenant'}
         </Button>
       </div>
     </div>
@@ -223,7 +222,7 @@ function SectionCard({
   const hasIssues = issues.length > 0;
 
   return (
-    <Card className={"product-card "+cn(hasIssues && 'border-destructive/30')}>
+    <Card className={cn(hasIssues && 'border-destructive/30')}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 space-y-1">{children}</div>

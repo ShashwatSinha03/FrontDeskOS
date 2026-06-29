@@ -60,13 +60,13 @@ export function MobileSidebar({ businessName, slug }: { businessName: string; sl
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="md:hidden rounded-md border border-zinc-700 p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors" aria-label="Menu">
+        <button className="md:hidden rounded-md border p-2 text-muted-foreground hover:bg-muted transition-colors" aria-label="Menu">
           <Menu className="h-5 w-5" />
         </button>
       </SheetTrigger>
-        <SheetContent side="left" className="w-56 p-0 bg-zinc-950 border-r border-zinc-800">
+        <SheetContent side="left" className="w-56 p-0">
           <div className="flex h-14 items-center px-5">
-          <Link href={`/${slug}`} className="text-sm font-semibold tracking-tight text-zinc-300 hover:text-white">
+          <Link href={`/${slug}`} className="text-sm font-semibold tracking-tight text-foreground/80">
             {businessName}
           </Link>
         </div>
@@ -85,14 +85,14 @@ export function MobileSidebar({ businessName, slug }: { businessName: string; sl
                 className={cn(
                   'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-all duration-150',
                   isActive
-                    ? 'bg-zinc-800 text-white font-medium'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
+                    ? 'bg-primary/[0.08] text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
               >
-                <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-white' : 'text-zinc-500')} />
+                <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')} />
                 <span className="flex-1 truncate">{item.label}</span>
                 {item.href === '/inbox' && inboxCount > 0 && (
-                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-600/80 px-1 text-[10px] font-bold text-white leading-none">
+                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white leading-none">
                     {inboxCount > 99 ? '99+' : inboxCount}
                   </span>
                 )}

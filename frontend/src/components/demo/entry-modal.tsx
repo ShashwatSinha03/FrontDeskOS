@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { demoAnalytics } from '@/lib/demo/analytics/demo-analytics';
-import { ShimmerButton } from '@/components/ui/shimmer-button';
 
 export function EntryModal() {
   const [show, setShow] = useState(false);
@@ -20,7 +20,7 @@ export function EntryModal() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="mx-4 max-w-md product-card p-8 shadow-2xl">
+      <div className="mx-4 max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
         <h2 className="text-2xl font-bold text-white">Interactive Product Demo</h2>
         <p className="mt-4 text-sm leading-relaxed text-zinc-400">
           This experience showcases how Novura works using simulated conversations,
@@ -28,16 +28,20 @@ export function EntryModal() {
           purposes. No real customers, AI models or business operations are involved.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ShimmerButton
+          <Link
             href="/demo/apex-dental"
             onClick={() => { demoAnalytics.track('demo_started'); dismiss(); }}
-            className="flex-1"
+            className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500"
           >
-            I Understood
-          </ShimmerButton>
-          <ShimmerButton href="/" onClick={dismiss} className="flex-1">
-            Return To Home
-          </ShimmerButton>
+            Explore Demo
+          </Link>
+          <Link
+            href="/"
+            onClick={dismiss}
+            className="flex-1 rounded-lg border border-zinc-700 px-4 py-2.5 text-center text-sm font-medium text-zinc-300 hover:bg-zinc-800"
+          >
+            Return Home
+          </Link>
         </div>
       </div>
     </div>

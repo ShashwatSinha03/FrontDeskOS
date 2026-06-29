@@ -37,7 +37,7 @@ export default async function BusinessLayout({
 
   return (
     <ChatProvider businessId={business.id} businessName={business.name}>
-      <div className="dark flex min-h-screen flex-col">
+      <div className="flex min-h-screen flex-col">
         <Header businessName={business.name} slug={businessSlug} description={business.description} />
         <main className="flex-1">{children}</main>
         <Footer businessName={business.name} slug={businessSlug} />

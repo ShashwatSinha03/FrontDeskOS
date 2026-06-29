@@ -18,12 +18,12 @@ export default function ServicesPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <div className="space-y-3 mb-12">
-          <Skeleton className="h-8 w-48 bg-zinc-800" />
-          <Skeleton className="h-5 w-80 bg-zinc-800" />
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-5 w-80" />
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-56 rounded-xl bg-zinc-800" />
+            <Skeleton key={i} className="h-56 rounded-xl" />
           ))}
         </div>
       </div>
@@ -43,9 +43,9 @@ export default function ServicesPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
       <div className="max-w-xl mb-12">
-        <h1 className="text-3xl font-bold tracking-tight text-white">Our Services</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Our Services</h1>
         {business && (
-          <p className="mt-3 text-base text-zinc-400">
+          <p className="mt-3 text-base text-muted-foreground">
             Services offered by {business.name}.
           </p>
         )}

@@ -66,22 +66,22 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <div>
-      <div className="overflow-hidden product-card">
+      <div className="overflow-hidden rounded-xl bg-card">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-zinc-800 bg-black/50">
+            <tr className="border-b bg-muted/20">
               {columns.map((col) => (
-                <th key={col.key} className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                <th key={col.key} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {col.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/60">
+          <tbody className="divide-y divide-border/50">
             {data.map((row, i) => (
-              <tr key={row.id || i} className="hover:bg-zinc-800/30 transition-colors duration-150" onClick={() => onRowClick?.(row)}>
+              <tr key={row.id || i} className="hover:bg-muted/30 transition-colors duration-150" onClick={() => onRowClick?.(row)}>
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 text-sm text-zinc-300">
+                  <td key={col.key} className="px-4 py-3 text-sm">
                     {col.render ? col.render(row[col.key], row) : String(row[col.key] ?? '')}
                   </td>
                 ))}
@@ -91,7 +91,7 @@ export function DataTable<T extends Record<string, any>>({
         </table>
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 text-sm text-zinc-400">
+        <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">
           <span>
             Page {page} of {totalPages} ({totalCount} total)
           </span>

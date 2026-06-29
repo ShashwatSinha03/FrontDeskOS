@@ -19,12 +19,12 @@ export function TourToast({ step, onDismiss }: TourToastProps) {
 
   return (
     <div
-      className={`fixed bottom-24 right-4 z-[90] max-w-sm product-card p-4 shadow-2xl transition-all duration-500 ${
+      className={`fixed bottom-24 right-4 z-[90] max-w-sm rounded-xl border border-zinc-700 bg-zinc-900 p-4 shadow-2xl transition-all duration-500 ${
         visible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600/80 text-xs font-bold text-white">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
           {step.id.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1">

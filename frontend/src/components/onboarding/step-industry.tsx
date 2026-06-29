@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { fetchIndustryList, fetchIndustryTemplate, IndustryTemplate } from '@/lib/onboarding';
 import { cn } from '@/lib/utils';
-import { Loader } from '@/components/ui/loader';
 
 const industryIcons: Record<string, string> = {
   gym: '🏋️',
@@ -64,7 +63,7 @@ export function StepIndustry({ onSelect }: StepIndustryProps) {
       {loading ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5].map((i) => (
-            <Card key={i} className="product-card animate-pulse">
+            <Card key={i} className="animate-pulse">
               <CardContent className="p-6">
                 <div className="h-8 w-8 rounded bg-muted" />
                 <div className="mt-3 h-4 w-24 rounded bg-muted" />
@@ -101,7 +100,7 @@ export function StepIndustry({ onSelect }: StepIndustryProps) {
       )}
 
       {error && (
-        <div className="product-card border-destructive/30 p-3 text-sm text-destructive">
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </div>
       )}
@@ -112,7 +111,7 @@ export function StepIndustry({ onSelect }: StepIndustryProps) {
           disabled={!selected || loadingTemplate}
           onClick={handleContinue}
         >
-          {loadingTemplate ? <Loader size={16} color="#a3a3a3" /> : 'Continue'}
+          {loadingTemplate ? 'Loading...' : 'Continue'}
         </Button>
       </div>
     </div>

@@ -68,22 +68,22 @@ export default function DeliveriesPage() {
     {
       key: 'failure_reason',
       label: 'Error',
-      render: (v: string) => <span className="text-xs text-zinc-400 max-w-[200px] block truncate">{v || '—'}</span>,
+      render: (v: string) => <span className="text-xs text-muted-foreground max-w-[200px] block truncate">{v || '—'}</span>,
     },
     {
       key: 'created_at',
       label: 'Timestamp',
-      render: (v: string) => <span className="text-xs text-zinc-400">{formatDate(v)}</span>,
+      render: (v: string) => <span className="text-xs text-muted-foreground">{formatDate(v)}</span>,
     },
     {
       key: 'conversation_id',
       label: 'Conversation',
       render: (v: string) => v ? (
         <button onClick={(e) => { e.stopPropagation(); router.push(`/${slug}/admin/conversations/${v}`); }}
-          className="text-xs text-blue-400 hover:underline">
+          className="text-xs text-blue-600 hover:underline">
           View &rarr;
         </button>
-      ) : <span className="text-zinc-400">—</span>,
+      ) : <span className="text-muted-foreground">—</span>,
     },
   ];
 
@@ -97,7 +97,7 @@ export default function DeliveriesPage() {
       <PageHeader title="Delivery Health" description="Message delivery status and failures" />
 
       {error && !loading && (
-        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>
       )}
 
       {loading ? (
@@ -118,21 +118,21 @@ export default function DeliveriesPage() {
 
       {!loading && channelBreakdown.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-white">Channel Breakdown</h3>
+          <h3 className="mb-3 text-sm font-semibold">Channel Breakdown</h3>
           <div className="space-y-2">
             {channelBreakdown.map((ch: any, i: number) => (
-              <div key={i} className="product-card p-4 flex items-center justify-between">
+              <div key={i} className="rounded-lg bg-card p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <StatusBadge level={ch.channel?.toLowerCase() === 'whatsapp' ? 'success' : 'info'}>
                     {ch.channel || ch.channel_type || 'Unknown'}
                   </StatusBadge>
                 </div>
                 <div className="flex items-center gap-6 text-sm">
-                  <span className="text-zinc-400">Total: <strong className="text-white">{ch.total_deliveries ?? ch.total ?? 0}</strong></span>
-                  <span className="text-emerald-400">OK: <strong>{ch.successful_deliveries ?? ch.successful ?? 0}</strong></span>
-                  <span className="text-red-400">Fail: <strong>{ch.failed_deliveries ?? ch.failed ?? 0}</strong></span>
-                  <span className="text-zinc-400">
-                    Rate: <strong className="text-white">{ch.delivery_rate ?? ch.rate ?? '—'}{ch.delivery_rate || ch.rate ? '%' : ''}</strong>
+                  <span className="text-muted-foreground">Total: <strong>{ch.total_deliveries ?? ch.total ?? 0}</strong></span>
+                  <span className="text-emerald-600">OK: <strong>{ch.successful_deliveries ?? ch.successful ?? 0}</strong></span>
+                  <span className="text-red-600">Fail: <strong>{ch.failed_deliveries ?? ch.failed ?? 0}</strong></span>
+                  <span className="text-muted-foreground">
+                    Rate: <strong>{ch.delivery_rate ?? ch.rate ?? '—'}{ch.delivery_rate || ch.rate ? '%' : ''}</strong>
                   </span>
                 </div>
               </div>
@@ -142,7 +142,7 @@ export default function DeliveriesPage() {
       )}
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-white">Failed Deliveries</h3>
+        <h3 className="mb-3 text-sm font-semibold">Failed Deliveries</h3>
         <DataTable
           columns={failedColumns}
           data={failedData}

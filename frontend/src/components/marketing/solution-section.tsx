@@ -1,7 +1,6 @@
 'use client';
 
 import { Reveal } from '@/components/design/reveal';
-import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { SolutionContent } from '@/lib/marketing-content';
 import { Globe, Zap, Calendar, HelpCircle, Repeat, AlertTriangle, UserCheck, LayoutDashboard, Rocket } from 'lucide-react';
 
@@ -19,32 +18,23 @@ export function SolutionSection({ headline, items }: SolutionContent) {
           </div>
         </Reveal>
 
-        <div className="mx-auto mt-16 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-16 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, i) => {
             const Icon = icons[i] || Rocket;
             return (
               <Reveal key={i} delay={i * 80} y={10} duration={600}>
-                <SpotlightCard className="p-5 group h-full" spotlightColor="rgba(59, 130, 246, 0.15)">
-                  <div className="flex flex-col items-center text-center h-full">
-                    <div className="mb-3">
-                      <div className="p-2.5 rounded-full border border-neutral-700 bg-neutral-800/50 shadow-lg transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110">
-                        <Icon className="h-5 w-5 text-zinc-300" />
-                      </div>
+                <div className="group relative h-full rounded-xl border border-zinc-800/60 bg-zinc-900/30 px-5 py-5 transition-all hover:border-blue-500/20 hover:bg-zinc-900/50">
+                  <div className="absolute left-0 top-2 h-[calc(100%-1rem)] w-0.5 rounded-full bg-blue-500/0 transition-colors group-hover:bg-blue-500/40" />
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-700/40 bg-zinc-800/40 transition-colors group-hover:border-blue-500/30 group-hover:bg-blue-500/10">
+                      <Icon className="h-4 w-4 text-zinc-400 transition-colors group-hover:text-blue-400" />
                     </div>
-                    <h3 className="mb-1.5 text-sm font-bold bg-gradient-to-r from-blue-400/80 via-blue-300/80 to-blue-400/80 bg-clip-text text-transparent">
-                      {item.label}
-                    </h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed transition-colors duration-300 group-hover:text-zinc-300 max-w-sm flex-1">
-                      {item.description}
-                    </p>
-                    <div className="mt-4 w-1/3 h-px bg-gradient-to-r from-transparent via-blue-400/20 to-transparent rounded-full transition-all duration-500 group-hover:w-1/2" />
-                    <div className="flex space-x-1.5 mt-2 opacity-40 transition-opacity duration-300 group-hover:opacity-70">
-                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
-                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
-                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
-                    </div>
+                    <h3 className="text-sm font-semibold text-white">{item.label}</h3>
                   </div>
-                </SpotlightCard>
+                  <p className="mt-3 text-sm leading-relaxed text-zinc-500 transition-colors group-hover:text-zinc-400">
+                    {item.description}
+                  </p>
+                </div>
               </Reveal>
             );
           })}

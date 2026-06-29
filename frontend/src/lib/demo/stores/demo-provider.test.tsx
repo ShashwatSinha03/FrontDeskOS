@@ -32,9 +32,9 @@ describe('DemoProvider', () => {
     expect(screen.getByText('hello')).toBeTruthy();
   });
 
-  it('provides stores via useDemo with seeded data', () => {
+  it('provides stores via useDemo', () => {
     render(<DemoProvider><TestConsumer /></DemoProvider>);
-    expect(screen.getByText('4')).toBeTruthy();
+    expect(screen.getByText('0')).toBeTruthy();
   });
 
   it('throws useDemo when outside provider', () => {

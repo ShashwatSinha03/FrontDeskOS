@@ -63,7 +63,7 @@ export default function LearningInboxPage() {
             {v || 'Unknown'}
           </CustomerLink>
         ) : (
-          <span className="text-zinc-400">—</span>
+          <span className="text-muted-foreground">—</span>
         )
       ),
     },
@@ -71,7 +71,7 @@ export default function LearningInboxPage() {
       key: 'suggestedAnswer',
       label: 'Suggested Answer',
       render: (v: string | null) => (
-        <span className="line-clamp-1 max-w-xs text-zinc-400">{v || '—'}</span>
+        <span className="line-clamp-1 max-w-xs text-muted-foreground">{v || '—'}</span>
       ),
     },
     {

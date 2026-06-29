@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import useSWR, { useSWRConfig } from 'swr';
 import { ArrowLeft } from 'lucide-react';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
-import { Loader } from '@/components/ui/loader';
 
 export default function EditBusinessPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -89,8 +88,10 @@ export default function EditBusinessPage({ params }: { params: Promise<{ id: str
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader size={40} color="#a3a3a3" />
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+        ))}
       </div>
     );
   }
@@ -178,9 +179,9 @@ export default function EditBusinessPage({ params }: { params: Promise<{ id: str
             <button
               type="submit"
               disabled={saving}
-              className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700/80 disabled:opacity-50"
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
             >
-              {saving ? <Loader size={16} color="currentColor" /> : 'Save Changes'}
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               type="button"
@@ -237,7 +238,7 @@ export default function EditBusinessPage({ params }: { params: Promise<{ id: str
           <button
             type="submit"
             disabled={assigning}
-            className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700/80 disabled:opacity-50"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
             {assigning ? 'Assigning...' : 'Assign Owner'}
           </button>

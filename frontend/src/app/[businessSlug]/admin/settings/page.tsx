@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/lib/auth';
 import { TeamManagement } from '@/components/admin/team-management';
 import { Globe, MessageCircle, Phone, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
-import { Loader } from '@/components/ui/loader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -124,8 +123,9 @@ export default function SettingsPage() {
 
   if (loadingRole || !user) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader size={40} color="#a3a3a3" />
+      <div className="space-y-4">
+        <div className="h-8 w-48 animate-pulse rounded bg-muted" />
+        <div className="h-64 animate-pulse rounded-lg bg-muted" />
       </div>
     );
   }
@@ -133,28 +133,28 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          Manage your business configuration.           {!isOwner && <span className="text-zinc-500">(View-only)</span>}
+        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Manage your business configuration. {!isOwner && '(View-only)'}
         </p>
       </div>
 
       {error && (
-        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>
       )}
       {msg && (
-        <div className="rounded-md border border-green-500/20 bg-green-500/10 p-3 text-sm text-green-400">{msg}</div>
+        <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">{msg}</div>
       )}
 
-      <div className="flex gap-1 border-b border-zinc-800">
+      <div className="flex gap-1 border-b">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => handleTabSwitch(t.id)}
             className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
               activeTab === t.id
-                ? 'border-blue-400 text-blue-400'
-                : 'border-transparent text-zinc-400 hover:text-white'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {t.label}
@@ -179,7 +179,7 @@ export default function SettingsPage() {
       )}
       {activeTab === 'team' && (
         <div className="space-y-4">
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted-foreground">
             Manage staff and owners for this business.
           </p>
           <TeamManagement readOnly={!isOwner} />
@@ -234,44 +234,44 @@ function BusinessTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }
     finally { setSaving(false); }
   }
 
-  if (loading) return <div className="flex items-center justify-center h-48"><Loader size={40} color="#a3a3a3" /></div>;
+  if (loading) return <div className="h-48 animate-pulse rounded-lg bg-muted" />;
 
   return (
     <div className="space-y-4 max-w-lg">
       <div>
-        <label className="block text-sm font-medium text-zinc-300 mb-1">Business Name</label>
+        <label className="block text-sm font-medium mb-1">Business Name</label>
         <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
           readOnly={!isOwner}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 read-only:opacity-60 read-only:cursor-not-allowed" />
+          className="w-full rounded-md border px-3 py-2 text-sm read-only:opacity-60 read-only:cursor-not-allowed" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-zinc-300 mb-1">Email</label>
+        <label className="block text-sm font-medium mb-1">Email</label>
         <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
           readOnly={!isOwner}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 read-only:opacity-60 read-only:cursor-not-allowed" />
+          className="w-full rounded-md border px-3 py-2 text-sm read-only:opacity-60 read-only:cursor-not-allowed" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-zinc-300 mb-1">Phone</label>
+        <label className="block text-sm font-medium mb-1">Phone</label>
         <input type="text" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
           readOnly={!isOwner}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 read-only:opacity-60 read-only:cursor-not-allowed" />
+          className="w-full rounded-md border px-3 py-2 text-sm read-only:opacity-60 read-only:cursor-not-allowed" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-zinc-300 mb-1">Address</label>
+        <label className="block text-sm font-medium mb-1">Address</label>
         <input type="text" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })}
           readOnly={!isOwner}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 read-only:opacity-60 read-only:cursor-not-allowed" />
+          className="w-full rounded-md border px-3 py-2 text-sm read-only:opacity-60 read-only:cursor-not-allowed" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-zinc-300 mb-1">Description</label>
+        <label className="block text-sm font-medium mb-1">Description</label>
         <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
           readOnly={!isOwner} rows={3}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 read-only:opacity-60 read-only:cursor-not-allowed" />
+          className="w-full rounded-md border px-3 py-2 text-sm read-only:opacity-60 read-only:cursor-not-allowed" />
       </div>
       {isOwner && (
         <button onClick={handleSave} disabled={!isDirty || saving}
-          className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity">
-          {saving ? <Loader size={16} color="currentColor" /> : 'Save'}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
+          {saving ? 'Saving...' : 'Save'}
         </button>
       )}
     </div>
@@ -336,95 +336,95 @@ function ServicesTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }
     setSaving(null);
   }
 
-  if (loading) return <div className="flex items-center justify-center h-48"><Loader size={40} color="#a3a3a3" /></div>;
+  if (loading) return <div className="h-48 animate-pulse rounded-lg bg-muted" />;
 
   return (
     <div className="space-y-4">
       {isOwner && (
         <button onClick={() => setShowCreate(!showCreate)}
-          className="rounded-md bg-blue-600/80 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-500/80 transition-opacity">
+          className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
           {showCreate ? 'Cancel' : 'Add Service'}
         </button>
       )}
 
       {showCreate && (
-          <form onSubmit={handleCreate} className="grid grid-cols-2 gap-3 product-card p-4">
-            <div className="col-span-2">
-              <label className="block text-xs font-medium text-zinc-300 mb-1">Name *</label>
-              <input type="text" value={newSvc.name} onChange={(e) => setNewSvc({ ...newSvc, name: e.target.value })}
-                required className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm text-white placeholder-zinc-500" />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-medium text-zinc-300 mb-1">Description</label>
-              <input type="text" value={newSvc.description} onChange={(e) => setNewSvc({ ...newSvc, description: e.target.value })}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm text-white placeholder-zinc-500" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">Duration (min) *</label>
-              <input type="number" value={newSvc.durationMinutes} onChange={(e) => setNewSvc({ ...newSvc, durationMinutes: Math.max(1, +e.target.value) })}
-                min={1} required className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm text-white" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">Price ($) *</label>
-              <input type="number" value={newSvc.price} onChange={(e) => setNewSvc({ ...newSvc, price: Math.max(0, +e.target.value) })}
-                min={0} step="0.01" required className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm text-white" />
-            </div>
-            <div className="col-span-2">
-              <button type="submit" disabled={saving === 'create' || !newSvc.name}
-                className="rounded-md bg-blue-600/80 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity">
-                {saving === 'create' ? <Loader size={16} color="currentColor" /> : 'Create Service'}
-              </button>
-            </div>
-          </form>
+        <form onSubmit={handleCreate} className="grid grid-cols-2 gap-3 rounded-lg bg-card p-4">
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1">Name *</label>
+            <input type="text" value={newSvc.name} onChange={(e) => setNewSvc({ ...newSvc, name: e.target.value })}
+              required className="w-full rounded-md border px-2 py-1.5 text-sm" />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1">Description</label>
+            <input type="text" value={newSvc.description} onChange={(e) => setNewSvc({ ...newSvc, description: e.target.value })}
+              className="w-full rounded-md border px-2 py-1.5 text-sm" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1">Duration (min) *</label>
+            <input type="number" value={newSvc.durationMinutes} onChange={(e) => setNewSvc({ ...newSvc, durationMinutes: Math.max(1, +e.target.value) })}
+              min={1} required className="w-full rounded-md border px-2 py-1.5 text-sm" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1">Price ($) *</label>
+            <input type="number" value={newSvc.price} onChange={(e) => setNewSvc({ ...newSvc, price: Math.max(0, +e.target.value) })}
+              min={0} step="0.01" required className="w-full rounded-md border px-2 py-1.5 text-sm" />
+          </div>
+          <div className="col-span-2">
+            <button type="submit" disabled={saving === 'create' || !newSvc.name}
+              className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
+              {saving === 'create' ? 'Creating...' : 'Create Service'}
+            </button>
+          </div>
+        </form>
       )}
 
       {services.length === 0 ? (
-        <p className="text-sm text-zinc-400">No services yet.</p>
+        <p className="text-sm text-muted-foreground">No services yet.</p>
       ) : (
-        <div className="overflow-x-auto product-card">
+        <div className="overflow-x-auto rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-zinc-800 bg-black/50">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Name</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Duration</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Price</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Status</th>
-                {isOwner && <th className="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">Actions</th>}
+              <tr className="border-b bg-muted/50">
+                <th className="px-4 py-3 text-left font-medium">Name</th>
+                <th className="px-4 py-3 text-left font-medium">Duration</th>
+                <th className="px-4 py-3 text-left font-medium">Price</th>
+                <th className="px-4 py-3 text-left font-medium">Status</th>
+                {isOwner && <th className="px-4 py-3 text-right font-medium">Actions</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60">
+            <tbody className="divide-y">
               {services.map((s: any) => (
-                <tr key={s.id} className={`hover:bg-zinc-800/30 transition-colors duration-150 ${!s.isActive ? 'opacity-50' : ''}`}>
+                <tr key={s.id} className={!s.isActive ? 'opacity-50' : ''}>
                   {editId === s.id ? (
                     <>
                       <td className="px-4 py-2">
                         <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                          className="w-full rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-white" />
+                          className="w-full rounded border px-2 py-1 text-xs" />
                       </td>
                       <td className="px-4 py-2">
                         <input type="number" value={editForm.durationMinutes} onChange={(e) => setEditForm({ ...editForm, durationMinutes: Math.max(1, +e.target.value) })}
-                          min={1} className="w-20 rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-white" />
+                          min={1} className="w-20 rounded border px-2 py-1 text-xs" />
                       </td>
                       <td className="px-4 py-2">
                         <input type="number" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: Math.max(0, +e.target.value) })}
-                          min={0} step="0.01" className="w-24 rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-white" />
+                          min={0} step="0.01" className="w-24 rounded border px-2 py-1 text-xs" />
                       </td>
-                      <td className="px-4 py-2 text-sm text-zinc-300">{s.isActive ? 'Active' : 'Disabled'}</td>
+                      <td className="px-4 py-2">{s.isActive ? 'Active' : 'Disabled'}</td>
                       <td className="px-4 py-2 text-right space-x-1">
                         <button onClick={() => handleEdit(s.id)} disabled={saving === s.id}
-                          className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800 disabled:opacity-50">Save</button>
+                          className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted disabled:opacity-50">Save</button>
                         <button onClick={() => setEditId(null)}
-                          className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Cancel</button>
+                          className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Cancel</button>
                       </td>
                     </>
                   ) : (
                     <>
-                      <td className="px-4 py-3 text-sm font-medium text-white">{s.name}</td>
-                      <td className="px-4 py-3 text-sm text-zinc-400">{s.durationMinutes} min</td>
-                      <td className="px-4 py-3 text-sm text-zinc-300">${s.price.toFixed(2)}</td>
+                      <td className="px-4 py-3 font-medium">{s.name}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{s.durationMinutes} min</td>
+                      <td className="px-4 py-3">${s.price.toFixed(2)}</td>
                       <td className="px-4 py-3">
-                        <span className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium ${
-                          s.isActive ? 'border-green-500/20 bg-green-500/10 text-green-400' : 'border-zinc-700 bg-zinc-800 text-zinc-300'
+                        <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                          s.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                         }`}>{s.isActive ? 'Active' : 'Disabled'}</span>
                       </td>
                       {isOwner && (
@@ -433,10 +433,10 @@ function ServicesTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }
                             setEditId(s.id);
                             setEditForm({ name: s.name, description: s.description, durationMinutes: s.durationMinutes, price: s.price });
                           }}
-                            className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition-colors">Edit</button>
+                            className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted transition-colors">Edit</button>
                           <button onClick={() => handleToggle(s.id, s.isActive)} disabled={saving === s.id}
                             className={`rounded border px-2 py-1 text-xs font-medium transition-colors ${
-                              s.isActive ? 'border-orange-500/30 text-orange-400 hover:bg-orange-500/10' : 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                              s.isActive ? 'border-orange-200 text-orange-600 hover:bg-orange-50' : 'border-green-200 text-green-600 hover:bg-green-50'
                             } disabled:opacity-50`}>
                             {s.isActive ? 'Disable' : 'Enable'}
                           </button>
@@ -493,41 +493,41 @@ function HoursTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: a
     setSaving(false);
   }
 
-  if (loading) return <div className="flex items-center justify-center h-48"><Loader size={40} color="#a3a3a3" /></div>;
+  if (loading) return <div className="h-48 animate-pulse rounded-lg bg-muted" />;
 
   return (
     <div className="space-y-4 max-w-lg">
       {DAYS.map((day) => {
         const d = week[day] || { open: false, start: '09:00', end: '17:00' };
         return (
-          <div key={day} className="flex items-center gap-3 product-card p-3">
-            <span className="w-28 text-sm font-medium text-white">{day}</span>
+          <div key={day} className="flex items-center gap-3 rounded-lg bg-card p-3">
+            <span className="w-28 text-sm font-medium">{day}</span>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={d.open}
                 onChange={(e) => updateDay(day, 'open', e.target.checked)}
                 disabled={!isOwner}
-                className="rounded accent-blue-500" />
+                className="rounded" />
               Open
             </label>
             {d.open && (
               <>
                 <input type="time" value={d.start} onChange={(e) => updateDay(day, 'start', e.target.value)}
                   disabled={!isOwner}
-                  className="rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1 text-sm text-white disabled:opacity-60" />
-                <span className="text-zinc-400">to</span>
+                  className="rounded-md border px-2 py-1 text-sm disabled:opacity-60" />
+                <span className="text-muted-foreground">to</span>
                 <input type="time" value={d.end} onChange={(e) => updateDay(day, 'end', e.target.value)}
                   disabled={!isOwner}
-                  className="rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1 text-sm text-white disabled:opacity-60" />
+                  className="rounded-md border px-2 py-1 text-sm disabled:opacity-60" />
               </>
             )}
-            {!d.open && <span className="text-sm text-zinc-400">Closed</span>}
+            {!d.open && <span className="text-sm text-muted-foreground">Closed</span>}
           </div>
         );
       })}
       {isOwner && (
         <button onClick={handleSave} disabled={!isDirty || saving}
-          className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity">
-          {saving ? <Loader size={16} color="currentColor" /> : 'Save Hours'}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
+          {saving ? 'Saving...' : 'Save Hours'}
         </button>
       )}
     </div>
@@ -607,69 +607,69 @@ function FaqsTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: an
     });
   }
 
-  if (loading) return <div className="flex items-center justify-center h-48"><Loader size={40} color="#a3a3a3" /></div>;
+  if (loading) return <div className="h-48 animate-pulse rounded-lg bg-muted" />;
 
   return (
     <div className="space-y-4 max-w-lg">
       {isOwner && (
         <button onClick={() => setShowAdd(!showAdd)}
-          className="rounded-md bg-blue-600/80 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-500/80 transition-opacity">
+          className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
           {showAdd ? 'Cancel' : 'Add FAQ'}
         </button>
       )}
 
       {showAdd && (
-        <form onSubmit={handleAdd} className="space-y-2 product-card p-4">
+        <form onSubmit={handleAdd} className="space-y-2 rounded-lg bg-card p-4">
           <input type="text" value={newQ} onChange={(e) => setNewQ(e.target.value)} placeholder="Question"
-            required className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm text-white placeholder-zinc-500" />
+            required className="w-full rounded-md border px-2 py-1.5 text-sm" />
           <textarea value={newA} onChange={(e) => setNewA(e.target.value)} placeholder="Answer" rows={2}
-            required className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm text-white placeholder-zinc-500" />
+            required className="w-full rounded-md border px-2 py-1.5 text-sm" />
           <button type="submit" disabled={!newQ || !newA}
-            className="rounded-md bg-blue-600/80 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity">
+            className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
             Add
           </button>
         </form>
       )}
 
       {faqs.length === 0 ? (
-        <p className="text-sm text-zinc-400">No FAQs yet.</p>
+        <p className="text-sm text-muted-foreground">No FAQs yet.</p>
       ) : (
         <div className="space-y-2">
           {faqs.map((faq, idx) => (
-            <div key={idx} className="product-card p-3">
+            <div key={idx} className="rounded-lg bg-card p-3">
               {editIdx === idx ? (
                 <div className="space-y-2">
                   <input type="text" value={editQ} onChange={(e) => setEditQ(e.target.value)}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm font-medium text-white" />
+                    className="w-full rounded-md border px-2 py-1.5 text-sm font-medium" />
                   <textarea value={editA} onChange={(e) => setEditA(e.target.value)} rows={2}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-sm text-white" />
+                    className="w-full rounded-md border px-2 py-1.5 text-sm" />
                   <div className="flex gap-1">
                     <button onClick={() => {
                       setFaqs((f) => f.map((item, i) => i === idx ? { question: editQ, answer: editA } : item));
                       setEditIdx(null);
                     }}
-                      className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Save</button>
+                      className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Save</button>
                     <button onClick={() => setEditIdx(null)}
-                      className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Cancel</button>
+                      className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Cancel</button>
                   </div>
                 </div>
               ) : (
                 <div>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-white">{faq.question}</p>
-                      <p className="mt-0.5 text-xs text-zinc-400">{faq.answer}</p>
+                      <p className="text-sm font-medium">{faq.question}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{faq.answer}</p>
                     </div>
                     {isOwner && (
                       <div className="flex shrink-0 gap-1">
                         <button onClick={() => { setEditIdx(idx); setEditQ(faq.question); setEditA(faq.answer); }}
-                          className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Edit</button>
+                          className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Edit</button>
                         <button onClick={() => handleMoveUp(idx)} disabled={idx === 0}
-                          className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800 disabled:opacity-40">&uarr;</button>
+                          className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted disabled:opacity-40">&uarr;</button>
                         <button onClick={() => handleMoveDown(idx)} disabled={idx >= faqs.length - 1}
-                          className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800 disabled:opacity-40">&darr;</button>
+                          className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted disabled:opacity-40">&darr;</button>
                         <button onClick={() => handleDelete(idx)}
-                          className="rounded border border-red-500/30 px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-500/10">Delete</button>
+                          className="rounded border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Delete</button>
                       </div>
                     )}
                   </div>
@@ -682,8 +682,8 @@ function FaqsTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: an
 
       {isOwner && (
         <button onClick={handleSave} disabled={!isDirty || saving}
-          className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity">
-          {saving ? <Loader size={16} color="currentColor" /> : 'Save FAQs'}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
+          {saving ? 'Saving...' : 'Save FAQs'}
         </button>
       )}
     </div>
@@ -773,16 +773,16 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
     setSavingPhone(false);
   }
 
-  if (loading) return <div className="flex items-center justify-center h-48"><Loader size={40} color="#a3a3a3" /></div>;
+  if (loading) return <div className="h-48 animate-pulse rounded-lg bg-muted" />;
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-zinc-400">
+      <p className="text-sm text-muted-foreground">
         Manage communication channels for your business. At least one channel must remain enabled.
       </p>
 
       {channels.length === 0 ? (
-        <p className="text-sm text-zinc-400">No channels configured.</p>
+        <p className="text-sm text-muted-foreground">No channels configured.</p>
       ) : (
         <div className="space-y-3">
           {channels.map((ch: any) => {
@@ -796,34 +796,34 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
             return (
               <div
                 key={ch.channelType}
-                className={`product-card p-4 transition-opacity ${!ch.enabled ? 'opacity-60' : ''}`}
+                className={`rounded-lg bg-card p-4 transition-opacity ${!ch.enabled ? 'opacity-60' : ''}`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`rounded-lg p-2 ${ch.enabled ? 'bg-blue-500/10 text-blue-400' : 'bg-zinc-800 text-zinc-500'}`}>
+                    <div className={`rounded-lg p-2 ${ch.enabled ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-white">{meta.label}</p>
+                        <p className="text-sm font-medium">{meta.label}</p>
                         {meta.badge && (
-                          <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
+                          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                             {meta.badge}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-400">{meta.description}</p>
+                      <p className="text-xs text-muted-foreground">{meta.description}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     {ch.enabled ? (
-                      <span className="flex items-center gap-1 text-xs font-medium text-green-400">
+                      <span className="flex items-center gap-1 text-xs font-medium text-green-600">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         Connected
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-xs font-medium text-zinc-400">
+                      <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
                         <XCircle className="h-3.5 w-3.5" />
                         Disabled
                       </span>
@@ -835,8 +835,8 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
                         disabled={toggling === ch.channelType}
                         className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
                           ch.enabled
-                            ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
-                            : 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                            ? 'border-red-200 text-red-600 hover:bg-red-50'
+                            : 'border-green-200 text-green-600 hover:bg-green-50'
                         }`}
                       >
                         {toggling === ch.channelType
@@ -848,7 +848,7 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
                     )}
 
                     {!isOwner && (
-                      <span className="text-xs text-zinc-400">
+                      <span className="text-xs text-muted-foreground">
                         {ch.enabled ? 'Active' : 'Inactive'}
                       </span>
                     )}
@@ -856,11 +856,11 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
                 </div>
 
                 {ch.channelType === 'whatsapp' && isOwner && (
-                  <div className="mt-4 border-t border-zinc-800 pt-4">
+                  <div className="mt-4 border-t pt-4">
                     <div className="flex items-end gap-3">
                       <div className="flex-1">
-                        <label className="block text-xs font-medium text-zinc-300 mb-1">WhatsApp Phone Number</label>
-                        <p className="text-xs text-zinc-400 mb-2">
+                        <label className="block text-xs font-medium mb-1">WhatsApp Phone Number</label>
+                        <p className="text-xs text-muted-foreground mb-2">
                           The Twilio WhatsApp-enabled number for your business (e.g., +1234567890).
                         </p>
                         <input
@@ -868,33 +868,33 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
                           value={whatsappPhone}
                           onChange={(e) => setWhatsappPhone(e.target.value)}
                           placeholder="+1234567890"
-                          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500"
+                          className="w-full rounded-md border px-3 py-2 text-sm"
                         />
                       </div>
                       <button
                         onClick={handleSaveWhatsappPhone}
                         disabled={savingPhone || !whatsappPhone}
-                        className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity"
+                        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
                       >
-                        {savingPhone ? <Loader size={16} color="currentColor" /> : 'Save'}
+                        {savingPhone ? 'Saving...' : 'Save'}
                       </button>
                     </div>
 
                     {deliveryHealth && (
                       <div className="mt-3 grid grid-cols-2 gap-3">
-                        <div className="rounded-md border border-zinc-800 bg-zinc-800/30 p-3">
-                          <p className="text-xs text-zinc-400">Delivery Health</p>
-                          <p className="mt-1 text-lg font-semibold text-white">
+                        <div className="rounded-md border bg-muted/30 p-3">
+                          <p className="text-xs text-muted-foreground">Delivery Health</p>
+                          <p className="mt-1 text-lg font-semibold">
                             {deliveryHealth.successRate}%
                           </p>
-                          <p className="text-xs text-zinc-500">
+                          <p className="text-xs text-muted-foreground">
                             {deliveryHealth.delivered} delivered · {deliveryHealth.failed} failed
                           </p>
                         </div>
-                        <div className="rounded-md border border-zinc-800 bg-zinc-800/30 p-3">
-                          <p className="text-xs text-zinc-400">Total Messages</p>
-                          <p className="mt-1 text-lg font-semibold text-white">{deliveryHealth.total}</p>
-                          <p className="text-xs text-zinc-500">
+                        <div className="rounded-md border bg-muted/30 p-3">
+                          <p className="text-xs text-muted-foreground">Total Messages</p>
+                          <p className="mt-1 text-lg font-semibold">{deliveryHealth.total}</p>
+                          <p className="text-xs text-muted-foreground">
                             {deliveryHealth.pending > 0 ? `${deliveryHealth.pending} pending` : 'All processed'}
                           </p>
                         </div>
@@ -902,11 +902,11 @@ function ChannelsTab({ isOwner, onError, onMsg }: { isOwner: boolean; onError: (
                     )}
 
                     <div className="mt-3 flex items-center gap-3">
-                      <span className="text-xs text-zinc-400">
+                      <span className="text-xs text-muted-foreground">
                         Provider: {ch.provider === 'twilio' ? 'Twilio' : ch.provider || 'Not configured'}
                       </span>
                       {ch.configJson?.whatsappNumber && (
-                        <span className="flex items-center gap-1 text-xs text-green-400">
+                        <span className="flex items-center gap-1 text-xs text-green-600">
                           <CheckCircle2 className="h-3 w-3" />
                           Number configured
                         </span>
@@ -960,70 +960,70 @@ function AiTab({ isOwner, onError, onMsg, setDirty, clearDirty, dirtyRef }: any)
     setSaving(false);
   }
 
-  if (loading) return <div className="flex items-center justify-center h-48"><Loader size={40} color="#a3a3a3" /></div>;
+  if (loading) return <div className="h-48 animate-pulse rounded-lg bg-muted" />;
 
   return (
     <div className="space-y-4 max-w-lg">
       <div>
-        <label className="block text-sm font-medium text-zinc-300 mb-1">Greeting</label>
-        <p className="text-xs text-zinc-400 mb-2">What visitors see when they start a chat.</p>
+        <label className="block text-sm font-medium mb-1">Greeting</label>
+        <p className="text-xs text-muted-foreground mb-2">What visitors see when they start a chat.</p>
         <textarea value={form.greeting} onChange={(e) => setForm({ ...form, greeting: e.target.value })}
           readOnly={!isOwner} rows={3} placeholder="Welcome! How can I help you today?"
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 read-only:opacity-60 read-only:cursor-not-allowed" />
+          className="w-full rounded-md border px-3 py-2 text-sm read-only:opacity-60 read-only:cursor-not-allowed" />
         {isOwner && (
           <button onClick={() => setShowPreview(!showPreview)}
-            className="mt-1 rounded border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition-colors">
+            className="mt-1 rounded border px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors">
             {showPreview ? 'Hide Preview' : 'Preview Greeting'}
           </button>
         )}
       </div>
 
       {showPreview && form.greeting && (
-        <div className="product-card p-4">
-          <p className="text-xs text-zinc-400 mb-2">Visitor preview:</p>
-          <div className="rounded-lg bg-blue-500/10 p-3 text-sm text-zinc-300">
+        <div className="rounded-lg bg-card bg-muted/30 p-4">
+          <p className="text-xs text-muted-foreground mb-2">Visitor preview:</p>
+          <div className="rounded-lg bg-primary/10 p-3 text-sm">
             {form.greeting}
           </div>
         </div>
       )}
 
       <div className="space-y-3">
-        <label className="flex items-center gap-3 product-card p-3">
+        <label className="flex items-center gap-3 rounded-lg bg-card p-3">
           <input type="checkbox" checked={form.leadCaptureEnabled}
             onChange={(e) => setForm({ ...form, leadCaptureEnabled: e.target.checked })}
             disabled={!isOwner}
-            className="rounded accent-blue-500" />
+            className="rounded" />
           <div>
-            <p className="text-sm font-medium text-white">Lead Capture</p>
-            <p className="text-xs text-zinc-400">Automatically collect visitor contact information.</p>
+            <p className="text-sm font-medium">Lead Capture</p>
+            <p className="text-xs text-muted-foreground">Automatically collect visitor contact information.</p>
           </div>
         </label>
 
-        <label className="flex items-center gap-3 product-card p-3">
+        <label className="flex items-center gap-3 rounded-lg bg-card p-3">
           <input type="checkbox" checked={form.bookingEnabled}
             onChange={(e) => setForm({ ...form, bookingEnabled: e.target.checked })}
             disabled={!isOwner}
-            className="rounded accent-blue-500" />
+            className="rounded" />
           <div>
-            <p className="text-sm font-medium text-white">Booking</p>
-            <p className="text-xs text-zinc-400">Allow visitors to book appointments through chat.</p>
+            <p className="text-sm font-medium">Booking</p>
+            <p className="text-xs text-muted-foreground">Allow visitors to book appointments through chat.</p>
           </div>
         </label>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-zinc-300 mb-1">Escalation Email</label>
-        <p className="text-xs text-zinc-400 mb-2">Where to send escalation notifications.</p>
+        <label className="block text-sm font-medium mb-1">Escalation Email</label>
+        <p className="text-xs text-muted-foreground mb-2">Where to send escalation notifications.</p>
         <input type="email" value={form.escalationEmail}
           onChange={(e) => setForm({ ...form, escalationEmail: e.target.value })}
           readOnly={!isOwner} placeholder="owner@example.com"
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 read-only:opacity-60 read-only:cursor-not-allowed" />
+          className="w-full rounded-md border px-3 py-2 text-sm read-only:opacity-60 read-only:cursor-not-allowed" />
       </div>
 
       {isOwner && (
         <button onClick={handleSave} disabled={!isDirty || saving}
-          className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity">
-          {saving ? <Loader size={16} color="currentColor" /> : 'Save AI Settings'}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
+          {saving ? 'Saving...' : 'Save AI Settings'}
         </button>
       )}
     </div>

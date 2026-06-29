@@ -18,7 +18,6 @@ import {
   Phone, Mail, Calendar, Clock, AlertTriangle, CalendarDays,
   MessageSquare, Activity, CalendarPlus,
 } from 'lucide-react';
-import { Loader } from '@/components/ui/loader';
 
 function ConversationMessages({ conversationId }: { conversationId: string | null }) {
   const { data: msgsData, error, isLoading } = useSWR(
@@ -28,7 +27,7 @@ function ConversationMessages({ conversationId }: { conversationId: string | nul
   );
   const convMessages = msgsData?.success ? (msgsData.data as any[]) || [] : [];
 
-  if (isLoading) return <div className="flex items-center justify-center h-32"><Loader size={24} color="#a3a3a3" /></div>;
+  if (isLoading) return <div className="h-32 rounded-lg bg-card bg-muted/30 animate-pulse" />;
   if (error) return <p className="text-sm text-red-500">Failed to load messages.</p>;
 
   return <ConversationViewer messages={convMessages as any} />;
@@ -130,14 +129,27 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
   }, [activeTab, selectedConversationId, conversations]);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-[300px]"><Loader size={40} color="#a3a3a3" /></div>;
+    return (
+      <div className="space-y-6">
+        <div className="h-8 w-48 rounded-md bg-muted animate-pulse" />
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl bg-card p-5">
+              <div className="h-4 w-24 rounded bg-muted animate-pulse mb-3" />
+              <div className="h-8 w-16 rounded bg-muted animate-pulse" />
+            </div>
+          ))}
+        </div>
+        <div className="h-64 rounded-xl border bg-muted/30 animate-pulse" />
+      </div>
+    );
   }
 
   if (error || !detail) {
     return (
-      <div className="product-card border-red-500/20 p-8 text-center">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center">
         <AlertTriangle className="h-8 w-8 mx-auto text-red-400 mb-3" />
-        <p className="text-sm font-medium text-red-400">
+        <p className="text-sm font-medium text-red-600">
           {error ? 'Failed to load customer details.' : 'Customer not found.'}
         </p>
       </div>
@@ -189,17 +201,18 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
   return (
     <div className="space-y-6">
       {/* Customer Header */}
-      <div className="product-card p-6">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-semibold tracking-tight text-white">{customer.name || 'Unnamed Customer'}</h1>
+                <h1 className="text-2xl font-semibold tracking-tight">{customer.name || 'Unnamed Customer'}</h1>
                 <StatusBadge level={lifecycleLevel(customer.lifecycleState)}>
                   {customer.lifecycleState}
                 </StatusBadge>
               </div>
 
-              <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-zinc-400">
+              <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-muted-foreground">
                 {customer.email && (
                   <span className="inline-flex items-center gap-1.5">
                     <Mail className="h-3.5 w-3.5" />
@@ -237,8 +250,9 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
                 onSave={handleRefresh}
               />
             </div>
-        </div>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <TabBar
         tabs={TABS.map((t) => ({ label: t, value: t }))}
@@ -259,9 +273,11 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
       {activeTab === 'Conversations' && (
         <div className="space-y-4">
           {conversations.length === 0 ? (
-            <div className="product-card p-6">
-                <p className="text-sm text-zinc-400 text-center py-4">No conversations yet.</p>
-            </div>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-sm text-muted-foreground text-center py-4">No conversations yet.</p>
+              </CardContent>
+            </Card>
           ) : (
             <>
               <TabBar
@@ -281,15 +297,15 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
       )}
 
       {activeTab === 'Timeline' && (
-        <div className="product-card">
-          <div className="px-4 py-3 border-b border-zinc-800">
-            <h3 className="text-base font-semibold text-white">Timeline</h3>
-          </div>
-          <div className="p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">Timeline</CardTitle>
+          </CardHeader>
+          <CardContent>
             {timeline.length === 0 ? (
-              <p className="text-sm text-zinc-400 py-8 text-center">No events yet.</p>
+              <p className="text-sm text-muted-foreground py-8 text-center">No events yet.</p>
             ) : (
-              <div className="relative pl-6 border-l-2 border-zinc-800 space-y-5">
+              <div className="relative pl-6 border-l-2 border-border space-y-5">
                 {timeline.map((event, i) => {
                   const typeDot: Record<string, string> = {
                     lead: 'bg-blue-500',
@@ -302,24 +318,24 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
                   };
                   return (
                     <div key={i} className="relative">
-                      <div className={`absolute -left-[25px] top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-black ${typeDot[event.type] || 'bg-zinc-400'}`} />
-                      <p className="text-xs text-zinc-400">
+                      <div className={`absolute -left-[25px] top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-background ${typeDot[event.type] || 'bg-zinc-400'}`} />
+                      <p className="text-xs text-muted-foreground">
                         {event.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </p>
-                      <p className="text-sm font-medium mt-0.5 text-white">{event.label}</p>
+                      <p className="text-sm font-medium mt-0.5">{event.label}</p>
                     </div>
                   );
                 })}
               </div>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {activeTab === 'Appointments' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-white">Appointment History</h2>
+            <h2 className="text-base font-semibold">Appointment History</h2>
             <Button size="sm" onClick={() => setShowBookDialog(true)}>
               <CalendarPlus className="h-3.5 w-3.5" /> Book Appointment
             </Button>
@@ -344,7 +360,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
 
       {activeTab === 'Escalations' && (
         <div className="space-y-4">
-          <h2 className="text-base font-semibold text-white">Escalations</h2>
+          <h2 className="text-base font-semibold">Escalations</h2>
           <DataTable
             columns={escColumns}
             data={escalations}
@@ -359,7 +375,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
 
       {activeTab === 'Follow-Ups' && (
         <div className="space-y-4">
-          <h2 className="text-base font-semibold text-white">Follow-Ups</h2>
+          <h2 className="text-base font-semibold">Follow-Ups</h2>
           <DataTable
             columns={fuColumns}
             data={followUps}
