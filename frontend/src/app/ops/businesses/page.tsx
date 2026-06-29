@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import Link from 'next/link';
 import { Copy, ExternalLink, Eye, Pencil, Shield } from 'lucide-react';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
+import { Loader } from '@/components/ui/loader';
 
 export default function OpsBusinessesPage() {
   const [search, setSearch] = useState('');
@@ -44,15 +45,13 @@ export default function OpsBusinessesPage() {
       )}
 
       {isLoading ? (
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
-          ))}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader size={40} color="#a3a3a3" />
         </div>
       ) : businesses.length === 0 ? (
         <p className="text-sm text-muted-foreground">No businesses found.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border bg-card">
+        <div className="overflow-x-auto product-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">

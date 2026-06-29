@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
+import { Loader } from '@/components/ui/loader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -124,18 +125,18 @@ export function TeamManagement({ readOnly }: { readOnly: boolean }) {
   return (
     <div className="space-y-4">
       {msg && (
-        <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+        <div className="rounded-md border border-green-500/20 bg-green-500/10 p-3 text-sm text-green-400">
           {msg}
         </div>
       )}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
           {error}
         </div>
       )}
 
       {!readOnly && (
-        <form onSubmit={handleInvite} className="flex items-end gap-2 rounded-lg bg-card p-4">
+        <form onSubmit={handleInvite} className="flex items-end gap-2 product-card p-4">
           <div className="flex-1">
             <label className="block text-xs font-medium mb-1">Email</label>
             <input
@@ -144,7 +145,7 @@ export function TeamManagement({ readOnly }: { readOnly: boolean }) {
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="colleague@example.com"
               required
-              className="w-full rounded-md border px-3 py-1.5 text-sm"
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500"
             />
           </div>
           <div className="flex-1">
@@ -154,13 +155,13 @@ export function TeamManagement({ readOnly }: { readOnly: boolean }) {
               value={inviteName}
               onChange={(e) => setInviteName(e.target.value)}
               placeholder="Full name"
-              className="w-full rounded-md border px-3 py-1.5 text-sm"
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500"
             />
           </div>
           <button
             type="submit"
             disabled={inviting || !inviteEmail}
-            className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+            className="rounded-md bg-blue-600/80 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50 transition-opacity"
           >
             {inviting ? 'Inviting...' : 'Invite'}
           </button>
@@ -168,40 +169,36 @@ export function TeamManagement({ readOnly }: { readOnly: boolean }) {
       )}
 
       {loading ? (
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
-          ))}
-        </div>
+        <div className="flex items-center justify-center py-12"><Loader size={32} color="#a3a3a3" /></div>
       ) : staff.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No team members yet.</p>
+        <p className="text-sm text-zinc-400">No team members yet.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border bg-card">
+        <div className="overflow-x-auto product-card">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">Name</th>
-                <th className="px-4 py-3 text-left font-medium">Email</th>
-                <th className="px-4 py-3 text-left font-medium">Role</th>
-                <th className="px-4 py-3 text-left font-medium">Status</th>
-                {!readOnly && <th className="px-4 py-3 text-right font-medium">Actions</th>}
+              <tr className="border-b border-zinc-800 bg-black/50">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Name</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Email</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Role</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Status</th>
+                {!readOnly && <th className="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">Actions</th>}
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-zinc-800/60">
               {staff.map((m) => (
-                <tr key={m.id} className="hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium">{m.full_name || '-'}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{m.email}</td>
+                <tr key={m.id} className="hover:bg-zinc-800/30 transition-colors duration-150">
+                  <td className="px-4 py-3 text-sm font-medium text-white">{m.full_name || '-'}</td>
+                  <td className="px-4 py-3 text-sm text-zinc-400">{m.email}</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                      m.role === 'owner' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                    <span className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+                      m.role === 'owner' ? 'border-blue-500/20 bg-blue-500/10 text-blue-400' : 'border-zinc-700 bg-zinc-800 text-zinc-300'
                     }`}>
                       {m.role}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                      m.status === 'active' ? 'bg-green-100 text-green-700' : m.status === 'invited' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+                    <span className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+                      m.status === 'active' ? 'border-green-500/20 bg-green-500/10 text-green-400' : m.status === 'invited' ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-400' : 'border-red-500/20 bg-red-500/10 text-red-400'
                     }`}>
                       {m.status}
                     </span>
@@ -214,34 +211,34 @@ export function TeamManagement({ readOnly }: { readOnly: boolean }) {
                             {m.status === 'active' ? (
                               <button
                                 onClick={() => handleAction(m.id, `/team/${m.id}/status`, 'PATCH', { status: 'suspended' })}
-                                className="rounded-md border px-2 py-1 text-xs font-medium hover:bg-muted transition-colors"
+                                className="rounded-md border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition-colors"
                               >
                                 Suspend
                               </button>
                             ) : (
                               <button
                                 onClick={() => handleAction(m.id, `/team/${m.id}/status`, 'PATCH', { status: 'active' })}
-                                className="rounded-md border border-green-200 px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-50 transition-colors"
+                                className="rounded-md border border-green-500/30 px-2 py-1 text-xs font-medium text-green-400 hover:bg-green-500/10 transition-colors"
                               >
                                 Reactivate
                               </button>
                             )}
                             <button
                               onClick={() => handleAction(m.id, `/team/${m.id}/promote`, 'POST')}
-                              className="rounded-md border border-blue-200 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+                              className="rounded-md border border-blue-500/30 px-2 py-1 text-xs font-medium text-blue-400 hover:bg-blue-500/10 transition-colors"
                             >
                               Promote
                             </button>
                             <button
                               onClick={() => handleAction(m.id, `/team/${m.id}`, 'DELETE')}
-                              className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+                              className="rounded-md border border-red-500/30 px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
                             >
                               Remove
                             </button>
                           </>
                         )}
                         {m.role === 'owner' && (
-                          <span className="text-xs text-muted-foreground">-</span>
+                          <span className="text-xs text-zinc-500">-</span>
                         )}
                       </div>
                     </td>

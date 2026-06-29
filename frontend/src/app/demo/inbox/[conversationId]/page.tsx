@@ -94,8 +94,8 @@ export default function DemoConversationPage() {
               msg.role === 'customer'
                 ? 'rounded-bl-sm bg-zinc-800 text-zinc-200'
                 : msg.role === 'human'
-                ? 'rounded-br-sm bg-green-600 text-white'
-                : 'rounded-br-sm bg-blue-600 text-white'
+                ? 'rounded-br-sm bg-green-600/80 text-white'
+                : 'rounded-br-sm bg-blue-600/80 text-white'
             }`}>
               <p>{msg.content}</p>
               <p className="mt-1 text-[10px] text-white/50">
@@ -107,7 +107,7 @@ export default function DemoConversationPage() {
       </div>
 
       {/* Customer info panel */}
-      <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+      <div className="mb-6 product-card p-4">
         <h3 className="text-sm font-medium text-white">Customer Info</h3>
         <div className="mt-3 space-y-2 text-sm text-zinc-400">
           <p>Name: {conv.customerName}</p>
@@ -122,7 +122,7 @@ export default function DemoConversationPage() {
         {!ownerJoined && (
           <button
             onClick={handleJoin}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80"
           >
             <UserPlus className="h-4 w-4" />
             Join Conversation
@@ -132,6 +132,7 @@ export default function DemoConversationPage() {
           <>
             <button
               onClick={handleReturnToAI}
+              data-tour="tour-return-to-ai"
               className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800"
             >
               <RotateCcw className="h-4 w-4" />
@@ -148,7 +149,7 @@ export default function DemoConversationPage() {
               <button
                 onClick={handleSendReply}
                 disabled={!replyText.trim()}
-                className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500 disabled:opacity-50"
+                className="rounded-lg bg-green-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-green-500/80 disabled:opacity-50"
               >
                 Send
               </button>

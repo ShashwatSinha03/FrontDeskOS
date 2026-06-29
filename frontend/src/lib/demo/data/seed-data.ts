@@ -15,7 +15,7 @@ export function seedDemoData(
   dashboard: DashboardStore,
 ): void {
   conversations.conversations.push(...getSeedConversations());
-  appointments.appointments.push(...getSeedAppointments());
+  appointments.seed(getSeedAppointments());
   notifications.notifications.push(...getSeedNotifications());
 }
 

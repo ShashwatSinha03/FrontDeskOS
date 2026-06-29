@@ -37,7 +37,8 @@ export default function DemoInboxPage() {
           <Link
             key={conv.id}
             href={`/demo/inbox/${conv.id}`}
-            className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-colors hover:border-zinc-700"
+            data-tour={conv.status === 'escalated' ? 'tour-inbox-escalation' : undefined}
+            className="flex items-center gap-4 product-card p-4 transition-colors hover:border-zinc-700"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-medium text-zinc-300">
               {conv.customerName.charAt(0)}
@@ -47,7 +48,7 @@ export default function DemoInboxPage() {
                 <p className="truncate text-sm font-medium text-white">{conv.customerName}</p>
                 {conv.status === 'escalated' && <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
                 {conv.unread > 0 && (
-                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] text-white">
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-blue-600/80 text-[10px] text-white">
                     {conv.unread}
                   </span>
                 )}

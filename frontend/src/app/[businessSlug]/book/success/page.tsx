@@ -40,14 +40,14 @@ export default function BookingSuccessPage() {
     return (
       <div className="max-w-lg mx-auto py-16 px-4 text-center space-y-4">
         <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-muted/30">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900/30">
             <CheckCircle className="h-6 w-6 text-green-500" />
           </div>
         </div>
-        <h1 className="text-xl font-semibold">Appointment Confirmed</h1>
-        <p className="text-sm text-muted-foreground">Your appointment was booked successfully.</p>
+        <h1 className="text-xl font-semibold text-white">Appointment Confirmed</h1>
+        <p className="text-sm text-zinc-400">Your appointment was booked successfully.</p>
         <Link href={`/${slug}`}>
-          <Button>Back to Home</Button>
+          <Button className="bg-blue-600/80 text-white hover:bg-blue-500/80">Back to Home</Button>
         </Link>
       </div>
     );
@@ -63,44 +63,44 @@ export default function BookingSuccessPage() {
     <div className="max-w-lg mx-auto py-12 px-4 space-y-8">
       <div className="text-center space-y-4">
         <div className="flex justify-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full border bg-muted/30">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900/30">
             <CheckCircle className="h-7 w-7 text-green-500" />
           </div>
         </div>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Appointment Confirmed!</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-white">Appointment Confirmed!</h1>
+          <p className="mt-2 text-sm text-zinc-400">
             A confirmation will be sent to {data.customerEmail}.
           </p>
         </div>
       </div>
 
-      <Card className="border">
-        <CardContent className="divide-y p-0">
+      <Card className="product-card">
+        <CardContent className="divide-y divide-zinc-800 p-0">
           {data.serviceName && (
             <div className="flex items-center gap-3 px-5 py-4">
-              <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+              <Calendar className="h-4 w-4 text-zinc-400 shrink-0" />
               <div>
-                <p className="text-sm font-medium">{data.serviceName}</p>
+                <p className="text-sm font-medium text-white">{data.serviceName}</p>
                 {data.serviceDuration && (
-                  <p className="text-xs text-muted-foreground">{data.serviceDuration} minutes</p>
+                  <p className="text-xs text-zinc-400">{data.serviceDuration} minutes</p>
                 )}
               </div>
             </div>
           )}
           <div className="flex items-center gap-3 px-5 py-4">
-            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-            <p className="text-sm font-medium">{dateStr}</p>
+            <Calendar className="h-4 w-4 text-zinc-400 shrink-0" />
+            <p className="text-sm font-medium text-white">{dateStr}</p>
           </div>
           <div className="flex items-center gap-3 px-5 py-4">
-            <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-            <p className="text-sm font-medium">{timeStr}</p>
+            <Clock className="h-4 w-4 text-zinc-400 shrink-0" />
+            <p className="text-sm font-medium text-white">{timeStr}</p>
           </div>
           <div className="flex items-center gap-3 px-5 py-4">
-            <User className="h-4 w-4 text-muted-foreground shrink-0" />
+            <User className="h-4 w-4 text-zinc-400 shrink-0" />
             <div>
-              <p className="text-sm font-medium">{data.customerName}</p>
-              <p className="text-xs text-muted-foreground">{data.customerEmail} &middot; {data.customerPhone}</p>
+              <p className="text-sm font-medium text-white">{data.customerName}</p>
+              <p className="text-xs text-zinc-400">{data.customerEmail} &middot; {data.customerPhone}</p>
             </div>
           </div>
         </CardContent>
@@ -108,13 +108,13 @@ export default function BookingSuccessPage() {
 
       <div className="flex flex-col gap-2.5">
         <a href={googleCalUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" className="w-full">Add to Google Calendar</Button>
+          <Button variant="outline" className="w-full border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white">Add to Google Calendar</Button>
         </a>
         <Link href={`/${slug}`}>
-          <Button variant="outline" className="w-full">Back to Home</Button>
+          <Button variant="outline" className="w-full border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white">Back to Home</Button>
         </Link>
         <Link href={`/${slug}/book`}>
-          <Button className="w-full">Book Another Appointment</Button>
+          <Button className="w-full bg-blue-600/80 text-white hover:bg-blue-500/80">Book Another Appointment</Button>
         </Link>
       </div>
     </div>

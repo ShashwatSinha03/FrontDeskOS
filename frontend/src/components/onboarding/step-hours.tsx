@@ -55,7 +55,7 @@ export function StepHours({ hours, onChange, onNext, onBack }: StepHoursProps) {
         </p>
       </div>
 
-      <Card>
+      <Card className="product-card">
         <CardContent className="p-4 sm:p-6">
           <div className="mb-4 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">

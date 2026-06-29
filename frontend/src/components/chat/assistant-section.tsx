@@ -35,9 +35,9 @@ const FEATURES = [
 function TypingIndicator() {
   return (
     <span className="inline-flex items-center gap-1">
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: '0ms' }} />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: '150ms' }} />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: '300ms' }} />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-500/60" style={{ animationDelay: '0ms' }} />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-500/60" style={{ animationDelay: '150ms' }} />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-500/60" style={{ animationDelay: '300ms' }} />
     </span>
   );
 }
@@ -73,13 +73,13 @@ export function AiAssistant() {
   };
 
   return (
-    <section className="border-t py-16 sm:py-20 lg:py-24">
+    <section className="border-t border-zinc-800 bg-black py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Questions? Ask Away.
           </h2>
-          <p className="mt-3 text-base text-muted-foreground">
+          <p className="mt-3 text-base text-zinc-400">
             Get instant answers, book appointments, and learn more about {businessName} &mdash; all without picking up the phone.
           </p>
         </div>
@@ -90,13 +90,13 @@ export function AiAssistant() {
             return (
               <div
                 key={feature.title}
-                className="rounded-lg border bg-card p-5"
+                className="product-card p-6"
               >
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border bg-background">
-                  <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900">
+                  <Icon className="h-4 w-4 text-zinc-400" />
                 </div>
-                <h3 className="text-sm font-semibold">{feature.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="text-sm font-semibold text-white">{feature.title}</h3>
+                <p className="mt-1 text-sm text-zinc-400">{feature.description}</p>
               </div>
             );
           })}
@@ -109,7 +109,7 @@ export function AiAssistant() {
                 key={qa.label}
                 variant="outline"
                 size="sm"
-                className="rounded-full"
+                className="rounded-lg border border-zinc-800/60 bg-zinc-900/50 text-zinc-300 hover:bg-zinc-800 hover:text-white"
                 onClick={() => handleSendQuickAction(qa.message)}
                 disabled={sending || !sessionReady}
               >
@@ -120,26 +120,26 @@ export function AiAssistant() {
         </div>
 
         <div className="mx-auto mt-12 max-w-2xl">
-          <div className="rounded-lg border bg-card">
+          <div className="product-card shadow-2xl">
             <div
-              className="flex cursor-pointer items-center justify-between border-b px-5 py-3.5 transition-colors hover:bg-muted/30"
+              className="flex cursor-pointer items-center justify-between border-b border-zinc-800 px-5 py-3.5 transition-colors hover:bg-zinc-800/30"
               onClick={() => setShowChat(!showChat)}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full border bg-background">
-                  <span className="text-[10px] font-semibold">{businessName.charAt(0)}</span>
+                <div className="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800">
+                  <span className="text-[10px] font-semibold text-white">{businessName.charAt(0)}</span>
                 </div>
-                <span className="text-sm font-medium">Chat with {businessName}</span>
+                <span className="text-sm font-medium text-white">Chat with {businessName}</span>
               </div>
               <div className="flex items-center gap-2">
                 {messages.length > 1 && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-zinc-400">
                     {messages.length - 1} message{messages.length - 1 !== 1 ? 's' : ''}
                   </span>
                 )}
                 <svg
                   className={cn(
-                    'h-4 w-4 text-muted-foreground transition-transform duration-200',
+                    'h-4 w-4 text-zinc-400 transition-transform duration-200',
                     showChat && 'rotate-180'
                   )}
                   fill="none"
@@ -164,10 +164,10 @@ export function AiAssistant() {
                     >
                       <div
                         className={cn(
-                          'max-w-[80%] rounded-lg px-3.5 py-2 text-sm leading-relaxed',
+                          'max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed',
                           msg.sender === 'customer'
-                            ? 'bg-foreground text-background'
-                            : 'bg-muted text-foreground'
+                            ? 'bg-blue-600/80 text-white'
+                            : 'bg-zinc-800 text-zinc-200'
                         )}
                       >
                         {msg.content}
@@ -176,7 +176,7 @@ export function AiAssistant() {
                   ))}
                   {sending && (
                     <div className="flex justify-start">
-                      <div className="max-w-[80%] rounded-lg bg-muted px-3.5 py-2.5 text-sm">
+                      <div className="max-w-[80%] rounded-2xl bg-zinc-800 px-3.5 py-2.5 text-sm">
                         <TypingIndicator />
                       </div>
                     </div>
@@ -184,7 +184,7 @@ export function AiAssistant() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                <div className="border-t px-5 py-3.5">
+                <div className="border-t border-zinc-800 px-5 py-3.5">
                   <div className="flex items-center gap-2">
                     <Input
                       value={input}
@@ -193,11 +193,11 @@ export function AiAssistant() {
                       placeholder="Type your message..."
                       maxLength={1000}
                       disabled={sending || !sessionReady}
-                      className="flex-1"
+                      className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 text-white placeholder-zinc-500"
                     />
                     <Button
                       size="icon"
-                      className="h-9 w-9 shrink-0 rounded-lg"
+                      className="h-9 w-9 shrink-0 rounded-lg bg-blue-600/80 text-white hover:bg-blue-500/80"
                       onClick={handleSend}
                       disabled={!input.trim() || sending || !sessionReady}
                     >
@@ -206,7 +206,7 @@ export function AiAssistant() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-9 w-9 shrink-0 rounded-lg"
+                      className="h-9 w-9 shrink-0 rounded-lg border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
                       onClick={() => setChatOpen(true)}
                       title="Open full chat"
                     >

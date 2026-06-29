@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getUnreadCount } from '@/lib/api/notifications';
 import { getDashboard } from '@/lib/api/ops';
+import { Loader } from '@/components/ui/loader';
 
 export function AttentionRequired() {
   const [unread, setUnread] = useState(0);
@@ -25,28 +26,26 @@ export function AttentionRequired() {
   }, []);
 
   const items = [
-    { label: 'Unread notifications', count: unread, color: 'bg-red-100 text-red-700' },
-    { label: 'Pending escalations', count: pendingEsc, color: 'bg-red-100 text-red-700' },
-    { label: 'Open leads', count: openLeads, color: 'bg-yellow-100 text-yellow-700' },
-    { label: 'Appointments today', count: todayAppts, color: 'bg-blue-100 text-blue-700' },
+    { label: 'Unread notifications', count: unread, color: 'bg-red-500/10 text-red-400 border border-red-500/20' },
+    { label: 'Pending escalations', count: pendingEsc, color: 'bg-red-500/10 text-red-400 border border-red-500/20' },
+    { label: 'Open leads', count: openLeads, color: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' },
+    { label: 'Appointments today', count: todayAppts, color: 'bg-blue-500/10 text-blue-400 border border-blue-500/20' },
   ];
 
   return (
-    <div className="rounded-lg bg-card">
-      <div className="px-4 py-3">
-        <h2 className="text-sm font-semibold">Attention Required</h2>
+    <div className="product-card">
+      <div className="px-4 py-3 border-b border-zinc-800">
+        <h2 className="text-sm font-semibold text-white">Attention Required</h2>
       </div>
       <div className="p-4">
         {loading ? (
-          <div className="space-y-2">
-            {[1,2,3,4].map((i) => <div key={i} className="h-6 animate-pulse rounded bg-muted" />)}
-          </div>
+          <div className="flex items-center justify-center py-12"><Loader size={32} color="#a3a3a3" /></div>
         ) : (
           <ul className="space-y-2">
             {items.map((item) => (
               <li key={item.label} className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{item.label}</span>
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${item.color}`}>
+                <span className="text-zinc-400">{item.label}</span>
+                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${item.color}`}>
                   {item.count}
                 </span>
               </li>

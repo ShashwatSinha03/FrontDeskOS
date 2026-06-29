@@ -48,7 +48,15 @@ export class ScenarioRunner {
 
     if (!nextId) return null;
 
-    if (exactMatch) this.context.selected_service = exactMatch;
+    if (exactMatch) {
+      if (this.currentNode?.id === 'ask_service') {
+        this.context.selected_service = exactMatch;
+      } else if (this.currentNode?.id === 'ask_date') {
+        this.context.selected_date = exactMatch;
+      } else if (this.currentNode?.id === 'ask_time') {
+        this.context.selected_time = exactMatch;
+      }
+    }
 
     const node = this.scenario.nodes[nextId];
     if (!node) return null;

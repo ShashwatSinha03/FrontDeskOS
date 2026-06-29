@@ -14,7 +14,7 @@ export default function DemoAppointmentsPage() {
       <p className="mt-1 text-sm text-zinc-500">{upcoming.length} upcoming · {all.length} total</p>
       <div className="mt-6 space-y-3">
         {all.map((apt) => (
-          <div key={apt.id} className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+          <div key={apt.id} className="flex items-center gap-4 product-card p-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600/10 text-blue-400">
               <CalendarCheck className="h-5 w-5" />
             </div>

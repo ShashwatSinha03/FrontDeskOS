@@ -19,7 +19,7 @@ export function ApexServices() {
           {services.map((service) => (
             <div
               key={service.name}
-              className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 transition-colors hover:border-blue-500/20"
+              className="product-card p-6 transition-colors hover:border-blue-500/20"
             >
               <h3 className="text-lg font-semibold text-white">{service.name}</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-400">{service.description}</p>

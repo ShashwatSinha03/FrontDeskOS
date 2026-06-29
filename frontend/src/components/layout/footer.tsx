@@ -26,24 +26,24 @@ export function Footer({ businessName, slug }: { businessName: string; slug?: st
   }));
 
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t border-zinc-800 bg-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
-            <h3 className="text-lg font-semibold tracking-tight">{businessName}</h3>
-            <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+            <h3 className="text-lg font-semibold tracking-tight text-zinc-300">{businessName}</h3>
+            <p className="mt-2 text-sm text-zinc-500 max-w-sm">
               {businessName} — professional service tailored to you.
             </p>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold mb-3">Navigation</h4>
+            <h4 className="text-sm font-semibold text-zinc-300 mb-3">Navigation</h4>
             <ul className="space-y-2">
               {navLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -53,13 +53,13 @@ export function Footer({ businessName, slug }: { businessName: string; slug?: st
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold mb-3">Legal</h4>
+            <h4 className="text-sm font-semibold text-zinc-300 mb-3">Legal</h4>
             <ul className="space-y-2">
               {LEGAL_LINKS.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -69,14 +69,14 @@ export function Footer({ businessName, slug }: { businessName: string; slug?: st
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+        <div className="mt-12 pt-8 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-zinc-500">
             &copy; {currentYear} {businessName}. All rights reserved.
           </p>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <Link href="/privacy" className="underline hover:text-foreground transition-colors">Privacy</Link>
-            <Link href="/terms" className="underline hover:text-foreground transition-colors">Terms</Link>
-            <Link href="/acceptable-use" className="underline hover:text-foreground transition-colors">AUP</Link>
+          <div className="flex items-center gap-3 text-xs text-zinc-500">
+            <Link href="/privacy" className="underline hover:text-zinc-300 transition-colors">Privacy</Link>
+            <Link href="/terms" className="underline hover:text-zinc-300 transition-colors">Terms</Link>
+            <Link href="/acceptable-use" className="underline hover:text-zinc-300 transition-colors">AUP</Link>
             <span className="flex items-center gap-1.5">
               Powered by <LogoWithName className="inline-block text-base align-middle font-normal" />
             </span>

@@ -170,7 +170,7 @@ function AppointmentsMockup({ visible }: { visible: boolean }) {
     <div className="space-y-4 p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <div className="h-4 w-28 rounded bg-zinc-700" />
-        <div className="h-8 w-36 rounded-lg bg-blue-600 px-3 text-xs text-white flex items-center justify-center font-medium">
+        <div className="h-8 w-36 rounded-lg bg-blue-600/80 px-3 text-xs text-white flex items-center justify-center font-medium">
           + Book Appointment
         </div>
       </div>
@@ -263,7 +263,7 @@ function ConversationMockup({ visible }: { visible: boolean }) {
                 'max-w-[80%] rounded-2xl px-3 py-2 text-[11px] leading-relaxed',
                 msg.sender === 'customer'
                   ? 'rounded-bl-sm bg-zinc-800 text-zinc-300'
-                  : 'rounded-br-sm bg-blue-600 text-white'
+                  : 'rounded-br-sm bg-blue-600/80 text-white'
               )}
             >
               {msg.text}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getNotifications, markRead, markAllRead } from '@/lib/api/notifications';
+import { Loader } from '@/components/ui/loader';
 
 interface Props {
   open: boolean;
@@ -114,11 +115,7 @@ export function NotificationDrawer({ open, onClose, onMarked }: Props) {
 
         <div className="overflow-y-auto h-[calc(100%-53px)]">
           {loading ? (
-            <div className="space-y-2 p-4">
-              {[1,2,3,4,5].map((i) => (
-                <div key={i} className="h-16 animate-pulse rounded bg-muted" />
-              ))}
-            </div>
+            <div className="flex items-center justify-center py-12"><Loader size={32} color="#a3a3a3" /></div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-sm text-muted-foreground">
               <p>No notifications yet.</p>

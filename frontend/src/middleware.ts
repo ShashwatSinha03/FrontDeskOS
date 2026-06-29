@@ -8,18 +8,22 @@ const PROTECTED_ADMIN = /^\/[a-z0-9]+(?:[-][a-z0-9]+)*\/admin(?:\/|$)/;
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip internal Next.js paths
+  const setPathname = (res: NextResponse) => {
+    res.headers.set('x-pathname', pathname);
+    return res;
+  };
+
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname === '/favicon.ico'
   ) {
-    return NextResponse.next();
+    return setPathname(NextResponse.next());
   }
 
   // Root path — always serve marketing page
   if (pathname === '/') {
-    return NextResponse.next();
+    return setPathname(NextResponse.next());
   }
 
   // Auth check for protected routes
@@ -29,15 +33,18 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirectTo', pathname);
-      return NextResponse.redirect(loginUrl);
+      const redirect = NextResponse.redirect(loginUrl);
+      redirect.headers.set('x-pathname', pathname);
+      return redirect;
     }
 
+    supabaseResponse.headers.set('x-pathname', pathname);
     return supabaseResponse;
   }
 
   // Skip if already on a slug path (e.g. /some-slug/...)
   if (pathname.match(/^\/[a-z0-9]+(?:[-][a-z0-9]+)*(?:\/|$)/)) {
-    return NextResponse.next();
+    return setPathname(NextResponse.next());
   }
 
   const host = request.headers.get('host') || '';
@@ -46,10 +53,12 @@ export async function middleware(request: NextRequest) {
   if (subdomain && subdomain !== 'localhost' && subdomain !== 'www' && subdomain !== 'localhost:3000') {
     const url = new URL(request.url);
     url.pathname = `/${subdomain}${pathname}`;
-    return NextResponse.rewrite(url);
+    const rewrite = NextResponse.rewrite(url);
+    rewrite.headers.set('x-pathname', pathname);
+    return rewrite;
   }
 
-  return NextResponse.next();
+  return setPathname(NextResponse.next());
 }
 
 export const config = {

@@ -81,7 +81,7 @@ export function DemoSection({ headline, messages }: DemoContent) {
                         className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed transition-all duration-700 ${
                           isCustomer
                             ? 'rounded-bl-sm bg-zinc-800 text-zinc-200'
-                            : 'rounded-br-sm bg-blue-600 text-white'
+                            : 'rounded-br-sm bg-blue-600/80 text-white'
                         } ${visible ? 'translate-x-0 opacity-100' : `${isCustomer ? '-translate-x-4' : 'translate-x-4'} opacity-0`}`}
                         style={{
                           transitionDelay: visible ? `${i * 500}ms` : '0ms',

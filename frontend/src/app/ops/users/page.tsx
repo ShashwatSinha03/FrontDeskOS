@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
+import { Loader } from '@/components/ui/loader';
 
 const FILTERS = [
   { label: 'All', value: '' },
@@ -53,15 +54,13 @@ export default function OpsUsersPage() {
       )}
 
       {isLoading ? (
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
-          ))}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader size={40} color="#a3a3a3" />
         </div>
       ) : users.length === 0 ? (
         <p className="text-sm text-muted-foreground">No users found.</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border bg-card">
+        <div className="overflow-x-auto product-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">

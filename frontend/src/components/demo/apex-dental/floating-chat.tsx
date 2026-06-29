@@ -40,17 +40,18 @@ export function FloatingChat() {
     <>
       <button
         id="demo-chat-toggle"
+        data-tour="tour-chat-widget"
         onClick={handleOpen}
-        className="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform hover:scale-105 hover:bg-blue-500"
+        className="fixed bottom-20 right-4 z-[85] flex h-14 w-14 items-center justify-center rounded-full bg-blue-600/80 text-white shadow-lg transition-transform hover:scale-105 hover:bg-blue-500/80"
       >
         <MessageSquare className="h-6 w-6" />
       </button>
 
       {open && (
-        <div className="fixed bottom-36 right-4 z-30 flex h-[500px] w-[380px] flex-col rounded-2xl border border-zinc-700 bg-zinc-900 shadow-2xl">
+        <div className="!fixed bottom-36 right-4 z-[90] flex h-[500px] w-[380px] flex-col product-card shadow-2xl">
           <div className="flex items-center justify-between rounded-t-2xl border-b border-zinc-700 bg-zinc-800 px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">A</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600/80 text-sm font-bold text-white">A</div>
               <div>
                 <p className="text-sm font-semibold text-white">Apex Dental AI</p>
                 <p className="text-xs text-green-400">Online</p>
@@ -66,7 +67,7 @@ export function FloatingChat() {
               <div key={msg.id} className={`flex ${msg.role === 'customer' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                   msg.role === 'customer'
-                    ? 'rounded-br-sm bg-blue-600 text-white'
+                    ? 'rounded-br-sm bg-blue-600/80 text-white'
                     : 'rounded-bl-sm bg-zinc-800 text-zinc-200'
                 }`}>
                   {msg.content}
@@ -115,7 +116,7 @@ export function FloatingChat() {
             <button
               onClick={handleSend}
               disabled={!input.trim() || sending}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+              className="rounded-lg bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50"
             >
               Send
             </button>

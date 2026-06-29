@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
+import { headers } from 'next/headers';
 import { AuthProvider } from '@/lib/auth';
+import { BootScreen } from '@/components/ui/boot-screen';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -57,16 +59,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+const MARKETING_ROOTS = new Set(['/', '/privacy', '/terms', '/acceptable-use']);
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname') || '';
+  const isMarketing = MARKETING_ROOTS.has(pathname);
+
   return (
     <html lang="en" className={`${bungeeOutline.variable} ${bungeeHairline.variable}`}>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <AuthProvider>
           {children}
+          <BootScreen isMarketing={isMarketing} />
         </AuthProvider>
       </body>
     </html>

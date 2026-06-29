@@ -38,19 +38,19 @@ export function Header({ businessName, slug, description }: { businessName: stri
       className={cn(
         'sticky top-0 z-50 transition-all duration-300',
         scrolled
-          ? 'bg-background/80 backdrop-blur-xl border-b shadow-sm'
+          ? 'bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 shadow-sm'
           : 'bg-transparent border-b border-transparent'
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href={`/${slug}`} className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border bg-muted/50">
-            <span className="text-xs font-bold">{businessName.charAt(0)}</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900">
+            <span className="text-xs font-bold text-white">{businessName.charAt(0)}</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold tracking-tight leading-tight">{businessName}</span>
+            <span className="text-sm font-semibold tracking-tight leading-tight text-white">{businessName}</span>
             {description && (
-              <span className="text-[10px] leading-tight text-muted-foreground truncate max-w-[180px] lg:max-w-[240px]">
+              <span className="text-[10px] leading-tight text-zinc-400 truncate max-w-[180px] lg:max-w-[240px]">
                 {description}
               </span>
             )}
@@ -65,8 +65,8 @@ export function Header({ businessName, slug, description }: { businessName: stri
               className={cn(
                 'px-3 py-2 text-sm font-medium rounded-md transition-colors',
                 isActive(item.href)
-                  ? 'text-foreground bg-muted'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  ? 'text-white bg-zinc-800'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
               )}
             >
               {item.label}
@@ -74,7 +74,7 @@ export function Header({ businessName, slug, description }: { businessName: stri
           ))}
           <div className="ml-4">
             <Link href={`/${slug}/book`}>
-              <Button size="sm">Book Appointment</Button>
+              <Button size="sm" className="bg-blue-600/80 text-white hover:bg-blue-500/80">Book Appointment</Button>
             </Link>
           </div>
         </nav>
@@ -85,25 +85,25 @@ export function Header({ businessName, slug, description }: { businessName: stri
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="relative h-9 w-9 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
+            className="relative h-9 w-9 flex items-center justify-center rounded-md hover:bg-zinc-800 transition-colors"
             aria-label="Toggle menu"
           >
             <div className="relative h-5 w-5">
               <span
                 className={cn(
-                  'absolute left-0 top-0.5 h-px w-full bg-foreground transition-all duration-300',
+                  'absolute left-0 top-0.5 h-px w-full bg-white transition-all duration-300',
                   mobileOpen && 'top-2 rotate-45'
                 )}
               />
               <span
                 className={cn(
-                  'absolute left-0 top-2.5 h-px w-full bg-foreground transition-all duration-300',
+                  'absolute left-0 top-2.5 h-px w-full bg-white transition-all duration-300',
                   mobileOpen && 'opacity-0'
                 )}
               />
               <span
                 className={cn(
-                  'absolute left-0 top-[calc(20px-4.5px)] h-px w-full bg-foreground transition-all duration-300',
+                  'absolute left-0 top-[calc(20px-4.5px)] h-px w-full bg-white transition-all duration-300',
                   mobileOpen && 'top-2 -rotate-45'
                 )}
               />
@@ -118,7 +118,7 @@ export function Header({ businessName, slug, description }: { businessName: stri
           mobileOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
         )}
       >
-        <nav className="flex flex-col gap-1 border-t px-4 py-3">
+        <nav className="flex flex-col gap-1 border-t border-zinc-800 bg-zinc-950 px-4 py-3">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
@@ -126,8 +126,8 @@ export function Header({ businessName, slug, description }: { businessName: stri
               className={cn(
                 'px-3 py-2.5 text-sm font-medium rounded-md transition-colors',
                 isActive(item.href)
-                  ? 'text-foreground bg-muted'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  ? 'text-white bg-zinc-800'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
               )}
             >
               {item.label}
