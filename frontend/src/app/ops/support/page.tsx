@@ -48,7 +48,7 @@ export default function SupportSearchPage() {
           className="block w-full max-w-2xl rounded-lg bg-card border-border bg-background px-4 py-3 text-base shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
         <button onClick={doSearch} disabled={loading || !query.trim()}
-          className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
+          className="rounded-lg bg-blue-600/80 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700/80 disabled:opacity-50">
           Search
         </button>
       </div>

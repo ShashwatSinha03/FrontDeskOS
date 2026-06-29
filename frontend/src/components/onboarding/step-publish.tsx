@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { Loader } from '@/components/ui/loader';
 
 interface StepPublishProps {
   status: 'publishing' | 'success' | 'error';
@@ -20,9 +21,7 @@ export function StepPublish({ status, error, result, onRetry, onSuccess }: StepP
   if (status === 'publishing') {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-6">
-        <div className="relative h-2 w-full max-w-sm overflow-hidden rounded-full bg-muted">
-          <div className="absolute inset-y-0 left-0 w-1/3 animate-pulse rounded-full bg-primary" style={{ animationDuration: '2s' }} />
-        </div>
+        <div className="flex items-center justify-center py-8"><Loader size={32} color="#a3a3a3" /></div>
         <div className="space-y-2 text-center">
           <p className="text-lg font-medium">Creating your tenant...</p>
           <p className="text-sm text-muted-foreground">Setting up business, services, hours, and AI configuration.</p>
@@ -111,7 +110,7 @@ function UrlField({ label, url }: { label: string; url: string }) {
   };
 
   return (
-    <Card>
+    <Card className="product-card">
       <CardContent className="flex items-center justify-between gap-4 p-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs text-muted-foreground">{label}</p>

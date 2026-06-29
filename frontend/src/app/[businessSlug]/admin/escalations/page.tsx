@@ -55,7 +55,7 @@ export default function EscalationsPage() {
       render: (_: any, row: any) => (
         <div>
           <div className="font-medium">{row.customerName || 'Unknown'}</div>
-          <div className="text-xs text-muted-foreground">{row.customerPhone || row.phone || '—'}</div>
+          <div className="text-xs text-zinc-400">{row.customerPhone || row.phone || '—'}</div>
         </div>
       ),
     },
@@ -63,7 +63,7 @@ export default function EscalationsPage() {
       key: 'reason',
       label: 'Reason',
       render: (v: string) => (
-        <span className="text-muted-foreground text-xs max-w-[200px] block truncate">
+        <span className="text-zinc-400 text-xs max-w-[200px] block truncate">
           {v ? (v.length > 100 ? v.slice(0, 100) + '...' : v) : '—'}
         </span>
       ),
@@ -73,10 +73,10 @@ export default function EscalationsPage() {
       label: 'Conversation',
       render: (v: string) => v ? (
         <button onClick={(e) => { e.stopPropagation(); router.push(`/${slug}/admin/conversations/${v}`); }}
-          className="text-xs text-blue-600 hover:text-blue-700 underline">
+          className="text-xs text-blue-400 hover:text-blue-300 underline">
           {v.slice(0, 8)}...
         </button>
-      ) : <span className="text-muted-foreground">—</span>,
+      ) : <span className="text-zinc-400">—</span>,
     },
     {
       key: 'status',
@@ -89,7 +89,7 @@ export default function EscalationsPage() {
       key: 'createdAt',
       label: 'Created',
       render: (v: string) => (
-        <span className="text-xs text-muted-foreground">{v ? new Date(v).toLocaleString() : '—'}</span>
+        <span className="text-xs text-zinc-400">{v ? new Date(v).toLocaleString() : '—'}</span>
       ),
     },
     {
@@ -101,8 +101,8 @@ export default function EscalationsPage() {
             resolveId === row.id ? (
               <div className="flex items-center gap-1">
                 <input type="text" value={resolveNote} onChange={(e) => setResolveNote(e.target.value)}
-                  placeholder="Note (optional)" className="w-28 rounded border px-2 py-1 text-xs" />
-                <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700"
+                  placeholder="Note (optional)" className="w-28 rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-white placeholder-zinc-500" />
+                <Button size="sm" variant="default" className="bg-green-600/80 hover:bg-green-700"
                   onClick={() => handleResolve(row.id)}>Resolve</Button>
                 <Button size="sm" variant="outline" onClick={() => { setResolveId(null); setResolveNote(''); }}>X</Button>
               </div>
@@ -110,7 +110,7 @@ export default function EscalationsPage() {
               <Button size="sm" variant="outline" onClick={() => setResolveId(row.id)}>Resolve</Button>
             )
           ) : (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-zinc-400">
               {row.resolvedAt ? new Date(row.resolvedAt).toLocaleDateString() : '-'}
             </span>
           )}
@@ -123,8 +123,8 @@ export default function EscalationsPage() {
     <div className="space-y-6">
       <PageHeader title="Escalations" description={`${totalCount} escalations.`} />
 
-      {msg && <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">{msg}</div>}
-      {error && !loading && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>}
+      {msg && <div className="rounded-md border border-green-500/20 bg-green-500/10 p-3 text-sm text-green-400">{msg}</div>}
+      {error && !loading && <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>}
 
       <div className="flex flex-wrap items-center gap-3">
         <input
@@ -132,10 +132,10 @@ export default function EscalationsPage() {
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           placeholder="Search by customer name or phone..."
-          className="rounded-md border px-3 py-1.5 text-sm w-64"
+          className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500 w-64"
         />
         <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="rounded-md border px-3 py-1.5 text-sm">
+          className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white">
           <option value="all">All Statuses</option>
           <option value="pending">Pending</option>
           <option value="resolved">Resolved</option>

@@ -32,8 +32,8 @@ export function StepDate({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">Pick a Date</h2>
-        <p className="text-sm text-muted-foreground mt-1">Select your preferred appointment date.</p>
+        <h2 className="text-xl font-semibold text-white">Pick a Date</h2>
+        <p className="text-sm text-zinc-400 mt-1">Select your preferred appointment date.</p>
       </div>
       <div className="grid grid-cols-5 gap-2 sm:grid-cols-7 md:grid-cols-10">
         {dates.map((date) => {
@@ -45,20 +45,20 @@ export function StepDate({
             <button
               key={dateStr}
               onClick={() => onSelect(dateStr)}
-              className={`flex flex-col items-center rounded-lg border p-2 text-xs transition-colors hover:border-primary ${
-                isSelected ? 'border-primary bg-primary/5 font-medium' : 'border-border'
-              } ${isToday ? 'ring-1 ring-primary/30' : ''}`}
+              className={`flex flex-col items-center rounded-lg border p-2 text-xs transition-colors hover:border-blue-500 ${
+                isSelected ? 'border-blue-500 bg-blue-500/10 font-medium text-white' : 'border-zinc-800 text-zinc-400'
+              } ${isToday ? 'ring-1 ring-blue-500/30' : ''}`}
             >
-              <span className="text-muted-foreground">{DAY_NAMES[date.getDay()]}</span>
-              <span className="text-base font-semibold">{date.getDate()}</span>
-              <span className="text-muted-foreground">{MONTH_NAMES[date.getMonth()]}</span>
+              <span className="text-zinc-500">{DAY_NAMES[date.getDay()]}</span>
+              <span className="text-base font-semibold text-white">{date.getDate()}</span>
+              <span className="text-zinc-500">{MONTH_NAMES[date.getMonth()]}</span>
             </button>
           );
         })}
       </div>
       <div className="flex justify-between">
-        <Button variant="outline" onClick={onBack}>Back</Button>
-        <Button onClick={onNext} disabled={!selected}>Next</Button>
+        <Button variant="outline" onClick={onBack} className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white">Back</Button>
+        <Button onClick={onNext} disabled={!selected} className="bg-blue-600/80 text-white hover:bg-blue-500/80">Next</Button>
       </div>
     </div>
   );

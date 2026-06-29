@@ -55,9 +55,9 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
   }, [fetchInboxCount]);
 
   return (
-    <aside className="w-56 bg-card shrink-0 hidden md:flex flex-col border-r border-border/50">
+    <aside className="w-56 bg-black shrink-0 hidden md:flex flex-col border-r border-zinc-800">
       <div className="flex h-14 items-center px-5">
-        <Link href={`/${slug}`} className="text-sm font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors">
+          <Link href={`/${slug}`} className="text-sm font-semibold tracking-tight text-zinc-300 hover:text-white transition-colors">
           {businessName}
         </Link>
       </div>
@@ -75,14 +75,14 @@ export function AdminSidebar({ businessName, slug }: { businessName: string; slu
               className={cn(
                 'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-all duration-150',
                 isActive
-                  ? 'bg-primary/[0.08] text-primary font-medium'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-zinc-800 text-white font-medium'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
               )}
             >
-              <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')} />
+              <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-white' : 'text-zinc-500')} />
               <span className="flex-1 truncate">{item.label}</span>
               {item.href === '/inbox' && inboxCount > 0 && (
-                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white leading-none">
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-600/80 px-1 text-[10px] font-bold text-white leading-none">
                   {inboxCount > 99 ? '99+' : inboxCount}
                 </span>
               )}

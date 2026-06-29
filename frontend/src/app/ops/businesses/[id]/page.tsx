@@ -6,6 +6,7 @@ import Link from 'next/link';
 import useSWR, { useSWRConfig } from 'swr';
 import { ArrowLeft, Copy, ExternalLink, Ban, CheckCircle } from 'lucide-react';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
+import { Loader } from '@/components/ui/loader';
 
 export default function BusinessDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -55,10 +56,8 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
       )}
 
       {isLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
-          ))}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader size={40} color="#a3a3a3" />
         </div>
       ) : !biz ? (
         <p className="text-sm text-muted-foreground">Business not found.</p>
@@ -159,7 +158,7 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
           <div className="flex flex-wrap gap-3">
             <Link
               href={`/ops/businesses/${id}/edit`}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700/80"
             >
               Edit Business
             </Link>
@@ -187,7 +186,7 @@ export default function BusinessDetailPage({ params }: { params: Promise<{ id: s
             <button
               onClick={toggleStatus}
               className={`rounded-md px-4 py-2 text-sm font-medium text-white ${
-                biz.status === 'disabled' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
+                biz.status === 'disabled' ? 'bg-green-600/80 hover:bg-green-700' : 'bg-red-600/80 hover:bg-red-700/80'
               }`}
             >
               {biz.status === 'disabled' ? (

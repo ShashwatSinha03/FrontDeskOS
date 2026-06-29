@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { getDashboard, updateLeadLifecycle, updateAppointmentStatus, resolveEscalation } from '@/lib/api/ops';
 import { ActivityFeed } from '@/components/admin/activity-feed';
 import { AttentionRequired } from '@/components/admin/attention-required';
+import { Loader } from '@/components/ui/loader';
 
 export default function AdminDashboardPage() {
   const params = useParams();
@@ -59,37 +60,35 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="mt-1 text-sm text-muted-foreground">What needs attention today.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Dashboard</h1>
+          <p className="mt-1 text-sm text-zinc-400">What needs attention today.</p>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>
+        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>
       )}
       {msg && (
-        <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">{msg}</div>
+        <div className="rounded-md border border-green-500/20 bg-green-500/10 p-3 text-sm text-green-400">{msg}</div>
       )}
 
       {loading ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-48 animate-pulse rounded-lg bg-muted" />
-          ))}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader size={40} color="#a3a3a3" />
         </div>
       ) : (
         <>
           {funnel && (
             <div className="grid grid-cols-4 gap-3">
               {[
-                { label: 'New', value: funnel.new, color: 'bg-blue-100 text-blue-700' },
-                { label: 'Contacted', value: funnel.contacted, color: 'bg-yellow-100 text-yellow-700' },
-                { label: 'Qualified', value: funnel.qualified, color: 'bg-purple-100 text-purple-700' },
-                { label: 'Won', value: funnel.won, color: 'bg-green-100 text-green-700' },
+                { label: 'New', value: funnel.new, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+                { label: 'Contacted', value: funnel.contacted, color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' },
+                { label: 'Qualified', value: funnel.qualified, color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' },
+                { label: 'Won', value: funnel.won, color: 'text-green-400 bg-green-500/10 border-green-500/20' },
               ].map((item) => (
-                <div key={item.label} className="rounded-lg bg-card p-3">
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <p className={`mt-1 text-2xl font-semibold inline-block rounded px-2 ${item.color}`}>
+                <div key={item.label} className="product-card p-4">
+                  <p className="text-xs text-zinc-400">{item.label}</p>
+                  <p className={`mt-1.5 text-2xl font-bold tracking-tight text-white`}>
                     {item.value}
                   </p>
                 </div>
@@ -102,21 +101,21 @@ export default function AdminDashboardPage() {
               <AttentionRequired />
             </div>
             <div className="md:col-span-2 space-y-4">
-            <div className="rounded-lg bg-card">
-              <div className="px-4 py-3 flex items-center justify-between">
-                <h2 className="text-sm font-semibold">Today&apos;s Appointments</h2>
-                <span className="text-xs text-muted-foreground">View all</span>
+            <div className="product-card">
+              <div className="px-4 py-3 flex items-center justify-between border-b border-zinc-800">
+                <h2 className="text-sm font-semibold text-white">Today&apos;s Appointments</h2>
+                <span className="text-xs text-zinc-400">View all</span>
               </div>
               <div className="p-4">
                 {data?.todayAppointments?.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No appointments today.</p>
+                  <p className="text-sm text-zinc-400">No appointments today.</p>
                 ) : (
                   <div className="space-y-2">
                     {data?.todayAppointments?.map((a: any) => (
-                      <div key={a.id} className="flex items-center justify-between gap-2 rounded-md border p-2.5 text-sm">
+                      <div key={a.id} className="flex items-center justify-between gap-2 rounded-md border border-zinc-800/60 p-2.5 text-sm">
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{a.customerName || 'Unknown'}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="font-medium text-white truncate">{a.customerName || 'Unknown'}</p>
+                          <p className="text-xs text-zinc-400">
                             {new Date(a.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             {a.serviceName ? ` · ${a.serviceName}` : ''}
                           </p>
@@ -125,24 +124,24 @@ export default function AdminDashboardPage() {
                           {a.status === 'pending' && (
                             <>
                               <button onClick={() => handleApptStatus(a.id, 'confirmed')}
-                                className="rounded border border-green-200 px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-50">Confirm</button>
+                                className="rounded border border-green-500/30 px-2 py-1 text-xs font-medium text-green-400 hover:bg-green-500/10">Confirm</button>
                               <button onClick={() => handleApptStatus(a.id, 'cancelled')}
-                                className="rounded border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Cancel</button>
+                                className="rounded border border-red-500/30 px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-500/10">Cancel</button>
                             </>
                           )}
                           {a.status === 'confirmed' && (
                             <>
                               <button onClick={() => handleApptStatus(a.id, 'completed')}
-                                className="rounded border border-green-200 px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-50">Complete</button>
+                                className="rounded border border-green-500/30 px-2 py-1 text-xs font-medium text-green-400 hover:bg-green-500/10">Complete</button>
                               <button onClick={() => handleApptStatus(a.id, 'cancelled')}
-                                className="rounded border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Cancel</button>
+                                className="rounded border border-red-500/30 px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-500/10">Cancel</button>
                             </>
                           )}
                           {a.status === 'completed' && (
-                            <span className="text-xs text-muted-foreground">Completed</span>
+                            <span className="text-xs text-zinc-400">Completed</span>
                           )}
                           {a.status === 'cancelled' && (
-                            <span className="text-xs text-red-500">Cancelled</span>
+                            <span className="text-xs text-red-400">Cancelled</span>
                           )}
                         </div>
                       </div>
@@ -152,34 +151,34 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="rounded-lg bg-card">
-              <div className="px-4 py-3 flex items-center justify-between">
-                <h2 className="text-sm font-semibold">Open Leads</h2>
-                <span className="text-xs text-muted-foreground">View all</span>
+            <div className="product-card">
+              <div className="px-4 py-3 flex items-center justify-between border-b border-zinc-800">
+                <h2 className="text-sm font-semibold text-white">Open Leads</h2>
+                <span className="text-xs text-zinc-400">View all</span>
               </div>
               <div className="p-4">
                 {data?.openLeads?.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No open leads.</p>
+                  <p className="text-sm text-zinc-400">No open leads.</p>
                 ) : (
                   <div className="space-y-2">
                     {data?.openLeads?.map((l: any) => (
-                      <div key={l.id} className="rounded-md border p-2.5 text-sm">
+                      <div key={l.id} className="rounded-md border border-zinc-800/60 p-2.5 text-sm">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <span className="font-medium truncate block">
+                            <span className="font-medium text-white truncate block">
                               {l.name || 'Unknown'}
                             </span>
-                            <p className="text-xs text-muted-foreground">{l.phone || l.email || ''}</p>
+                            <p className="text-xs text-zinc-400">{l.phone || l.email || ''}</p>
                           </div>
-                          <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                          <span className="shrink-0 rounded-full border border-zinc-700 bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-300">
                             {l.lifecycleState}
                           </span>
                         </div>
                         <div className="mt-1.5 flex gap-1">
                           <button onClick={() => handleLeadLifecycle(l.id, 'Qualified')}
-                            className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Qualify</button>
+                            className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Qualify</button>
                           <button onClick={() => handleLeadLifecycle(l.id, 'Lost')}
-                            className="rounded border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Lost</button>
+                            className="rounded border border-red-500/30 px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-500/10">Lost</button>
                         </div>
                       </div>
                     ))}
@@ -188,34 +187,34 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="rounded-lg bg-card">
-              <div className="px-4 py-3 flex items-center justify-between">
-                <h2 className="text-sm font-semibold">Pending Escalations</h2>
-                <span className="text-xs text-muted-foreground">View all</span>
+            <div className="product-card">
+              <div className="px-4 py-3 flex items-center justify-between border-b border-zinc-800">
+                <h2 className="text-sm font-semibold text-white">Pending Escalations</h2>
+                <span className="text-xs text-zinc-400">View all</span>
               </div>
               <div className="p-4">
                 {data?.pendingEscalations?.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No pending escalations.</p>
+                  <p className="text-sm text-zinc-400">No pending escalations.</p>
                 ) : (
                   <div className="space-y-2">
                     {data?.pendingEscalations?.map((e: any) => (
-                      <div key={e.id} className="rounded-md border p-2.5 text-sm">
-                        <p className="font-medium">{e.customerName || 'Unknown'}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{e.reason}</p>
+                      <div key={e.id} className="rounded-md border border-zinc-800/60 p-2.5 text-sm">
+                        <p className="font-medium text-white">{e.customerName || 'Unknown'}</p>
+                        <p className="text-xs text-zinc-400 mt-0.5">{e.reason}</p>
                         {resolveId === e.id ? (
                           <div className="mt-2 space-y-1">
                             <input type="text" value={resolveNote} onChange={(e) => setResolveNote(e.target.value)}
-                              placeholder="Resolution note (optional)" className="w-full rounded border px-2 py-1 text-xs" />
+                              placeholder="Resolution note (optional)" className="w-full rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-white placeholder-zinc-500" />
                             <div className="flex gap-1">
                               <button onClick={() => handleResolve(e.id)}
-                                className="rounded bg-green-600 px-2 py-1 text-xs font-medium text-white hover:bg-green-700">Resolve</button>
+                                className="rounded bg-blue-600/80 px-2 py-1 text-xs font-medium text-white hover:bg-blue-500/80">Resolve</button>
                               <button onClick={() => { setResolveId(null); setResolveNote(''); }}
-                                className="rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Cancel</button>
+                                className="rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Cancel</button>
                             </div>
                           </div>
                         ) : (
                           <button onClick={() => setResolveId(e.id)}
-                            className="mt-1 rounded border px-2 py-1 text-xs font-medium hover:bg-muted">Resolve</button>
+                            className="mt-1 rounded border border-zinc-700 px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Resolve</button>
                         )}
                       </div>
                     ))}
@@ -224,9 +223,9 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="rounded-lg bg-card">
-              <div className="px-4 py-3">
-                <h2 className="text-sm font-semibold">Recent Activity</h2>
+            <div className="product-card">
+              <div className="px-4 py-3 border-b border-zinc-800">
+                <h2 className="text-sm font-semibold text-white">Recent Activity</h2>
               </div>
               <div className="p-4">
                 <ActivityFeed activities={data?.recentActivity || []} loading={false} />
@@ -236,13 +235,13 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Link href={`/${slug}/admin/leads`} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
+            <Link href={`/${slug}/admin/leads`} className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 transition-colors">
               View Leads
             </Link>
-            <Link href={`/${slug}/admin/appointments`} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
+            <Link href={`/${slug}/admin/appointments`} className="rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 transition-colors">
               View Appointments
             </Link>
-            <Link href={`/${slug}/admin/settings`} className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+            <Link href={`/${slug}/admin/settings`} className="rounded-md border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition-colors">
               Open Settings
             </Link>
           </div>

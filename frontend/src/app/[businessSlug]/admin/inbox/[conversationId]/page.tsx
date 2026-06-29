@@ -12,6 +12,7 @@ import {
 import { PageHeader } from '@/components/design/page-header';
 import { EmptyState } from '@/components/design/empty-state';
 import { MessageSquare } from 'lucide-react';
+import { Loader } from '@/components/ui/loader';
 
 function waitingDuration(date: Date | string | null): string {
   if (!date) return '';
@@ -118,9 +119,8 @@ export default function InboxConversationPage() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-8 w-48 animate-pulse rounded bg-muted" />
-        <div className="h-64 animate-pulse rounded-lg bg-muted" />
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader size={40} color="#a3a3a3" />
       </div>
     );
   }
@@ -129,8 +129,8 @@ export default function InboxConversationPage() {
     return (
       <div className="space-y-4">
         <PageHeader title="Conversation" description="" />
-        <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-600">{error}</div>
-        <button onClick={load} className="text-sm text-blue-600 hover:underline">Retry</button>
+        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error}</div>
+        <button onClick={load} className="text-sm text-blue-400 hover:underline">Retry</button>
       </div>
     );
   }
@@ -169,7 +169,7 @@ export default function InboxConversationPage() {
             {isHumanPending && (
               <button
                 onClick={handleJoin}
-                className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 whitespace-nowrap"
+                className="rounded-md bg-blue-600/80 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-500/80 whitespace-nowrap"
               >
                 Join Conversation
               </button>
@@ -177,7 +177,7 @@ export default function InboxConversationPage() {
             {isHumanActive && (
               <button
                 onClick={handleReturnToAI}
-                className="rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted whitespace-nowrap"
+                className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:bg-zinc-800 whitespace-nowrap"
               >
                 Return to AI
               </button>
@@ -185,7 +185,7 @@ export default function InboxConversationPage() {
             {isReturnedToAI && (
               <button
                 onClick={handleJoin}
-                className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 whitespace-nowrap"
+                className="rounded-md bg-blue-600/80 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-500/80 whitespace-nowrap"
               >
                 Take Over
               </button>
@@ -194,16 +194,16 @@ export default function InboxConversationPage() {
         </div>
 
         {msg && (
-          <div className="mb-2 rounded-md border border-green-200 bg-green-50 p-2 text-xs text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400">
+          <div className="mb-2 rounded-md border border-green-500/20 bg-green-500/10 p-2 text-xs text-green-400">
             {msg}
           </div>
         )}
         {error && (
-          <div className="mb-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-600">{error}</div>
+          <div className="mb-2 rounded-md border border-red-500/20 bg-red-500/10 p-2 text-xs text-red-400">{error}</div>
         )}
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-lg bg-card mb-3">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto product-card mb-3">
           {messages.length === 0 ? (
             <EmptyState icon={MessageSquare} title="No messages" description="No messages in this conversation yet." />
           ) : (
@@ -223,16 +223,16 @@ export default function InboxConversationPage() {
                     className={`flex p-4 ${m.sender === 'customer' ? 'justify-start' : 'justify-end'}`}
                   >
                     <div
-                      className={`max-w-[85%] sm:max-w-[75%] rounded-lg px-3 py-2 text-sm ${
+                      className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
                         m.sender === 'customer'
-                          ? 'bg-muted text-foreground'
+                          ? 'bg-zinc-800 text-zinc-300'
                           : m.sender === 'human_owner'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-primary text-primary-foreground'
+                          ? 'bg-blue-600/80 text-white'
+                          : 'bg-blue-600/80 text-white'
                       }`}
                     >
                       <div className="whitespace-pre-wrap break-words">{m.content}</div>
-                      <div className={`mt-1 text-[10px] ${m.sender === 'customer' ? 'text-muted-foreground' : 'text-white/70'}`}>
+                      <div className={`mt-1 text-[10px] ${m.sender === 'customer' ? 'text-zinc-500' : 'text-white/70'}`}>
                         {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         {m.sender === 'human_owner' && ' · You'}
                         {m.sender === 'agent' && ' · AI'}
@@ -256,14 +256,14 @@ export default function InboxConversationPage() {
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               placeholder={isHumanPending ? 'Join the conversation to reply...' : 'Type a message...'}
               disabled={!isHumanActive || sending}
-              className="flex-1 rounded-lg bg-card bg-background px-3 py-2 text-sm disabled:opacity-50"
+              className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 disabled:opacity-50"
             />
             <button
               onClick={handleSend}
               disabled={!isHumanActive || sending || !input.trim()}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              className="rounded-lg bg-blue-600/80 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500/80 disabled:opacity-50"
             >
-              {sending ? 'Sending...' : 'Send'}
+              {sending ? <Loader size={16} color="currentColor" /> : 'Send'}
             </button>
           </div>
         )}
@@ -272,58 +272,58 @@ export default function InboxConversationPage() {
       {/* Info Sidebar (collapses below on mobile) */}
       <div className="w-full lg:w-72 shrink-0 space-y-3">
         {/* Customer Info */}
-        <div className="rounded-lg bg-card p-3">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Customer</h3>
+        <div className="product-card p-3">
+          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Customer</h3>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Name</span>
-              <span className="font-medium truncate ml-2">{conv?.customer_name || 'Unknown'}</span>
+              <span className="text-zinc-400">Name</span>
+              <span className="font-medium text-white truncate ml-2">{conv?.customer_name || 'Unknown'}</span>
             </div>
             {conv?.customer_phone && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Phone</span>
-                <span className="font-medium">{conv.customer_phone}</span>
+                <span className="text-zinc-400">Phone</span>
+                <span className="font-medium text-white">{conv.customer_phone}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Channel</span>
-              <span className="font-medium capitalize">{(conv?.channel_type || '').replace('_', ' ')}</span>
+              <span className="text-zinc-400">Channel</span>
+              <span className="font-medium text-white capitalize">{(conv?.channel_type || '').replace('_', ' ')}</span>
             </div>
             {conv?.lifecycle_state && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">State</span>
-                <span className="font-medium text-xs">{conv.lifecycle_state}</span>
+                <span className="text-zinc-400">State</span>
+                <span className="font-medium text-xs text-white">{conv.lifecycle_state}</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Escalation Details */}
-        <div className="rounded-lg bg-card p-3">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Escalation</h3>
+        <div className="product-card p-3">
+          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Escalation</h3>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Status</span>
-              <span className={`font-medium text-xs ${isHumanPending ? 'text-red-600' : isHumanActive ? 'text-blue-600' : 'text-muted-foreground'}`}>
+              <span className="text-zinc-400">Status</span>
+              <span className={`font-medium text-xs ${isHumanPending ? 'text-red-400' : isHumanActive ? 'text-blue-400' : 'text-zinc-400'}`}>
                 {(ownershipStatus || 'ai_active').replace(/_/g, ' ')}
               </span>
             </div>
             {conv?.escalated_at && (
               <>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Waiting</span>
-                  <span className="font-medium">{waitingDuration(conv.escalated_at)}</span>
+                  <span className="text-zinc-400">Waiting</span>
+                  <span className="font-medium text-white">{waitingDuration(conv.escalated_at)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Since</span>
-                  <span className="font-medium text-xs">{timeAgo(conv.escalated_at)}</span>
+                  <span className="text-zinc-400">Since</span>
+                  <span className="font-medium text-xs text-white">{timeAgo(conv.escalated_at)}</span>
                 </div>
               </>
             )}
             {conv?.owner_name && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Owner</span>
-                <span className="font-medium text-xs">{conv.owner_name}</span>
+                <span className="text-zinc-400">Owner</span>
+                <span className="font-medium text-xs text-white">{conv.owner_name}</span>
               </div>
             )}
           </div>
@@ -331,27 +331,27 @@ export default function InboxConversationPage() {
 
         {/* Workflow Info */}
         {workflow && (
-          <div className="rounded-lg bg-card p-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Workflow</h3>
+          <div className="product-card p-3">
+            <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Workflow</h3>
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Type</span>
-                <span className="font-medium text-xs">{(workflow.workflow_type || '').replace(/_/g, ' ')}</span>
+                <span className="text-zinc-400">Type</span>
+                <span className="font-medium text-xs text-white">{(workflow.workflow_type || '').replace(/_/g, ' ')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">State</span>
-                <span className="font-medium text-xs">{workflow.workflow_state || '—'}</span>
+                <span className="text-zinc-400">State</span>
+                <span className="font-medium text-xs text-white">{workflow.workflow_state || '—'}</span>
               </div>
               {workflow.last_asked_field && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Last Asked</span>
-                  <span className="font-medium text-xs truncate ml-2">{workflow.last_asked_field}</span>
+                  <span className="text-zinc-400">Last Asked</span>
+                  <span className="font-medium text-xs text-white truncate ml-2">{workflow.last_asked_field}</span>
                 </div>
               )}
               {workflow.collected_data && Object.keys(workflow.collected_data).length > 0 && (
                 <div className="mt-1 pt-1 border-t">
-                  <span className="text-xs text-muted-foreground block mb-1">Collected Data</span>
-                  <pre className="text-[10px] text-muted-foreground/70 whitespace-pre-wrap">
+                  <span className="text-xs text-zinc-400 block mb-1">Collected Data</span>
+                  <pre className="text-[10px] text-zinc-500 whitespace-pre-wrap">
                     {JSON.stringify(workflow.collected_data, null, 2)}
                   </pre>
                 </div>
@@ -362,24 +362,24 @@ export default function InboxConversationPage() {
 
         {/* Appointments */}
         {appointments.length > 0 && (
-          <div className="rounded-lg bg-card p-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Appointments</h3>
+          <div className="product-card p-3">
+            <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Appointments</h3>
             <div className="space-y-2">
               {appointments.map((apt: any) => (
                 <div key={apt.id} className="text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-zinc-400 text-xs">
                       {new Date(apt.appointment_time).toLocaleDateString()}
                     </span>
                     <span className={`text-xs font-medium ${
-                      apt.status === 'confirmed' ? 'text-green-600' :
-                      apt.status === 'completed' ? 'text-blue-600' :
-                      apt.status === 'cancelled' ? 'text-red-600' : 'text-muted-foreground'
+                      apt.status === 'confirmed' ? 'text-green-400' :
+                      apt.status === 'completed' ? 'text-blue-400' :
+                      apt.status === 'cancelled' ? 'text-red-400' : 'text-zinc-400'
                     }`}>
                       {apt.status}
                     </span>
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-zinc-400">
                     {new Date(apt.appointment_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>

@@ -1,10 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { Reveal } from '@/components/design/reveal';
-import BorderGlow from '@/components/BorderGlow';
 import { CtaContent } from '@/lib/marketing-content';
 import { Calendar, Mail, Phone } from 'lucide-react';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 
 function buildMailtoHref(mailto: { to: string; subject: string; body: string }): string {
   return `mailto:${mailto.to}?subject=${encodeURIComponent(mailto.subject)}&body=${encodeURIComponent(mailto.body)}`;
@@ -39,25 +38,10 @@ export function FinalCta({ headline, subheadline, primaryCta, secondaryActions }
 
           <Reveal delay={300} y={10}>
             <div className="mt-10 inline-block">
-              <BorderGlow
-                edgeSensitivity={30}
-                glowColor="40 80 80"
-                backgroundColor="#000"
-                borderRadius={12}
-                glowRadius={12}
-                glowIntensity={1}
-                coneSpread={25}
-                animated={false}
-                colors={['#c084fc', '#f472b6', '#38bdf8']}
-              >
-                <Link
-                  href={primaryHref}
-                  className="inline-flex items-center gap-2.5 px-8 py-4 text-base font-semibold text-white sm:text-lg"
-                >
-                  <Calendar className="h-5 w-5" />
-                  {primaryCta.label}
-                </Link>
-              </BorderGlow>
+              <ShimmerButton href={primaryHref}>
+                <Calendar className="h-5 w-5" />
+                {primaryCta.label}
+              </ShimmerButton>
             </div>
           </Reveal>
 

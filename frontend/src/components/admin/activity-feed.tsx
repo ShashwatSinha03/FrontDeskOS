@@ -1,6 +1,7 @@
 'use client';
 
 import { Clock } from 'lucide-react';
+import { Loader } from '@/components/ui/loader';
 
 interface Activity {
   event_type: string;
@@ -28,7 +29,7 @@ function activityColor(type: string) {
     case 'escalation_raised': return 'text-red-500';
     case 'escalation_resolved': return 'text-green-600';
     case 'staff_invited': return 'text-purple-500';
-    default: return 'text-muted-foreground';
+    default: return 'text-zinc-500';
   }
 }
 
@@ -47,17 +48,11 @@ function timeAgo(dateStr: string) {
 
 export function ActivityFeed({ activities, loading }: { activities: Activity[]; loading: boolean }) {
   if (loading) {
-    return (
-      <div className="space-y-2">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-9 animate-pulse rounded bg-muted" />
-        ))}
-      </div>
-    );
+    return <div className="flex items-center justify-center py-12"><Loader size={32} color="#a3a3a3" /></div>;
   }
 
   if (activities.length === 0) {
-    return <p className="text-sm text-muted-foreground">No recent activity.</p>;
+    return <p className="text-sm text-zinc-400">No recent activity.</p>;
   }
 
   return (
@@ -67,8 +62,8 @@ export function ActivityFeed({ activities, loading }: { activities: Activity[]; 
           <span className={`mt-0.5 text-xs ${activityColor(a.event_type)}`}>
             {activityIcon(a.event_type)}
           </span>
-          <span className="flex-1 text-muted-foreground">{a.description}</span>
-          <span className="shrink-0 text-xs text-muted-foreground/60">{timeAgo(a.occurred_at)}</span>
+          <span className="flex-1 text-zinc-400">{a.description}</span>
+          <span className="shrink-0 text-xs text-zinc-500">{timeAgo(a.occurred_at)}</span>
         </div>
       ))}
     </div>

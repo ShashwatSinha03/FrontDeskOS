@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
 import { ArrowLeft } from 'lucide-react';
+import { Loader } from '@/components/ui/loader';
 
 export default function OpsUserDetailPage({
   params,
@@ -66,9 +67,8 @@ export default function OpsUserDetailPage({
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-8 w-48 animate-pulse rounded bg-muted" />
-        <div className="h-32 animate-pulse rounded-lg bg-muted" />
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader size={40} color="#a3a3a3" />
       </div>
     );
   }
@@ -258,7 +258,7 @@ export default function OpsUserDetailPage({
                   setShowTransfer(false);
                 }}
                 disabled={!transferBusinessId || !transferNewOwnerId}
-                className="self-end rounded-md bg-orange-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-700 disabled:opacity-50 transition-colors"
+                className="self-end rounded-md bg-orange-600/80 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-700/80 disabled:opacity-50 transition-colors"
               >
                 Transfer
               </button>
@@ -288,7 +288,7 @@ export default function OpsUserDetailPage({
                   setShowRemoveMembership(false);
                 }}
                 disabled={!removeBusinessId}
-                className="self-end rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+                className="self-end rounded-md bg-red-600/80 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700/80 disabled:opacity-50 transition-colors"
               >
                 Remove
               </button>

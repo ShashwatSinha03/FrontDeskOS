@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { OwnerCreationForm } from '@/components/onboarding/owner-creation-form';
+import { Loader } from '@/components/ui/loader';
 
 const CHECKLIST_KEY = 'fdos_post_onboarding_checklist';
 
@@ -121,7 +122,7 @@ function SuccessContent() {
       )}
 
       {ownerDone && !showOwnerForm && (
-        <Card className="mb-8 border-emerald-500/20 bg-emerald-500/5">
+        <Card className="product-card mb-8 border-emerald-500/20 bg-emerald-500/5">
           <CardContent className="flex items-center gap-3 p-4">
             <svg className="h-5 w-5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -134,7 +135,7 @@ function SuccessContent() {
       )}
 
       {/* Checklist */}
-      <Card>
+      <Card className="product-card">
         <CardContent className="p-4 sm:p-6">
           <h3 className="mb-3 text-sm font-medium">Post-Publish Checklist</h3>
           <div className="space-y-2">
@@ -177,7 +178,7 @@ function SuccessContent() {
 
 function UrlCard({ label, url }: { label: string; url: string }) {
   return (
-    <Card>
+    <Card className="product-card">
       <CardContent className="flex items-center justify-between gap-4 p-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs text-muted-foreground">{label}</p>
@@ -196,7 +197,7 @@ function UrlCard({ label, url }: { label: string; url: string }) {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-16"><p className="text-muted-foreground">Loading...</p></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-16"><Loader size={24} color="#a3a3a3" /></div>}>
       <SuccessContent />
     </Suspense>
   );

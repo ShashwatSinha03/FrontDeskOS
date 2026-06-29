@@ -2,6 +2,7 @@
 
 import useSWR from 'swr';
 import { founderFetcher, founderUrl } from '@/lib/api/founder';
+import { Loader } from '@/components/ui/loader';
 
 function formatMoney(cents: number): string {
   if (cents < 0.01) return '$0.00';
@@ -56,10 +57,8 @@ export default function CostsPage() {
       )}
 
       {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
-          ))}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader size={40} color="#a3a3a3" />
         </div>
       ) : summary ? (
         <>

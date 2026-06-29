@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Logo } from '@/components/ui/logo';
+import { Loader } from '@/components/ui/loader';
 import { isSafeRedirect } from '@/lib/redirect';
 
 function LoginForm() {
@@ -90,9 +91,9 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="w-full rounded-md bg-blue-600/80 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? <span className="flex items-center gap-2"><Loader size={16} color="currentColor" /> Signing in</span> : 'Sign in'}
           </button>
         </form>
 
@@ -119,7 +120,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <Loader size={24} color="#a3a3a3" />
       </div>
     }>
       <LoginForm />

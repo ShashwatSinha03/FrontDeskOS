@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { LegalConsent } from '@/components/legal/legal-consent';
+import { Loader } from '@/components/ui/loader';
 import { createOwnerInvite } from '@/lib/onboarding';
 
 interface OwnerCreationFormProps {
@@ -48,7 +49,7 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
 
   if (created) {
     return (
-      <Card className="border-emerald-500/20">
+      <Card className="product-card border-emerald-500/20">
         <CardHeader>
           <CardTitle className="text-lg text-emerald-600 dark:text-emerald-400">Owner Created</CardTitle>
           <CardDescription>
@@ -92,7 +93,7 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
   }
 
   return (
-    <Card className="border-primary/20">
+    <Card className="product-card border-primary/20">
       <CardHeader>
         <CardTitle className="text-lg">Create Owner Account</CardTitle>
         <CardDescription>
@@ -128,7 +129,7 @@ export function OwnerCreationForm({ businessId, onComplete, onSkip }: OwnerCreat
             Skip for now
           </Button>
           <Button type="submit" disabled={!isValid || saving} className="flex-1">
-            {saving ? 'Creating account...' : 'Create Account'}
+            {saving ? <span className="flex items-center gap-2"><Loader size={16} color="currentColor" /> Creating account</span> : 'Create Account'}
           </Button>
         </CardFooter>
       </form>
