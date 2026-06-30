@@ -1,4 +1,4 @@
-# Novura RC1 — Release Candidate Readiness Report
+# Nuvora RC1 — Release Candidate Readiness Report
 
 **Date:** 2026-06-28
 **Branch:** `feature/interactive-demo` (worktree)
@@ -149,7 +149,7 @@ The Interactive Demo is fully isolated from production dependencies:
 - No remaining public-facing "FrontDeskOS" references
 
 ### Documentation
-- 9 docs files use "Novura" instead of "Nuvora" (pilot, founder, escalation, plans)
+- 9 docs files use "Nuvora" instead of "Nuvora" (pilot, founder, escalation, plans)
 - `.env.example` files use "Nevura" instead of "Nuvora" (2 files)
 
 ### Old Project Names
@@ -347,8 +347,8 @@ The Interactive Demo is fully isolated from production dependencies:
 
 | Doc | Issue |
 |---|---|
-| 9 doc files use "Novura" instead of "Nuvora" | Misspelled brand name in reports |
-| `docs/plans/` files reference "Novura" | Plans are historical — acceptable, but inconsistent |
+| 9 doc files use "Nuvora" instead of "Nuvora" | Misspelled brand name in reports |
+| `docs/plans/` files reference "Nuvora" | Plans are historical — acceptable, but inconsistent |
 | `docs/rls-audit.md` | curl examples use `frontdeskos.onrender.com` |
 
 ### Missing Documentation
@@ -385,7 +385,7 @@ The Interactive Demo is fully isolated from production dependencies:
 - [ ] Add `loading.tsx` to demo routes
 - [ ] Add `apple-touch-icon.png` (180×180)
 - [ ] Update `Nevura` → `Nuvora` in `.env.example` files
-- [ ] Update "Novura" → "Nuvora" in 9 documentation files
+- [ ] Update "Nuvora" → "Nuvora" in 9 documentation files
 - [ ] Add OG/Twitter image references to layout metadata
 
 ### Deployment

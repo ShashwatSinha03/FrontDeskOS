@@ -1,7 +1,7 @@
 # Pilot Operations Readiness Report
 
 **Date:** 2026-06-24
-**Scope:** Operational audit of Novura's ability to support 20 businesses without constant founder intervention
+**Scope:** Operational audit of Nuvora's ability to support 20 businesses without constant founder intervention
 **Verdict:** FOUNDER BOTTLENECK IDENTIFIED
 
 ---
@@ -821,4 +821,4 @@ But the operational model does not scale beyond a handful of businesses because:
 - Proactive monitoring requires manual dashboard review
 - Every business problem eventually reaches the founder
 
-**Novura at 20 businesses does not require 20x more software. It requires a fundamentally different operational model where the business owner is self-sufficient and the founder is an observer, not a participant.**
+**Nuvora at 20 businesses does not require 20x more software. It requires a fundamentally different operational model where the business owner is self-sufficient and the founder is an observer, not a participant.**

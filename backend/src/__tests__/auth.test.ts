@@ -24,6 +24,9 @@ describe('API Key auth middleware', () => {
     const res = await request(app)
       .get('/api/leads?businessId=00000000-0000-0000-0000-000000000000')
       .set('x-api-key', 'test-api-key');
-    expect(res.status).not.toBe(401);
+    // requireApiKey passes (x-api-key is valid), but authenticate fails (no Bearer token)
+    // A 401 from authenticate means requireApiKey worked
+    expect(res.body.error).toBe('Missing or invalid authorization header');
+    expect(res.body.error).not.toBe('Unauthorized. Provide a valid x-api-key header.');
   });
 });

@@ -1,8 +1,8 @@
-# Novura Founder Readiness Audit
+# Nuvora Founder Readiness Audit
 
 **Audit Date:** 2026-06-14
 **Audit Scope:** Full-stack, end-to-end
-**System Version:** Pre-pilot (FrontDeskOS → Novura)
+**System Version:** Pre-pilot (FrontDeskOS → Nuvora)
 
 ---
 
@@ -10,7 +10,7 @@
 
 **Verdict: NOT READY FOR PILOT**
 
-Novura has strong architectural foundations — clean service boundaries, deterministic workflow state, proper tenant isolation, and comprehensive TypeScript types. However, this audit identified **4 blockers** that will cause runtime failures for real customers, **6 critical security vulnerabilities**, and **17 high-severity issues** spanning data integrity, AI safety, operational visibility, and deployment readiness.
+Nuvora has strong architectural foundations — clean service boundaries, deterministic workflow state, proper tenant isolation, and comprehensive TypeScript types. However, this audit identified **4 blockers** that will cause runtime failures for real customers, **6 critical security vulnerabilities**, and **17 high-severity issues** spanning data integrity, AI safety, operational visibility, and deployment readiness.
 
 The system is approximately 2-3 weeks of focused engineering from being ready for a **limited pilot** with 1-2 controlled businesses.
 
@@ -899,7 +899,7 @@ These are gitignored but exist on disk. Machine compromise → full service comp
 
 ## 18. Business Readiness Audit
 
-### 18.1 10 Businesses Onboarding Tomorrow — Can Novura Support?
+### 18.1 10 Businesses Onboarding Tomorrow — Can Nuvora Support?
 
 | Activity | Ready? | Blockers |
 |---|---|---|
@@ -928,7 +928,7 @@ These are gitignored but exist on disk. Machine compromise → full service comp
 
 ### 18.3 Support Requirements
 
-| Need | Can Novura Do It? |
+| Need | Can Nuvora Do It? |
 |---|---|
 | Owner forgot password | YES — Supabase reset email |
 | Owner locked out | YES — founder can reset password |

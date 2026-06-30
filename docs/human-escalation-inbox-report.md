@@ -304,7 +304,7 @@ All inbox routes pass through: `authenticate` → `loadMembership` → `requireS
 |-------------|--------|
 | Customer can request a human naturally | ✅ LLM-based intent detection |
 | System distinguishes informational vs. assistance requests | ✅ Dedicated classifier with examples |
-| Owner can join and manage conversations from Novura | ✅ Join/message/return endpoints |
+| Owner can join and manage conversations from Nuvora | ✅ Join/message/return endpoints |
 | Conversations move safely between AI → Human → AI | ✅ Ownership lifecycle states |
 | No context loss on return to AI | ✅ History and workflow preserved |
 | Notifications reach the dashboard | ✅ Notification system with bell badge |

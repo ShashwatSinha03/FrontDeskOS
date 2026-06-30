@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build a fully frontend-only interactive demo at `/demo` that showcases the complete Novura ecosystem. The demo is the primary product showcase — a self-contained, production-isolated experience that converts visitors into paying customers.
+Build a fully frontend-only interactive demo at `/demo` that showcases the complete Nuvora ecosystem. The demo is the primary product showcase — a self-contained, production-isolated experience that converts visitors into paying customers.
 
 ## Route
 

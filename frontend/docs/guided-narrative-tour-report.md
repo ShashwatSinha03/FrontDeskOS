@@ -87,7 +87,7 @@ DemoLayout
 | 4 | `dashboard-overview` | `/demo/dashboard` | spotlight | `tour-dashboard-metrics` | — | "Open Conversation" → /demo/inbox |
 | 5 | `human-escalation` | `/demo/inbox` | spotlight | `tour-inbox-escalation` | — | "View Escalation" → /demo/inbox/conv-mike |
 | 6 | `inbox-handoff` | `/demo/inbox/conv-mike` | tooltip | `tour-return-to-ai` | — | "Continue" |
-| 7 | `business-intelligence` | `/demo/dashboard/analytics` | modal | — | — | "See How Novura Fits Your Business" → analytics |
+| 7 | `business-intelligence` | `/demo/dashboard/analytics` | modal | — | — | "See How Nuvora Fits Your Business" → analytics |
 | 8 | `completion` | — | modal | — | — | "Book a Discovery Call" / "Explore Freely" |
 
 ### Narrative Flow
@@ -107,7 +107,7 @@ Customer arrives at demo → Entry Modal → Apex Dental page
   → Step 6: "Seamless Handoff" tooltip on Return to AI button
   → "Continue" → navigate to /demo/dashboard/analytics
   → Step 7: "Business Intelligence" modal
-  → "See How Novura Fits Your Business"
+  → "See How Nuvora Fits Your Business"
   → Step 8: Completion modal
   → "Book a Discovery Call" or "Explore Freely"
 ```
@@ -250,7 +250,7 @@ idle → active → completed
 ### Walkthrough Steps for Verification
 
 1. **Start**: Visit `/demo` → Entry modal shows → Click "I Understood"
-2. **Step 1**: Arrive at `/demo/apex-dental` → Chat widget highlighted → Tooltip: "Welcome to Novura"
+2. **Step 1**: Arrive at `/demo/apex-dental` → Chat widget highlighted → Tooltip: "Welcome to Nuvora"
 3. **Step 1 CTA**: Click "Start Customer Journey" → Chat opens → `demo_started` fires
 4. **Step 2**: Tooltip on chat: "Book an Appointment" → User clicks "Book an Appointment" quick reply
 5. **Step 2 → 3**: Follow booking flow → `appointment_created` fires → "Booking Completed" modal
@@ -261,7 +261,7 @@ idle → active → completed
 10. **Step 5 CTA**: Navigate to `/demo/inbox/conv-mike`
 11. **Step 6**: "Return to AI" button spotlighted →" Continue" CTA
 12. **Step 6 CTA**: Navigate to `/demo/dashboard/analytics`
-13. **Step 7**: Analytics page → "Business Intelligence" modal → "See How Novura Fits Your Business"
+13. **Step 7**: Analytics page → "Business Intelligence" modal → "See How Nuvora Fits Your Business"
 14. **Step 8**: Completion modal → "Book a Discovery Call" or "Explore Freely"
 
 ### Skip at Any Point

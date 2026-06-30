@@ -4,7 +4,7 @@
 2026-06-18
 
 ## Summary
-Implemented the Human Escalation Inbox and Mobile & PWA Readiness for the Novura pilot.
+Implemented the Human Escalation Inbox and Mobile & PWA Readiness for the Nuvora pilot.
 
 ## Changes
 

@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Build a fully frontend-only interactive demo at `/demo` showcasing the complete Novura ecosystem — AI receptionist, booking, escalation, dashboard, inbox, analytics, costs.
+**Goal:** Build a fully frontend-only interactive demo at `/demo` showcasing the complete Nuvora ecosystem — AI receptionist, booking, escalation, dashboard, inbox, analytics, costs.
 
 **Architecture:** Event-driven simulation with a strongly typed DemoEventBus, domain stores (Appointments, Conversations, Notifications, Analytics, Costs, Dashboard), a keyword-based conversation engine, and a separate Story Mode that reacts to business events. All static, no backend.
 
@@ -525,7 +525,7 @@ export function EntryModal() {
       <div className="mx-4 max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
         <h2 className="text-2xl font-bold text-white">Interactive Product Demo</h2>
         <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-          This experience showcases how Novura works using simulated conversations, dashboards and business data.
+          This experience showcases how Nuvora works using simulated conversations, dashboards and business data.
           Everything shown is scripted for demonstration purposes. No real customers, AI models or business operations are involved.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -854,7 +854,7 @@ export interface TourStep {
 }
 
 export const tourSteps: TourStep[] = [
-  { id: 'welcome', trigger: 'demo_started', title: 'Welcome to Novura', description: 'Try booking an appointment to see how the AI receptionist works.', type: 'modal', action: { label: 'Start Chatting', href: '/demo/apex-dental' } },
+  { id: 'welcome', trigger: 'demo_started', title: 'Welcome to Nuvora', description: 'Try booking an appointment to see how the AI receptionist works.', type: 'modal', action: { label: 'Start Chatting', href: '/demo/apex-dental' } },
   { id: 'appointment_booked', trigger: 'appointment_created', title: 'Appointment Booked!', description: "Your appointment was created instantly. Let's see how the owner receives it.", type: 'modal', action: { label: 'Open Dashboard', href: '/demo/dashboard' } },
   { id: 'escalation_triggered', trigger: 'escalation_created', title: 'Human Escalation', description: 'When something needs a human touch, it appears in the inbox.', type: 'modal', action: { label: 'Open Inbox', href: '/demo/inbox' } },
   // ...
@@ -917,7 +917,7 @@ Change "See It Live" link from `/brightsmile-dental` to `/demo`. Update the hove
 
 ### Task 9.2: Add CTAs to demo pages
 
-Add "Launch Novura For Your Business" / "Book a Discovery Call" CTAs on demo footer/banner pointing back to real marketing funnel (Calendly).
+Add "Launch Nuvora For Your Business" / "Book a Discovery Call" CTAs on demo footer/banner pointing back to real marketing funnel (Calendly).
 
 ### Task 9.3: TypeScript + build verification
 
