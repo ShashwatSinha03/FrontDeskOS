@@ -23,7 +23,7 @@
 1. `DemoProvider` (in `demo/layout.tsx`) instantiates all stores + `DemoEventBus` and seeds synthetic data.
 2. `EntryModal` shows once per session (checked via `sessionStorage`).
 3. `StoryMode` subscribes to 4 bus events at mount. Each handler checks a `completedRef` Set and a `skipped` boolean — if neither is set, it displays the step as a modal or toast.
-4. Steps have **no order control** — they display in whatever order their events fire. The first two (`demo_started` → "Welcome to Novura", `appointment_created` → "Appointment Booked!") happen on page load of `/demo/apex-dental` because the `ConversationEngine` emits `demo_started` on `start()` and the greeting scenario fires `appointment_created` via effects.
+4. Steps have **no order control** — they display in whatever order their events fire. The first two (`demo_started` → "Welcome to Nuvora", `appointment_created` → "Appointment Booked!") happen on page load of `/demo/apex-dental` because the `ConversationEngine` emits `demo_started` on `start()` and the greeting scenario fires `appointment_created` via effects.
 5. "Skip Tour" navigates to `/` and sets `skipped = true`, suppressing all future steps.
 
 ### Event-Driven Coupling (The Core Issue)
@@ -262,7 +262,7 @@ DemoLayout (server component — no 'use client')
 ### Current Flow
 ```
 User clicks "I Understood" → redirects to /demo/apex-dental
-  → demo_started fires → "Welcome to Novura" modal (action: Open Chat → /demo/apex-dental)
+  → demo_started fires → "Welcome to Nuvora" modal (action: Open Chat → /demo/apex-dental)
   → User clicks Open Chat → chat opens, greeting scenario starts
   → User books appointment → appointment_created fires → "Appointment Booked!" modal (action: Open Dashboard)
   → User goes to dashboard → (nothing happens unless escalation or lead events fire)
@@ -270,7 +270,7 @@ User clicks "I Understood" → redirects to /demo/apex-dental
 
 ### Desired Flow (Phase 3)
 ```
-Step 1: "Welcome to Novura" → highlight chat bubble (target: #demo-chat-toggle)
+Step 1: "Welcome to Nuvora" → highlight chat bubble (target: #demo-chat-toggle)
 Step 2: "Click 'Book an Appointment'" → highlight quick reply button
 Step 3: "Select a service" → highlight service options
 Step 4: "Appointment Booked!" → show modal, action → /demo/dashboard

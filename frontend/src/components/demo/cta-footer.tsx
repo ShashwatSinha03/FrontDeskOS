@@ -5,7 +5,7 @@ export function CTAFooter() {
     <div className="border-t border-zinc-800 bg-zinc-950 px-4 py-12 text-center">
       <h2 className="text-xl font-semibold text-white">Ready for the real thing?</h2>
       <p className="mt-2 text-sm text-zinc-400">
-        Set up Novura for your business and start capturing leads today.
+        Set up Nuvora for your business and start capturing leads today.
       </p>
       <div className="mt-6 flex items-center justify-center gap-4">
         <ShimmerButton href="https://calendly.com/sinhashashwat21/30min">

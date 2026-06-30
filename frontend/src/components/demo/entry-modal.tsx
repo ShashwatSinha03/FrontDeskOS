@@ -23,7 +23,7 @@ export function EntryModal() {
       <div className="mx-4 max-w-md product-card p-8 shadow-2xl">
         <h2 className="text-2xl font-bold text-white">Interactive Product Demo</h2>
         <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-          This experience showcases how Novura works using simulated conversations,
+          This experience showcases how Nuvora works using simulated conversations,
           dashboards and business data. Everything shown is scripted for demonstration
           purposes. No real customers, AI models or business operations are involved.
         </p>

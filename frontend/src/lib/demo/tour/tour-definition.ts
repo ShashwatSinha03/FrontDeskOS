@@ -28,9 +28,9 @@ export const tourSteps: TourStep[] = [
     id: 'welcome',
     order: 1,
     page: '/demo/apex-dental',
-    title: 'Welcome to Novura',
+    title: 'Welcome to Nuvora',
     description:
-      'Novura is an AI receptionist that handles your customer conversations, appointments, and escalations — so your team can focus on what matters.',
+      'Nuvora is an AI receptionist that handles your customer conversations, appointments, and escalations — so your team can focus on what matters.',
     target: 'tour-chat-widget',
     type: 'tooltip',
     cta: { label: 'Start Customer Journey' },
@@ -41,7 +41,7 @@ export const tourSteps: TourStep[] = [
     page: '/demo/apex-dental',
     title: 'Book an Appointment',
     description:
-      'Click "Book an Appointment" in the chat to see how Novura handles a real booking flow.',
+      'Click "Book an Appointment" in the chat to see how Nuvora handles a real booking flow.',
     target: 'tour-chat-widget',
     type: 'tooltip',
     nextStep: 'booking-complete',
@@ -75,7 +75,7 @@ export const tourSteps: TourStep[] = [
     page: '/demo/inbox',
     title: 'Human Escalation',
     description:
-      'When a customer requests a human, Novura notifies your team and the conversation appears in your inbox with an escalation badge.',
+      'When a customer requests a human, Nuvora notifies your team and the conversation appears in your inbox with an escalation badge.',
     target: 'tour-inbox-escalation',
     type: 'spotlight',
     cta: { label: 'View Escalation', href: '/demo/inbox/conv-mike' },
@@ -97,9 +97,9 @@ export const tourSteps: TourStep[] = [
     page: '/demo/dashboard/analytics',
     title: 'Business Intelligence',
     description:
-      'From conversation volume to cost per channel, Novura gives you full visibility into your operations. Analytics, costs, and performance — all in one place.',
+      'From conversation volume to cost per channel, Nuvora gives you full visibility into your operations. Analytics, costs, and performance — all in one place.',
     type: 'modal',
-    cta: { label: 'See How Novura Fits Your Business' },
+    cta: { label: 'See How Nuvora Fits Your Business' },
     nextStep: 'completion',
   },
 ];
@@ -110,7 +110,7 @@ export const completionStep: TourStep = {
   page: '',
   title: 'You\'ve Experienced the Complete Journey',
   description:
-    'From a customer\'s first message to business insights — Novura manages it all. Ready to see how it works for your business?',
+    'From a customer\'s first message to business insights — Nuvora manages it all. Ready to see how it works for your business?',
   type: 'modal',
   cta: {
     label: 'Book a Discovery Call',
