@@ -1,6 +1,7 @@
 'use client';
 
 import { HeroContent } from '@/lib/marketing-content';
+import { LogoWithName } from '@/components/ui/logo';
 import { ArrowRight } from 'lucide-react';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
 import dynamic from 'next/dynamic';
@@ -19,17 +20,18 @@ export function HomeHero({
       <div className="absolute inset-0">
         <LightRays
           raysOrigin="top-center"
-          raysColor="#3b85ff"
-          raysSpeed={0.6}
-          lightSpread={1.3}
-          rayLength={2.1}
+          raysColor="#035ef3"
+          raysSpeed={0.4}
+          lightSpread={0.9}
+          rayLength={3}
           followMouse={true}
           mouseInfluence={0.2}
-          noiseAmount={0.28}
+          noiseAmount={0.5}
           distortion={0}
-          pulsating
-          fadeDistance={1}
-          saturation={1.1}
+          className="custom-rays"
+          pulsating={false}
+          fadeDistance={1.1}
+          saturation={1.3}
         />
       </div>
 
@@ -38,8 +40,9 @@ export function HomeHero({
           <h1 className="text-5xl font-bold tracking-tighter text-white sm:text-6xl lg:text-7xl">
             {headline}
           </h1>
-          <p className="mt-6 text-lg leading-relaxed text-zinc-400 sm:text-xl sm:leading-relaxed">
-            {subheadline}
+          <p className="mt-8 text-lg leading-relaxed text-zinc-400 sm:text-xl sm:leading-relaxed">
+            <LogoWithName className="inline-flex align-middle text-zinc-400" />{' '}
+            {subheadline.replace('Nuvora', '').trimStart()}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <ShimmerButton href={primaryCta.href}>
