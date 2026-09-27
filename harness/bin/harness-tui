@@ -1,0 +1,206 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const readline = require('readline');
+const fs = require('fs');
+const path = require('path');
+
+const HARNESS_ROOT = path.join(__dirname, '..');
+
+const PROVIDERS = [
+  { id: 'gemini', name: 'Google Gemini', description: 'Google Gemini models via google-genai SDK', requiresBaseUrl: false, defaultModel: 'gemini-3.8-high', envKey: 'GEMINI_API_KEY' },
+  { id: 'groq', name: 'Groq', description: 'Groq LPU inference via OpenAI-compatible API', requiresBaseUrl: false, defaultModel: 'llama-3.3-70b-versatile', envKey: 'GROQ_API_KEY' },
+  { id: 'openai-compatible', name: 'OpenAI Compatible', description: 'Any OpenAI-compatible API (OpenAI, Together, Together AI, etc.)', requiresBaseUrl: true, defaultModel: 'gpt-4o', envKey: 'OPENAI_API_KEY' },
+];
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function question(text, callback) {
+  rl.question(text, callback);
+}
+
+function printHeader() {
+  console.clear();
+  console.log('\x1b[35m');
+  console.log('╔══════════════════════════════════════════════════════════╗');
+  console.log('║                    ⚡ HARNESS TUI                          ║');
+  console.log('║         Autonomous Coding Agent Harness                   ║');
+  console.log('╚═════════════════════════════════════════════════════════╝');
+  console.log('\x1b[0m\n');
+}
+
+function printWarning() {
+  if (!process.env.GEMINI_API_KEY && !process.env.AI_API_KEY && !process.env.GROQ_API_KEY) {
+    console.log('\x1b[33mWarning:\x1b[0m No API keys found in environment.');
+    console.log('You can enter them interactively or set GEMINI_API_KEY/GROQ_API_KEY env vars.\n');
+  }
+}
+
+function selectProvider(callback) {
+  console.log('\x1b[36m┌─ Model Configuration ─────────────────────────────────┐\x1b[0m');
+  console.log('\nSelect provider:');
+  PROVIDERS.forEach((opt, i) => {
+    console.log(`  ${i + 1}. ${opt.name} - ${opt.description}`);
+  });
+  
+  function ask() {
+    question('Select (number) [1]: ', (choice) => {
+      const idx = parseInt(choice || '1', 10) - 1;
+      if (idx >= 0 && idx < PROVIDERS.length) {
+        callback(PROVIDERS[idx]);
+      } else {
+        console.log('Invalid selection, try again.');
+        ask();
+      }
+    });
+  }
+  ask();
+}
+
+function getInput(promptText, validator, defaultValue, callback) {
+  const prompt = defaultValue ? `${promptText} [${defaultValue}]: ` : `${promptText}: `;
+  question(prompt, (input) => {
+    const value = input || defaultValue;
+    if (validator(value)) {
+      callback(value);
+    } else {
+      console.log('Invalid input, please try again.');
+      getInput(promptText, validator, defaultValue, callback);
+    }
+  });
+}
+
+function runConfigFlow(provider) {
+  const providerConfig = provider;
+  
+  // Check for existing API key
+  let apiKey = process.env[providerConfig.envKey] || '';
+  
+  function askApiKey() {
+    if (!apiKey) {
+      getInput(`API Key for ${providerConfig.name}`, (v) => v.length > 0, '', (val) => {
+        apiKey = val;
+        askModelId();
+      });
+    } else {
+      console.log(`Using ${providerConfig.envKey} from environment`);
+      askModelId();
+    }
+  }
+  
+  function askModelId() {
+    getInput('Model ID', (v) => v.length > 0, providerConfig.defaultModel, (modelId) => {
+      askBaseUrl(modelId);
+    });
+  }
+  
+  function askBaseUrl(modelId) {
+    if (providerConfig.requiresBaseUrl) {
+      getInput('Base URL (required for OpenAI-compatible)', (v) => v.startsWith('http'), 'https://api.openai.com/v1', (baseUrl) => {
+        askLimits(modelId, baseUrl);
+      });
+    } else {
+      askLimits(modelId, '');
+    }
+  }
+  
+  function askLimits(modelId, baseUrl) {
+    console.log('\n\x1b[36m┌─ Execution Limits ─────────────────────────────────────┐\x1b[0m');
+    
+    getInput('Max iterations', (v) => /^\d+$/.test(v) && parseInt(v) >= 1 && parseInt(v) <= 100, '10', (maxIterations) => {
+      getInput('Max depth', (v) => /^\d+$/.test(v) && parseInt(v) >= 1 && parseInt(v) <= 10, '3', (maxDepth) => {
+        getInput('Max recovery attempts', (v) => /^\d+$/.test(v) && parseInt(v) >= 1 && parseInt(v) <= 20, '5', (maxRecoveryAttempts) => {
+          getInput('Test command', (v) => v.length > 0, 'python3 -m pytest tests -q', (testCommand) => {
+            askIssue(modelId, baseUrl, parseInt(maxIterations), parseInt(maxDepth), parseInt(maxRecoveryAttempts), testCommand);
+          });
+        });
+      });
+    });
+  }
+  
+  function askIssue(modelId, baseUrl, maxIterations, maxDepth, maxRecoveryAttempts, testCommand) {
+    console.log('\n\x1b[36m┌─ Issue Description ────────────────────────────────────┐\x1b[0m');
+    console.log('Describe the coding issue to solve:');
+    
+    getInput('Issue', (v) => v.trim().length > 0, '', (issue) => {
+      showSummary(providerConfig, modelId, baseUrl, maxIterations, maxDepth, maxRecoveryAttempts, testCommand, issue);
+    });
+  }
+  
+  function showSummary(providerConfig, modelId, baseUrl, maxIterations, maxDepth, maxRecoveryAttempts, testCommand, issue) {
+    console.log('\n\x1b[36m┌─ Configuration Summary ────────────────────────────────┐\x1b[0m');
+    console.log(`  Provider: ${providerConfig.name}`);
+    console.log(`  Model: ${modelId}`);
+    console.log(`  Base URL: ${baseUrl || 'N/A'}`);
+    console.log(`  Max Iterations: ${maxIterations}`);
+    console.log(`  Max Depth: ${maxDepth}`);
+    console.log(`  Max Recovery: ${maxRecoveryAttempts}`);
+    console.log(`  Test Command: ${testCommand}`);
+    console.log(`  Issue: ${issue.substring(0, 80)}${issue.length > 80 ? '...' : ''}`);
+    console.log('\x1b[36m└─────────────────────────────────────────────────────────┘\x1b[0m\n');
+    
+    getInput('Start evaluation? [Y/n]', (v) => ['y', 'n', 'Y', 'N', ''].includes(v), 'y', (confirm) => {
+      if (confirm.toLowerCase() === 'n') {
+        console.log('Cancelled.');
+        rl.close();
+        process.exit(0);
+      }
+      startHarness(providerConfig, modelId, baseUrl, maxIterations, maxDepth, maxRecoveryAttempts, testCommand, issue);
+    });
+  }
+  
+  function startHarness(providerConfig, modelId, baseUrl, maxIterations, maxDepth, maxRecoveryAttempts, testCommand, issue) {
+    console.log('\n\x1b[32mStarting harness...\x1b[0m\n');
+    
+    const env = {
+      ...process.env,
+      GEMINI_API_KEY: providerConfig.id === 'gemini' ? apiKey : process.env.GEMINI_API_KEY,
+      GROQ_API_KEY: providerConfig.id === 'groq' ? apiKey : process.env.GROQ_API_KEY,
+      OPENAI_API_KEY: providerConfig.id === 'openai-compatible' ? apiKey : process.env.OPENAI_API_KEY,
+      HARNESS_PROVIDER: providerConfig.id,
+      HARNESS_MODEL_ID: modelId,
+      HARNESS_MAX_ITERATIONS: String(maxIterations),
+      HARNESS_MAX_DEPTH: String(maxDepth),
+      HARNESS_MAX_RECOVERY_ATTEMPTS: String(maxRecoveryAttempts),
+      HARNESS_REPO_ROOT: process.cwd(),
+      HARNESS_ISSUE: issue,
+    };
+    
+    if (baseUrl) {
+      process.env.HARNESS_BASE_URL = baseUrl;
+      process.env.OPENAI_BASE_URL = baseUrl;
+    }
+    
+    const child = spawn('make', ['run', issue], {
+      cwd: process.cwd(),
+      env,
+      stdio: 'inherit',
+    });
+    
+    child.on('close', (code) => {
+      rl.close();
+      process.exit(code);
+    });
+    
+    child.on('error', (err) => {
+      console.error('Failed to start harness:', err);
+      rl.close();
+      process.exit(1);
+    });
+  }
+  
+  askApiKey();
+}
+
+function main() {
+  printHeader();
+  printWarning();
+  selectProvider((provider) => {
+    runConfigFlow(provider);
+  });
+}
+
+main();
